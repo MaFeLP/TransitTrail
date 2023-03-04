@@ -1,0 +1,78 @@
+use reqwest::Error;
+use serde::Deserialize;
+
+#[derive(Debug, PartialEq, Eq, Deserialize)]
+struct Response {
+    destinations: Vec<Destination>,
+}
+
+#[derive(Debug, PartialEq, Eq, Deserialize)]
+pub struct Destination {
+    pub key: u32,
+    pub name: String,
+}
+
+impl crate::TransitClient {
+    pub async fn destinations(
+        &self,
+        route: String,
+        verbose: bool,
+    ) -> Result<Vec<Destination>, Error> {
+        let response = self
+            .client
+            .get(format!(
+                "{base}/variants/{route}/destinations.json?api-key={key}&usage={usage}",
+                base = self.base_url,
+                key = self.api_key,
+                usage = {
+                    if verbose {
+                        "long"
+                    } else {
+                        "short"
+                    }
+                }
+            ))
+            .send()
+            .await?;
+        let out: Response = response.json().await?;
+
+        Ok(out.destinations)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn destinations() {
+        // Read .env file for environment variables
+        dotenv::dotenv().unwrap();
+        // Create a runtime, to run async functions
+        let rt = tokio::runtime::Runtime::new().unwrap();
+
+        let client = crate::TransitClient::new(
+            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
+        );
+        let actual = rt
+            .block_on(client.destinations("16-1-K".to_string(), true))
+            .unwrap();
+        let expected = vec![
+            Destination {
+                key: 10,
+                name: "City Hall".to_string(),
+            },
+            Destination {
+                key: 164,
+                name: "Kingston Row".to_string(),
+            },
+            Destination {
+                key: 5,
+                name: "Downtown".to_string(),
+            },
+        ];
+
+        //dbg!("{:?},{:?}", &actual, &expected);
+        assert_eq!(actual, expected);
+    }
+}
