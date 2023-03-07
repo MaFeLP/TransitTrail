@@ -1,0 +1,40 @@
+name: Winnipeg API Client Test
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "transit-api-client/**" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "transit-api-client/**" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  WPG_TRANSIT_API_KEY: ${secrets.WPG_TRANSIT_API_KEY}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --verbose
+      working-directory: transit-api-client
+    - name: Run tests
+      run: cargo test --verbose
+      working-directory: transit-api-client
+  
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: cargo fmt
+      run: cargo fmt -- --check
+      working-directory: transit-api-client
+    - name: clippy
+      run: cargo clippy --all-featues
+      working-directory: transit-api-client
+      env:
+        RUSTFLAGS: -D warnings
