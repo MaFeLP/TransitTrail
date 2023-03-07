@@ -57,7 +57,7 @@ jobs:
       run: cargo fmt -- --check
       working-directory: transit-api-client
     - name: clippy
-      run: cargo clippy --all-features
+      run: cargo clippy --all-features --no-deps
       working-directory: transit-api-client
       env:
         RUSTFLAGS: -D warnings
