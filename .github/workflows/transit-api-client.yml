@@ -22,6 +22,11 @@ jobs:
     - name: Build
       run: cargo build --verbose
       working-directory: transit-api-client
+    # Needed, because function dotenv::dotenv() needs the file to exist, even if
+    # environment variable is not set in file.
+    - name: Prepare .env file
+      run: touch .env
+      working-directory: transit-api-client
     - name: Run tests
       run: cargo test --verbose
       working-directory: transit-api-client
@@ -35,7 +40,7 @@ jobs:
       run: cargo fmt -- --check
       working-directory: transit-api-client
     - name: clippy
-      run: cargo clippy --all-featues
+      run: cargo clippy --all-features
       working-directory: transit-api-client
       env:
         RUSTFLAGS: -D warnings
