@@ -8,7 +8,7 @@ pub enum Usage {
 }
 
 impl Usage {
-    pub(crate) fn to_url_parameter(self) -> String {
+    pub(crate) fn to_url_parameter(&self) -> String {
         match self {
             Usage::Normal => "".to_string(),
             Usage::Long => "&usage=long".to_string(),

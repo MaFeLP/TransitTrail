@@ -69,7 +69,7 @@ impl crate::TransitClient {
                     let mut s = String::new();
                     for stop in stops {
                         s.push_str(&stop.to_string());
-                        s.push_str(",");
+                        s.push(',');
                     }
                     s.pop();
                     s
