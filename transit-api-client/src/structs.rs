@@ -1,5 +1,22 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum Usage {
+    Normal,
+    Long,
+    Short,
+}
+
+impl Usage {
+    pub(crate) fn to_url_parameter(self) -> String {
+        match self {
+            Usage::Normal => "".to_string(),
+            Usage::Long => "&usage=long".to_string(),
+            Usage::Short => "&usage=short".to_string(),
+        }
+    }
+}
+
 // Locations.rs
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Street {

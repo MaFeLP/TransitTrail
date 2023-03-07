@@ -1,4 +1,4 @@
-use crate::structs::Route;
+use crate::structs::{Route, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -6,7 +6,7 @@ impl crate::TransitClient {
     pub async fn route<T: std::fmt::Display>(
         &self,
         route_number: T,
-        verbose: bool,
+        usage: Usage,
     ) -> Result<Route, Error> {
         #[derive(Debug, PartialEq, Eq, Deserialize)]
         struct Response {
@@ -16,16 +16,10 @@ impl crate::TransitClient {
         let response = self
             .client
             .get(format!(
-                "{base}/routes/{route_number}.json?api-key={key}&usage={usage}",
+                "{base}/routes/{route_number}.json?api-key={key}{usage}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = {
-                    if verbose {
-                        "long"
-                    } else {
-                        "short"
-                    }
-                }
+                usage = usage.to_url_parameter(),
             ))
             .send()
             .await?;
@@ -36,7 +30,7 @@ impl crate::TransitClient {
     pub async fn routes_by_stop(
         &self,
         stop_number: u32,
-        verbose: bool,
+        usage: Usage,
     ) -> Result<Vec<Route>, Error> {
         #[derive(Debug, PartialEq, Eq, Deserialize)]
         struct Response {
@@ -46,16 +40,10 @@ impl crate::TransitClient {
         let response = self
             .client
             .get(format!(
-                "{base}/routes.json?api-key={key}&usage={usage}&stop={stop_number}",
+                "{base}/routes.json?api-key={key}{usage}&stop={stop_number}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = {
-                    if verbose {
-                        "long"
-                    } else {
-                        "short"
-                    }
-                }
+                usage = usage.to_url_parameter(),
             ))
             .send()
             .await?;
@@ -80,7 +68,7 @@ mod test {
         let client = crate::TransitClient::new(
             std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
         );
-        let actual = rt.block_on(client.route(25, true)).unwrap();
+        let actual = rt.block_on(client.route(25, Usage::Normal)).unwrap();
         let expected = Route::Regular(RouteRegular {
             key: 25,
             number: 25,
@@ -120,7 +108,9 @@ mod test {
         let client = crate::TransitClient::new(
             std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
         );
-        let actual = rt.block_on(client.routes_by_stop(50254, true)).unwrap();
+        let actual = rt
+            .block_on(client.routes_by_stop(50254, Usage::Normal))
+            .unwrap();
         let expected = vec![
             Route::Regular(RouteRegular {
                 key: 57,
@@ -201,7 +191,7 @@ mod test {
         let client = crate::TransitClient::new(
             std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
         );
-        let actual = rt.block_on(client.route("BLUE", true)).unwrap();
+        let actual = rt.block_on(client.route("BLUE", Usage::Normal)).unwrap();
         let expected = Route::Blue(RouteBlue {
             key: "BLUE".to_string(),
             number: "BLUE".to_string(),

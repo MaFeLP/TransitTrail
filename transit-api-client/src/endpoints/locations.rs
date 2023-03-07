@@ -1,4 +1,4 @@
-use crate::structs::{GeoLocation, Location};
+use crate::structs::{GeoLocation, Location, Usage};
 use reqwest::Error;
 use serde::{Deserialize, Serialize};
 
@@ -13,21 +13,15 @@ impl crate::TransitClient {
         position: &GeoLocation,
         distance: Option<f32>,
         max_results: Option<u32>,
-        verbose: bool,
+        usage: Usage,
     ) -> Result<Vec<Location>, Error> {
         let response = self
             .client
             .get(format!(
-                "{base}locations.json?api-key={key}&usage={usage}&lat={lat}&lon={long}&distance={distance}&max-results={max_results}",
+                "{base}locations.json?api-key={key}{usage}&lat={lat}&lon={long}&distance={distance}&max-results={max_results}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = {
-                    if verbose {
-                        "long"
-                    } else {
-                        "short"
-                    }
-                },
+                usage = usage.to_url_parameter(),
                 lat = position.latitude,
                 long = position.longitude,
                 distance = distance.unwrap_or(100.0),
@@ -37,7 +31,6 @@ impl crate::TransitClient {
             .await?;
         let out: Response = response.json().await?;
         //let out: Response = serde_json::from_str(text.as_str()).unwrap();
-        dbg!(&out);
 
         Ok(out.locations)
     }
@@ -63,7 +56,7 @@ mod test {
             longitude: "-97.138".to_string(),
         };
         let actual = rt
-            .block_on(client.locations(&position, None, None, true))
+            .block_on(client.locations(&position, None, None, Usage::Normal))
             .unwrap();
         let expected = vec![
             Location::Monument(Monument {

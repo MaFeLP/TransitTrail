@@ -1,3 +1,4 @@
+use crate::structs::Usage;
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -16,21 +17,15 @@ impl crate::TransitClient {
     pub async fn destinations(
         &self,
         route: String,
-        verbose: bool,
+        usage: Usage,
     ) -> Result<Vec<Destination>, Error> {
         let response = self
             .client
             .get(format!(
-                "{base}/variants/{route}/destinations.json?api-key={key}&usage={usage}",
+                "{base}/variants/{route}/destinations.json?api-key={key}{usage}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = {
-                    if verbose {
-                        "long"
-                    } else {
-                        "short"
-                    }
-                }
+                usage = usage.to_url_parameter(),
             ))
             .send()
             .await?;
@@ -55,7 +50,7 @@ mod test {
             std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
         );
         let actual = rt
-            .block_on(client.destinations("16-1-K".to_string(), true))
+            .block_on(client.destinations("16-1-K".to_string(), Usage::Normal))
             .unwrap();
         let expected = vec![
             Destination {
