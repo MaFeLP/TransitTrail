@@ -87,9 +87,11 @@ mod test {
             variants: vec![
                 RouteVariante {
                     key: "25-0-U".to_string(),
+                    name: None,
                 },
                 RouteVariante {
                     key: "25-1-D".to_string(),
+                    name: None,
                 },
             ],
         });
@@ -130,9 +132,11 @@ mod test {
                 variants: vec![
                     RouteVariante {
                         key: "57-1-D".to_string(),
+                        name: None,
                     },
                     RouteVariante {
                         key: "57-0-S".to_string(),
+                        name: None,
                     },
                 ],
             }),
@@ -154,24 +158,31 @@ mod test {
                 variants: vec![
                     RouteVariante {
                         key: "19-0-#".to_string(),
+                        name: None,
                     },
                     RouteVariante {
                         key: "19-1-N".to_string(),
+                        name: None,
                     },
                     RouteVariante {
                         key: "19-0-N".to_string(),
+                        name: None,
                     },
                     RouteVariante {
                         key: "19-0-E".to_string(),
+                        name: None,
                     },
                     RouteVariante {
                         key: "19-1-D".to_string(),
+                        name: None,
                     },
                     RouteVariante {
                         key: "19-1-A".to_string(),
+                        name: None,
                     },
                     RouteVariante {
                         key: "19-0-L".to_string(),
+                        name: None,
                     },
                 ],
             }),
@@ -209,12 +220,15 @@ mod test {
             variants: vec![
                 RouteVariante {
                     key: "BLUE-0-S".to_string(),
+                    name: None,
                 },
                 RouteVariante {
                     key: "BLUE-0-U".to_string(),
+                    name: None,
                 },
                 RouteVariante {
                     key: "BLUE-1-D".to_string(),
+                    name: None,
                 },
             ],
         });

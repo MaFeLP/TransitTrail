@@ -163,6 +163,7 @@ pub enum RouteCoverage {
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RouteVariante {
     pub key: String,
+    pub name: Option<String>,
 }
 
 pub mod badges {
