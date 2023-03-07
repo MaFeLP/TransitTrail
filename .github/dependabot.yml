@@ -1,0 +1,41 @@
+version: 2
+updates:
+    # Maintain dependencies for the client library
+  - package-ecosystem: "cargo"
+    directory: "/transit-api-client/"
+    schedule:
+      interval: "weekly"
+    assignees: ["dependabot"]
+    commit-message:
+      prefix: "[api-client] "
+    labels: ["dependency"]
+    reviewers:
+      - "MaFeLP"
+
+    # Maintain dependencies for the application's rust backend
+  - package-ecosystem: "cargo"
+    directory: "/src-tauri/"
+    schedule:
+      interval: "weekly"
+    assignees: ["dependabot"]
+    commit-message:
+      prefix: "[backend] "
+    labels: ["dependency"]
+    reviewers:
+      - "MaFeLP"
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees: ["dependabot"]
+    commit-message:
+      prefix: "[CI] "
+    labels: ["dependency"]
+    reviewers:
+      - "MaFeLP"
+
+# pnpm package manager is not supported, so the main dependencies
+# have to be updated manually!
+
