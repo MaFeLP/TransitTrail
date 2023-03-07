@@ -17,7 +17,14 @@ impl Usage {
     }
 }
 
-// Locations.rs
+// destinations.rs
+#[derive(Debug, PartialEq, Eq, Deserialize)]
+pub struct Destination {
+    pub key: u32,
+    pub name: String,
+}
+
+// locations.rs
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Street {
     pub key: u32,

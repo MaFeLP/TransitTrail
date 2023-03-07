@@ -8,7 +8,7 @@ impl crate::TransitClient {
         route_number: T,
         usage: Usage,
     ) -> Result<Route, Error> {
-        #[derive(Debug, PartialEq, Eq, Deserialize)]
+        #[derive(Debug, Deserialize)]
         struct Response {
             route: Route,
         }
@@ -32,7 +32,7 @@ impl crate::TransitClient {
         stop_number: u32,
         usage: Usage,
     ) -> Result<Vec<Route>, Error> {
-        #[derive(Debug, PartialEq, Eq, Deserialize)]
+        #[derive(Debug, Deserialize)]
         struct Response {
             routes: Vec<Route>,
         }

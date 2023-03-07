@@ -3,11 +3,6 @@ use reqwest::Error;
 use serde::Deserialize;
 
 #[derive(Debug, PartialEq, Eq, Deserialize)]
-struct Response {
-    destinations: Vec<Destination>,
-}
-
-#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct Destination {
     pub key: u32,
     pub name: String,
@@ -19,6 +14,11 @@ impl crate::TransitClient {
         route: String,
         usage: Usage,
     ) -> Result<Vec<Destination>, Error> {
+        #[derive(Debug, Deserialize)]
+        struct Response {
+            destinations: Vec<Destination>,
+        }
+
         let response = self
             .client
             .get(format!(

@@ -1,11 +1,6 @@
 use crate::structs::{GeoLocation, Location, Usage};
 use reqwest::Error;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-struct Response {
-    locations: Vec<Location>,
-}
+use serde::Deserialize;
 
 impl crate::TransitClient {
     pub async fn locations(
@@ -15,6 +10,11 @@ impl crate::TransitClient {
         max_results: Option<u32>,
         usage: Usage,
     ) -> Result<Vec<Location>, Error> {
+        #[derive(Debug, Deserialize)]
+        struct Response {
+            locations: Vec<Location>,
+        }
+
         let response = self
             .client
             .get(format!(
