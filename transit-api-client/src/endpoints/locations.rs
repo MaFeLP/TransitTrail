@@ -70,6 +70,7 @@ mod test {
                         key: 2265,
                         name: "Main Street".to_string(),
                         street_type: Some(StreetType::Street),
+                        leg: None,
                     },
                     centre: GeographicLocation {
                         geographic: GeoLocation {
@@ -90,6 +91,7 @@ mod test {
                         key: 2265,
                         name: "Main Street".to_string(),
                         street_type: Some(StreetType::Street),
+                        leg: None,
                     },
                     centre: GeographicLocation {
                         geographic: GeoLocation {
@@ -106,6 +108,7 @@ mod test {
                     key: 2265,
                     name: "Main Street".to_string(),
                     street_type: Some(StreetType::Street),
+                    leg: None,
                 },
                 centre: GeographicLocation {
                     geographic: GeoLocation {
@@ -120,11 +123,13 @@ mod test {
                     key: 2265,
                     name: "Main Street".to_string(),
                     street_type: Some(StreetType::Street),
+                    leg: None,
                 },
                 cross_street: Street {
                     key: 2871,
                     name: "Pioneer Avenue".to_string(),
                     street_type: Some(StreetType::Avenue),
+                    leg: None,
                 },
                 centre: GeographicLocation {
                     geographic: GeoLocation {
@@ -139,11 +144,13 @@ mod test {
                     key: 70002356,
                     name: "Walkway: Portage and Main".to_string(),
                     street_type: None,
+                    leg: None,
                 },
                 cross_street: Street {
                     key: 70002355,
                     name: "Walkway: Winnipeg Square".to_string(),
                     street_type: None,
+                    leg: None,
                 },
                 centre: GeographicLocation {
                     geographic: GeoLocation {

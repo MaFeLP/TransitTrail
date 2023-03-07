@@ -31,6 +31,7 @@ pub struct Street {
     pub name: String,
     #[serde(rename = "type")]
     pub street_type: Option<StreetType>,
+    pub leg: Option<StreetLeg>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -40,6 +41,14 @@ pub enum StreetType {
     Road,
     Drive,
     Crescent,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum StreetLeg {
+    North,
+    East,
+    South,
+    West,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
