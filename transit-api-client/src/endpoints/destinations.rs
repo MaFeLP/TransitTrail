@@ -1,12 +1,6 @@
-use crate::structs::Usage;
+use crate::structs::{Destination, Usage};
 use reqwest::Error;
 use serde::Deserialize;
-
-#[derive(Debug, PartialEq, Eq, Deserialize)]
-pub struct Destination {
-    pub key: u32,
-    pub name: String,
-}
 
 impl crate::TransitClient {
     pub async fn destinations(
