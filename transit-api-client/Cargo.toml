@@ -1,9 +1,17 @@
 [package]
 name = "transit-api-client"
 version = "0.1.0"
+authors = ["MaFeLP <mafelp@proton.me"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+rust-version = "^1.67"
+description = "A rust client for the Winnipeg Transit API made with reqwest"
+#documentation = ""
+readme = "README.md"
+#homepage = ""
+repository = "https://github.com/MaFeLP/computerscience402-final-project"
+license = "GPL-3.0-or-later"
+keywords = ["winnipeg", "wpg", "transit", "api"]
+publish = false
 
 [dependencies]
 reqwest = { version = "0.11", features = ["json"] }
@@ -13,3 +21,4 @@ serde_json = "1.0"
 [dev-dependencies]
 dotenv = "0.15"
 tokio = { version = "1.26", features = ["rt", "rt-multi-thread"] }
+
