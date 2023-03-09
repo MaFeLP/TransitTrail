@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{de::Error, Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Debug)]
@@ -62,30 +62,53 @@ pub enum StreetLeg {
     West,
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GeographicLocation {
-    pub geographic: GeoLocation,
-}
-
-impl From<GeoLocation> for GeographicLocation {
-    fn from(value: GeoLocation) -> Self {
-        Self { geographic: value }
-    }
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize)]
 pub struct GeoLocation {
-    pub latitude: String,
-    pub longitude: String,
-}
-
-impl From<GeographicLocation> for GeoLocation {
-    fn from(value: GeographicLocation) -> Self {
-        value.geographic
-    }
+    pub latitude: f64,
+    pub longitude: f64,
 }
 
 impl Eq for GeoLocation {}
+
+impl<'de> serde::de::Deserialize<'de> for GeoLocation {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let map = <serde_json::Map<String, serde_json::Value>>::deserialize(deserializer)?;
+
+        // Somehow, this function gets called twice for the deserialization...
+        // The first time with a map that contains the "geolocation" key, the second time with the
+        // longitude and latitude fields.
+        if map.contains_key(&String::from("latitude"))
+            && map.contains_key(&String::from("longitude"))
+        {
+            // the longitude and latitude fields are stored with quotes, so directly asking for
+            // them as a float, would error out.
+            let latitude: f64 = match map.get("latitude").unwrap().as_str() {
+                Some(l) => l.parse().map_err(D::Error::custom)?,
+                None => return Err(D::Error::custom("field `latitude` is not of type  `str`")),
+            };
+            let longitude: f64 = match map.get("longitude").unwrap().as_str() {
+                Some(l) => l.parse().map_err(D::Error::custom)?,
+                None => return Err(D::Error::custom("field `longitude` is not of type `str`")),
+            };
+
+            return Ok(Self {
+                latitude,
+                longitude,
+            });
+        }
+
+        let geographic: &serde_json::Value = map
+            .get("geographic")
+            .ok_or(D::Error::missing_field("geographic"))?;
+        let out: GeoLocation =
+            serde_json::from_value(geographic.clone()).map_err(D::Error::custom)?;
+
+        Ok(out)
+    }
+}
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -104,7 +127,7 @@ pub struct Address {
     pub street: Street,
     #[serde(rename = "street-number")]
     pub street_number: u32,
-    pub centre: GeographicLocation,
+    pub centre: GeoLocation,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -121,7 +144,7 @@ pub struct Intersection {
     pub street: Street,
     #[serde(rename = "cross-street")]
     pub cross_street: Street,
-    pub centre: GeographicLocation,
+    pub centre: GeoLocation,
 }
 
 // Routes.rs
@@ -306,9 +329,8 @@ pub struct Stop {
     pub street: Street,
     #[serde(rename = "cross-street")]
     pub cross_street: Street,
-    pub centre: GeographicLocation,
+    pub centre: GeoLocation,
 }
-
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StopDirection {
@@ -328,7 +350,7 @@ pub enum StopSide {
     Nearside, // stop: 10076
     #[serde(rename = "Nearside Opposite")]
     NearsideOpposite, // stop: 10077
-    NA, // stop: 10087
+    NA,      // stop: 10087
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -336,4 +358,3 @@ pub struct StopFeature {
     pub name: String,
     pub count: u32,
 }
-

@@ -52,8 +52,8 @@ mod test {
             std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
         );
         let position = GeoLocation {
-            latitude: "49.895".to_string(),
-            longitude: "-97.138".to_string(),
+            latitude: 49.895,
+            longitude: -97.138,
         };
         let actual = rt
             .block_on(client.locations(&position, None, None, Usage::Normal))
@@ -72,11 +72,9 @@ mod test {
                         street_type: Some(StreetType::Street),
                         leg: None,
                     },
-                    centre: GeographicLocation {
-                        geographic: GeoLocation {
-                            latitude: "49.89491".to_string(),
-                            longitude: "-97.13763".to_string(),
-                        },
+                    centre: GeoLocation {
+                        latitude: 49.89491,
+                        longitude: -97.13763,
                     },
                 },
             }),
@@ -93,11 +91,9 @@ mod test {
                         street_type: Some(StreetType::Street),
                         leg: None,
                     },
-                    centre: GeographicLocation {
-                        geographic: GeoLocation {
-                            latitude: "49.89491".to_string(),
-                            longitude: "-97.13763".to_string(),
-                        },
+                    centre: GeoLocation {
+                        latitude: 49.89491,
+                        longitude: -97.13763,
                     },
                 },
             }),
@@ -110,11 +106,9 @@ mod test {
                     street_type: Some(StreetType::Street),
                     leg: None,
                 },
-                centre: GeographicLocation {
-                    geographic: GeoLocation {
-                        latitude: "49.89491".to_string(),
-                        longitude: "-97.13763".to_string(),
-                    },
+                centre: GeoLocation {
+                    latitude: 49.89491,
+                    longitude: -97.13763,
                 },
             }),
             Location::Intersection(Intersection {
@@ -131,11 +125,9 @@ mod test {
                     street_type: Some(StreetType::Avenue),
                     leg: None,
                 },
-                centre: GeographicLocation {
-                    geographic: GeoLocation {
-                        latitude: "49.89467".to_string(),
-                        longitude: "-97.13801".to_string(),
-                    },
+                centre: GeoLocation {
+                    latitude: 49.89467,
+                    longitude: -97.13801,
                 },
             }),
             Location::Intersection(Intersection {
@@ -152,11 +144,9 @@ mod test {
                     street_type: None,
                     leg: None,
                 },
-                centre: GeographicLocation {
-                    geographic: GeoLocation {
-                        latitude: "49.89533".to_string(),
-                        longitude: "-97.13809".to_string(),
-                    },
+                centre: GeoLocation {
+                    latitude: 49.89533,
+                    longitude: -97.13809,
                 },
             }),
         ];

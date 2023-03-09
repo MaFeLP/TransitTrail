@@ -105,9 +105,7 @@ mod test {
 
         let client =
             crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
-        let mut actual = rt
-            .block_on(client.stop_info(10168, Usage::Normal))
-            .unwrap();
+        let mut actual = rt.block_on(client.stop_info(10168, Usage::Normal)).unwrap();
         let mut expected = Stop {
             key: 10168,
             name: "Westbound River at Cauchon".to_string(),
@@ -126,14 +124,15 @@ mod test {
                 street_type: Some(StreetType::Street),
                 leg: None,
             },
-            centre: GeographicLocation { geographic: GeoLocation { latitude: "49.88099".to_string(), longitude: "-97.14116".to_string() } },
+            centre: GeoLocation {
+                latitude: 49.88099,
+                longitude: -97.14116,
+            },
         };
         //dbg!("{:?},{:?}", &actual, &expected);
         assert_eq!(actual, expected);
 
-        actual = rt
-            .block_on(client.stop_info(10087, Usage::Normal))
-            .unwrap();
+        actual = rt.block_on(client.stop_info(10087, Usage::Normal)).unwrap();
         expected = Stop {
             key: 10087,
             name: "Northbound Stafford at Stafford Loop".to_string(),
@@ -152,10 +151,12 @@ mod test {
                 street_type: Some(StreetType::Street),
                 leg: None,
             },
-            centre: GeographicLocation { geographic: GeoLocation { latitude: "49.85741".to_string(), longitude: "-97.15236".to_string() } },
+            centre: GeoLocation {
+                latitude: 49.85741,
+                longitude: -97.15236,
+            },
         };
         //dbg!("{:?},{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 }
-
