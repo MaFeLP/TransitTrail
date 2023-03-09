@@ -1,4 +1,4 @@
-use crate::structs::{GeoLocation, Location, Usage};
+use crate::structs::{GeoLocation, Location, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -21,7 +21,7 @@ impl crate::TransitClient {
                 "{base}locations.json?api-key={key}{usage}&lat={lat}&lon={long}&distance={distance}&max-results={max_results}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = usage.to_url_parameter(),
+                usage = UrlParameter::from(usage),
                 lat = position.latitude,
                 long = position.longitude,
                 distance = distance.unwrap_or(100.0),

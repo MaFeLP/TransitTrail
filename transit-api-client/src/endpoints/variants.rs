@@ -1,4 +1,4 @@
-use crate::structs::{RouteVariante, Usage};
+use crate::structs::{RouteVariante, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -15,7 +15,7 @@ impl crate::TransitClient {
                 "{base}/variants/{key}.json?api-key={api_key}{usage}",
                 base = self.base_url,
                 api_key = self.api_key,
-                usage = usage.to_url_parameter()
+                usage = UrlParameter::from(usage),
             ))
             .send()
             .await?;
@@ -39,7 +39,7 @@ impl crate::TransitClient {
                 "{base}/variants.json?api-key={api_key}{usage}&stop={stop}",
                 base = self.base_url,
                 api_key = self.api_key,
-                usage = usage.to_url_parameter(),
+                usage = UrlParameter::from(usage),
             ))
             .send()
             .await?;
@@ -64,7 +64,7 @@ impl crate::TransitClient {
                 "{base}/variants.json?api-key={api_key}{usage}&stops={stops_formatted}",
                 base = self.base_url,
                 api_key = self.api_key,
-                usage = usage.to_url_parameter(),
+                usage = UrlParameter::from(usage),
                 stops_formatted = {
                     let mut s = String::new();
                     for stop in stops {

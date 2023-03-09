@@ -1,4 +1,4 @@
-use crate::structs::{Street, Usage};
+use crate::structs::{Street, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -15,7 +15,7 @@ impl crate::TransitClient {
                 "{base}/streets.json?api-key={key}{usage}&name={name}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = usage.to_url_parameter(),
+                usage = UrlParameter::from(usage),
             ))
             .send()
             .await?;

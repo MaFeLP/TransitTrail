@@ -1,4 +1,4 @@
-use crate::structs::{Route, Usage};
+use crate::structs::{Route, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -19,7 +19,7 @@ impl crate::TransitClient {
                 "{base}/routes/{route_number}.json?api-key={key}{usage}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = usage.to_url_parameter(),
+                usage = UrlParameter::from(usage),
             ))
             .send()
             .await?;
@@ -43,7 +43,7 @@ impl crate::TransitClient {
                 "{base}/routes.json?api-key={key}{usage}&stop={stop_number}",
                 base = self.base_url,
                 key = self.api_key,
-                usage = usage.to_url_parameter(),
+                usage = UrlParameter::from(usage),
             ))
             .send()
             .await?;

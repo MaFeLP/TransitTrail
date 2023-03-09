@@ -1,5 +1,14 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug)]
+pub(crate) struct UrlParameter(String);
+
+impl std::fmt::Display for UrlParameter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub enum Usage {
     Normal,
@@ -7,13 +16,13 @@ pub enum Usage {
     Short,
 }
 
-impl Usage {
-    pub(crate) fn to_url_parameter(&self) -> String {
-        match self {
+impl From<Usage> for UrlParameter {
+    fn from(value: Usage) -> Self {
+        Self(match value {
             Usage::Normal => "".to_string(),
             Usage::Long => "&usage=long".to_string(),
             Usage::Short => "&usage=short".to_string(),
-        }
+        })
     }
 }
 
