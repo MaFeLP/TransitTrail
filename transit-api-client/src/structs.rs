@@ -293,3 +293,11 @@ impl Default for ServiceAdvisoryCategory {
         Self::All
     }
 }
+
+// Stops.rs
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct StopFeature {
+    pub name: String,
+    pub count: u32,
+}
+
