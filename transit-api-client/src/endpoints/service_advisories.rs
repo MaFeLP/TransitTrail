@@ -66,7 +66,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use chrono::{NaiveDateTime, NaiveDate, NaiveTime};
+    use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
     //use super::*;
     use crate::structs::*;
@@ -78,9 +78,8 @@ mod test {
         // Create a runtime, to run async functions
         let rt = tokio::runtime::Runtime::new().unwrap();
 
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default()
-        );
+        let client =
+            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
         let actual = rt
             .block_on(client.service_advisory(96, Usage::Normal))
             .unwrap();
@@ -103,9 +102,8 @@ mod test {
         // Create a runtime, to run async functions
         let rt = tokio::runtime::Runtime::new().unwrap();
 
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default()
-        );
+        let client =
+            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
         let actual = rt
             .block_on(client.service_advisories(None, None, None, Some(3), Usage::Normal))
             .unwrap();

@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_repr::{Serialize_repr, Deserialize_repr};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Debug)]
 pub(crate) struct UrlParameter(String);
@@ -257,7 +257,6 @@ impl From<Option<ServiceAdvisoryPriority>> for UrlParameter {
         }
     }
 }
-
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum ServiceAdvisoryCategory {
