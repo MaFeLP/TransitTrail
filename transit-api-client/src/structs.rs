@@ -51,6 +51,7 @@ pub enum StreetType {
     Road,
     Drive,
     Crescent,
+    Loop,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -295,6 +296,41 @@ impl Default for ServiceAdvisoryCategory {
 }
 
 // Stops.rs
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct Stop {
+    pub key: u32,
+    pub name: String,
+    pub number: u32,
+    pub direction: StopDirection,
+    pub side: StopSide,
+    pub street: Street,
+    #[serde(rename = "cross-street")]
+    pub cross_street: Street,
+    pub centre: GeographicLocation,
+}
+
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum StopDirection {
+    Northbound,
+    Eastbound,
+    Southbound,
+    Westbound,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum StopSide {
+    #[serde(rename = "Direct Opposite")]
+    DirectOpposite, // stop: 10168
+    Farside, //  stop: 10095
+    #[serde(rename = "Farside Opposite")]
+    FarsideOpposite, // stop: 10081
+    Nearside, // stop: 10076
+    #[serde(rename = "Nearside Opposite")]
+    NearsideOpposite, // stop: 10077
+    NA, // stop: 10087
+}
+
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct StopFeature {
     pub name: String,
