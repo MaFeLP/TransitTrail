@@ -1,7 +1,10 @@
+use chrono::NaiveDateTime;
 use serde::{de::Error, Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-#[derive(Debug)]
+pub(crate) const TIME_FORMAT: &'static str = "%Y-%m-%dT%H:%M:%S";
+
+#[derive(Debug, Default)]
 pub(crate) struct UrlParameter(String);
 
 impl std::fmt::Display for UrlParameter {
@@ -160,7 +163,8 @@ pub struct RouteRegular {
     pub badge_label: u32,
     #[serde(rename = "badge-style")]
     pub badge_style: badges::Style,
-    pub variants: Vec<RouteVariante>,
+    // Is always set on the 'routes' endpoint, but not set in the 'stops' endpoint
+    pub variants: Option<Vec<RouteVariante>>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -174,7 +178,7 @@ pub struct RouteBlue {
     pub badge_label: String,
     #[serde(rename = "badge-style")]
     pub badge_style: badges::Style,
-    pub variants: Vec<RouteVariante>,
+    pub variants: Option<Vec<RouteVariante>>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -245,7 +249,7 @@ pub struct ServiceAdvisory {
     pub body: String,
     pub category: ServiceAdvisoryCategory,
     #[serde(rename = "updated-at")]
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize_repr, Deserialize_repr)]
@@ -357,4 +361,60 @@ pub enum StopSide {
 pub struct StopFeature {
     pub name: String,
     pub count: u32,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct StopSchedule {
+    pub stop: Stop,
+    #[serde(rename = "route-schedules")]
+    pub route_schedules: Vec<RouteSchedule>,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct RouteSchedule {
+    pub route: Route,
+    #[serde(rename = "scheduled-stops")]
+    pub scheduled_stops: Vec<ScheduledStop>,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct ScheduledStop {
+    pub key: String,
+    #[serde(deserialize_with = "deserialize_string_to_bool")]
+    pub cancelled: bool,
+    pub times: ScheduledTimes,
+    pub variant: RouteVariante,
+    pub bus: Bus,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct ScheduledTimes {
+    pub arrival: Time,
+    pub departure: Time,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct Time {
+    pub scheduled: NaiveDateTime,
+    pub estimated: NaiveDateTime,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct Bus {
+    pub key: u32,
+    #[serde(deserialize_with = "deserialize_string_to_bool", rename = "bike-rack")]
+    pub bike_rack: bool,
+    #[serde(deserialize_with = "deserialize_string_to_bool")]
+    pub wifi: bool,
+}
+
+fn deserialize_string_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = <serde_json::Value>::deserialize(deserializer)?;
+    let string_value = value.as_str().ok_or(D::Error::custom("unknown type"))?;
+    let bool_value: bool = string_value.parse().map_err(D::Error::custom)?;
+
+    Ok(bool_value)
 }

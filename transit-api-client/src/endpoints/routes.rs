@@ -84,7 +84,7 @@ mod test {
                 border_color: "#cab700".to_string(),
                 color: "#000000".to_string(),
             },
-            variants: vec![
+            variants: Some(vec![
                 RouteVariante {
                     key: "25-0-U".to_string(),
                     name: None,
@@ -93,7 +93,7 @@ mod test {
                     key: "25-1-D".to_string(),
                     name: None,
                 },
-            ],
+            ]),
         });
 
         //dbg!("{:?},{:?}", &actual, &expected);
@@ -129,7 +129,7 @@ mod test {
                     border_color: "#cab700".to_string(),
                     color: "#000000".to_string(),
                 },
-                variants: vec![
+                variants: Some(vec![
                     RouteVariante {
                         key: "57-1-D".to_string(),
                         name: None,
@@ -138,7 +138,7 @@ mod test {
                         key: "57-0-S".to_string(),
                         name: None,
                     },
-                ],
+                ]),
             }),
             Route::Regular(RouteRegular {
                 key: 19,
@@ -155,7 +155,7 @@ mod test {
                     border_color: "#d9d9d9".to_string(),
                     color: "#000000".to_string(),
                 },
-                variants: vec![
+                variants: Some(vec![
                     RouteVariante {
                         key: "19-0-#".to_string(),
                         name: None,
@@ -184,7 +184,7 @@ mod test {
                         key: "19-0-L".to_string(),
                         name: None,
                     },
-                ],
+                ]),
             }),
         ];
 
@@ -217,7 +217,7 @@ mod test {
                 border_color: "#0060a9".to_string(),
                 color: "#ffffff".to_string(),
             },
-            variants: vec![
+            variants: Some(vec![
                 RouteVariante {
                     key: "BLUE-0-S".to_string(),
                     name: None,
@@ -230,7 +230,7 @@ mod test {
                     key: "BLUE-1-D".to_string(),
                     name: None,
                 },
-            ],
+            ]),
         });
 
         //dbg!("{:?},{:?}", &actual, &expected);
