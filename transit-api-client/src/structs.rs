@@ -2,7 +2,7 @@ use chrono::NaiveDateTime;
 use serde::{de::Error, Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-pub(crate) const TIME_FORMAT: &'static str = "%Y-%m-%dT%H:%M:%S";
+pub(crate) const TIME_FORMAT: &str = "%Y-%m-%dT%H:%M:%S";
 
 #[derive(Debug, Default)]
 pub(crate) struct UrlParameter(String);

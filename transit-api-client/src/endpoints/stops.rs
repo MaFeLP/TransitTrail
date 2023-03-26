@@ -67,11 +67,11 @@ impl crate::TransitClient {
                 api_key = self.api_key,
                 usage = UrlParameter::from(usage),
                 start = match start {
-                    Some(t) => format!("&start={}", t.format(TIME_FORMAT).to_string()),
+                    Some(t) => format!("&start={}", t.format(TIME_FORMAT)),
                     None => "".to_string(),
                 },
                 end = match end {
-                    Some(t) => format!("&end={}", t.format(TIME_FORMAT).to_string()),
+                    Some(t) => format!("&end={}", t.format(TIME_FORMAT)),
                     None => "".to_string(),
                 },
                 limit = match limit {
@@ -116,11 +116,11 @@ impl crate::TransitClient {
                 api_key = self.api_key,
                 usage = UrlParameter::from(usage),
                 start = match start {
-                    Some(t) => format!("&start={}", t.format(TIME_FORMAT).to_string()),
+                    Some(t) => format!("&start={}", t.format(TIME_FORMAT)),
                     None => "".to_string(),
                 },
                 end = match end {
-                    Some(t) => format!("&end={}", t.format(TIME_FORMAT).to_string()),
+                    Some(t) => format!("&end={}", t.format(TIME_FORMAT)),
                     None => "".to_string(),
                 },
                 limit = match max_results_per_route {
