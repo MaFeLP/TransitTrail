@@ -7,7 +7,7 @@ pub(crate) const TIME_FORMAT: &str = "%Y-%m-%dT%H:%M:%S";
 #[derive(Debug, Default)]
 pub(crate) struct UrlParameter(String);
 
-impl std::fmt::Display for UrlParameter {
+impl Display for UrlParameter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -47,14 +47,16 @@ pub struct Street {
     pub leg: Option<StreetLeg>,
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StreetType {
-    Street,
     Avenue,
-    Road,
-    Drive,
+    Boulevard,
     Crescent,
+    Drive,
     Loop,
+    Road,
+    #[default]
+    Street,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -65,7 +67,7 @@ pub enum StreetLeg {
     West,
 }
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, Default, PartialEq, Serialize)]
 pub struct GeoLocation {
     pub latitude: f64,
     pub longitude: f64,
@@ -78,14 +80,12 @@ impl<'de> serde::de::Deserialize<'de> for GeoLocation {
     where
         D: serde::Deserializer<'de>,
     {
-        let map = <serde_json::Map<String, serde_json::Value>>::deserialize(deserializer)?;
+        let map: Map<String, Value> = Map::deserialize(deserializer)?;
 
         // Somehow, this function gets called twice for the deserialization...
         // The first time with a map that contains the "geolocation" key, the second time with the
         // longitude and latitude fields.
-        if map.contains_key(&String::from("latitude"))
-            && map.contains_key(&String::from("longitude"))
-        {
+        if map.contains_key("latitude") && map.contains_key("longitude") {
             // the longitude and latitude fields are stored with quotes, so directly asking for
             // them as a float, would error out.
             let latitude: f64 = match map.get("latitude").unwrap().as_str() {
@@ -151,7 +151,7 @@ pub struct Intersection {
 }
 
 // Routes.rs
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RouteRegular {
     pub key: u32,
     pub number: u32,
@@ -167,7 +167,7 @@ pub struct RouteRegular {
     pub variants: Option<Vec<RouteVariante>>,
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RouteBlue {
     pub key: String,
     pub number: String,
@@ -188,8 +188,15 @@ pub enum Route {
     Regular(RouteRegular),
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+impl Default for Route {
+    fn default() -> Self {
+        Self::Regular(RouteRegular::default())
+    }
+}
+
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum RouteCustomer {
+    #[default]
     #[serde(rename = "regular")]
     Regular,
     #[serde(rename = "industrial")]
@@ -202,8 +209,9 @@ pub enum RouteCustomer {
     Work,
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum RouteCoverage {
+    #[default]
     #[serde(rename = "regular")]
     Regular,
     #[serde(rename = "express")]
@@ -214,7 +222,7 @@ pub enum RouteCoverage {
     RapidTransit,
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RouteVariante {
     pub key: String,
     pub name: Option<String>,
@@ -223,7 +231,7 @@ pub struct RouteVariante {
 pub mod badges {
     use serde::{Deserialize, Serialize};
 
-    #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+    #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
     pub struct Style {
         #[serde(rename = "class-names")]
         pub class_names: ClassNames,
@@ -234,7 +242,7 @@ pub mod badges {
         pub color: String,
     }
 
-    #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+    #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
     pub struct ClassNames {
         #[serde(rename = "class-name")]
         pub class_name: Vec<String>,
@@ -399,7 +407,7 @@ pub struct Time {
     pub estimated: NaiveDateTime,
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Bus {
     pub key: u32,
     #[serde(deserialize_with = "deserialize_string_to_bool", rename = "bike-rack")]
