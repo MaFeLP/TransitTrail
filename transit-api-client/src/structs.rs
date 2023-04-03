@@ -1,5 +1,8 @@
-use chrono::NaiveDateTime;
+use std::fmt::Display;
+
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use serde::{de::Error, Deserialize, Serialize};
+use serde_json::{Map, Value};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 pub(crate) const TIME_FORMAT: &str = "%Y-%m-%dT%H:%M:%S";
@@ -103,6 +106,31 @@ impl<'de> serde::de::Deserialize<'de> for GeoLocation {
             });
         }
 
+        if map.contains_key("lat") && map.contains_key("lng") {
+            // the longitude and latitude fields are stored with quotes, so directly asking for
+            // them as a float, would error out.
+            let latitude: f64 = match map.get("lat").unwrap().as_str() {
+                Some(l) => l.parse().map_err(D::Error::custom)?,
+                None => return Err(D::Error::custom("field `lat` is not of type  `str`")),
+            };
+            let longitude: f64 = match map.get("lng").unwrap().as_str() {
+                Some(l) => l.parse().map_err(D::Error::custom)?,
+                None => return Err(D::Error::custom("field `lng` is not of type `str`")),
+            };
+
+            return Ok(Self {
+                latitude,
+                longitude,
+            });
+        }
+
+        if map.contains_key("centre") {
+            let centre: &serde_json::Value = map.get("centre").unwrap();
+            return Ok(
+                serde_json::from_value::<GeoLocation>(centre.clone()).map_err(D::Error::custom)?
+            );
+        }
+
         let geographic: &serde_json::Value = map
             .get("geographic")
             .ok_or(D::Error::missing_field("geographic"))?;
@@ -122,6 +150,25 @@ pub enum Location {
     Monument(Monument),
     #[serde(rename = "intersection")]
     Intersection(Intersection),
+    #[serde(rename = "point")]
+    Point(GeoLocation), // Can be used in trip planner
+}
+
+impl Default for Location {
+    fn default() -> Self {
+        Self::Point(GeoLocation::default())
+    }
+}
+
+impl Display for Location {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Address(a) => write!(f, "addresses/{}", a.key),
+            Self::Monument(m) => write!(f, "monuments/{}", m.key),
+            Self::Intersection(i) => write!(f, "intersections/{}", i.key),
+            Self::Point(p) => write!(f, "geo/{},{}", p.latitude, p.longitude),
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -414,6 +461,147 @@ pub struct Bus {
     pub bike_rack: bool,
     #[serde(deserialize_with = "deserialize_string_to_bool")]
     pub wifi: bool,
+}
+
+// trip_planner.rs
+#[derive(Debug)]
+pub enum TripFilter {
+    Date(NaiveDate),
+    Time(NaiveTime),
+    Mode(TripMode),
+    WalkSpeed(f32),
+    MaxWalkTime(i32),
+    MinTransferWait(i32),
+    MaxTransferWait(i32),
+    MaxTransfers(i32),
+}
+
+impl From<TripFilter> for UrlParameter {
+    fn from(value: TripFilter) -> Self {
+        Self(match value {
+            TripFilter::Date(d) => format!("&date={}", d.format("%Y-%m-%d").to_string()),
+            TripFilter::Time(t) => format!("&time={}", t.format("%H:%M:%S").to_string()),
+            TripFilter::Mode(m) => format!("&mode={}", m),
+            TripFilter::WalkSpeed(s) => format!("&walk-speed={}", s),
+            TripFilter::MaxWalkTime(t) => format!(""),
+            TripFilter::MinTransferWait(t) => format!(""),
+            TripFilter::MaxTransferWait(t) => format!(""),
+            TripFilter::MaxTransfers(t) => format!(""),
+        })
+    }
+}
+
+#[derive(Debug)]
+pub enum TripMode {
+    DepartBefore,
+    DepartAfter,
+    ArriveBefore,
+    ArriveAfter,
+}
+
+impl Display for TripMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::DepartBefore => write!(f, "depart-before"),
+            Self::DepartAfter => write!(f, "depart-after"),
+            Self::ArriveBefore => write!(f, "arrive-before"),
+            Self::ArriveAfter => write!(f, "depart-after"),
+        }
+    }
+}
+
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TripPlan {
+    pub number: u32,
+    pub times: TripTimes,
+    pub segments: Vec<TripSegment>,
+}
+
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TripTimes {
+    pub start: NaiveDateTime,
+    pub end: NaiveDateTime,
+    pub durations: TripDurations,
+}
+
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TripDurations {
+    #[serde(default)]
+    pub total: u32,
+    #[serde(default)]
+    pub walking: u32,
+    #[serde(default)]
+    pub waiting: u32,
+    #[serde(default)]
+    pub riding: u32,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum TripSegment {
+    // No field "type"
+    #[serde(rename = "walk")]
+    Walk(TripSegmentWalk),
+    #[serde(rename = "ride")]
+    Ride(TripSegmentRide),
+}
+
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TripSegmentWalk {
+    pub bounds: TripBounds,
+    pub from: TripStop,
+    pub times: TripTimes,
+    pub to: TripStop,
+}
+
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TripSegmentRide {
+    pub bounds: TripBounds,
+    pub bus: Bus,
+    pub route: Route,
+    pub times: TripTimes,
+    pub variant: RouteVariante,
+}
+
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TripBounds {
+    pub maximum: GeoLocation,
+    pub minimum: GeoLocation,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum TripStop {
+    #[serde(rename = "origin")]
+    Origin(TripLocation),
+    #[serde(rename = "stop")]
+    Stop(TripStopStop),
+    #[serde(rename = "destination")]
+    Destination(TripLocation),
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum TripLocation {
+    #[serde(rename = "address")]
+    Address(Address),
+    #[serde(rename = "monument")]
+    Monument(Monument),
+    #[serde(rename = "intersection")]
+    Intersection(Intersection),
+    #[serde(rename = "point")]
+    Point(GeoLocation), // Can be used in trip planner
+}
+
+#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TripStopStop {
+    pub centre: GeoLocation,
+    pub key: u32,
+    pub name: String,
+}
+
+impl Default for TripStop {
+    fn default() -> Self {
+        Self::Stop(TripStopStop::default())
+    }
 }
 
 fn deserialize_string_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
