@@ -1,4 +1,4 @@
-use crate::structs::{Street, UrlParameter, Usage};
+use crate::structs::{common::Street, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -26,8 +26,10 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    //use super::*;
-    use crate::structs::*;
+    use crate::structs::{
+        common::{Street, StreetLeg, StreetType},
+        Usage,
+    };
 
     #[test]
     fn main_street() {

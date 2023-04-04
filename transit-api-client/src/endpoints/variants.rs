@@ -1,4 +1,4 @@
-use crate::structs::{RouteVariante, UrlParameter, Usage};
+use crate::structs::{routes::RouteVariante, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -84,8 +84,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    //use super::*;
-    use crate::structs::*;
+    use crate::structs::{routes::RouteVariante, Usage};
 
     #[test]
     fn variant_by_key() {

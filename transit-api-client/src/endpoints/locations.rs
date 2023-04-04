@@ -1,4 +1,5 @@
-use crate::structs::{GeoLocation, Location, UrlParameter, Usage};
+use crate::structs::common::{GeoLocation, Location};
+use crate::structs::{UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -38,8 +39,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    //use super::*;
-    use crate::structs::*;
+    use crate::structs::{common::*, Usage};
 
     #[test]
     fn locations() {

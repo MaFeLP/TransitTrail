@@ -1,4 +1,7 @@
-use crate::structs::{Stop, StopFeature, StopSchedule, UrlParameter, Usage, TIME_FORMAT};
+use crate::structs::{
+    stops::{Stop, StopFeature, StopSchedule},
+    UrlParameter, Usage, TIME_FORMAT,
+};
 use chrono::NaiveDateTime;
 use reqwest::Error;
 use serde::Deserialize;
@@ -137,8 +140,11 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    //use super::*;
-    use crate::structs::*;
+    use crate::structs::{
+        common::{GeoLocation, Street, StreetType},
+        stops::{Stop, StopDirection, StopFeature, StopSide},
+        Usage,
+    };
 
     #[test]
     fn stop_features() {

@@ -1,4 +1,4 @@
-use crate::structs::{Destination, UrlParameter, Usage};
+use crate::structs::{destinations::Destination, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 

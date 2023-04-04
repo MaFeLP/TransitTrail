@@ -1,5 +1,6 @@
 use crate::structs::{
-    ServiceAdvisory, ServiceAdvisoryCategory, ServiceAdvisoryPriority, UrlParameter, Usage,
+    service_advisories::{ServiceAdvisory, ServiceAdvisoryCategory, ServiceAdvisoryPriority},
+    UrlParameter, Usage,
 };
 use reqwest::Error;
 use serde::Deserialize;
@@ -66,10 +67,11 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
+    use crate::structs::{
+        service_advisories::{ServiceAdvisory, ServiceAdvisoryCategory, ServiceAdvisoryPriority},
+        Usage,
+    };
     use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-
-    //use super::*;
-    use crate::structs::*;
 
     #[test]
     fn service_adviory() {

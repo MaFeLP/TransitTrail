@@ -1,4 +1,4 @@
-use crate::structs::{Route, UrlParameter, Usage};
+use crate::structs::{routes::Route, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -54,9 +54,13 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    //use super::*;
-    use crate::structs::badges::*;
-    use crate::structs::*;
+    use crate::structs::{
+        routes::{
+            badges::{ClassNames, Style},
+            {Route, RouteBlue, RouteCoverage, RouteCustomer, RouteRegular, RouteVariante},
+        },
+        Usage,
+    };
 
     #[test]
     fn normal_route() {

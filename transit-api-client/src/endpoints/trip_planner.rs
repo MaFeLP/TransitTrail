@@ -1,4 +1,8 @@
-use crate::structs::{Location, TripFilter, TripPlan, UrlParameter, Usage};
+use crate::structs::{
+    common::Location,
+    trip_planner::{TripFilter, TripPlan},
+    UrlParameter, Usage,
+};
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -40,8 +44,11 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    //use super::*;
-    use crate::structs::*;
+    use crate::structs::{
+        common::{GeoLocation, Location},
+        trip_planner::{TripFilter, TripMode},
+        Usage,
+    };
     use chrono::offset::Local;
 
     #[test]
