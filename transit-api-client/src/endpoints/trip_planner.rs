@@ -7,7 +7,7 @@ impl crate::TransitClient {
         &self,
         origin: Location,
         destination: Location,
-        filters: Option<Vec<TripFilter>>,
+        filters: Vec<TripFilter>,
         usage: Usage,
     ) -> Result<Vec<TripPlan>, Error> {
         #[derive(Debug, Deserialize)]
@@ -16,10 +16,8 @@ impl crate::TransitClient {
         }
 
         let mut filter_parameters = String::new();
-        if let Some(all_filters) = filters {
-            for filter in all_filters {
-                filter_parameters.push_str(&UrlParameter::from(filter).to_string())
-            }
+        for filter in filters {
+            filter_parameters.push_str(&UrlParameter::from(filter).to_string())
         }
 
         let response = self
@@ -44,9 +42,10 @@ impl crate::TransitClient {
 mod test {
     //use super::*;
     use crate::structs::*;
+    use chrono::offset::Local;
 
     #[test]
-    fn variant_by_key() {
+    fn default_trip() {
         // Read .env file for environment variables
         dotenv::dotenv().unwrap();
         // Create a runtime, to run async functions
@@ -64,7 +63,41 @@ mod test {
                 latitude: 49.8327,
                 longitude: -97.10887,
             }),
-            Some(Vec::new()),
+            Vec::new(),
+            Usage::Normal,
+        ))
+        .unwrap();
+    }
+
+    #[test]
+    fn filters() {
+        // Read .env file for environment variables
+        dotenv::dotenv().unwrap();
+        // Create a runtime, to run async functions
+        let rt = tokio::runtime::Runtime::new().unwrap();
+
+        let client = crate::TransitClient::new(
+            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
+        );
+        rt.block_on(client.trip_planner(
+            Location::Point(GeoLocation {
+                latitude: 49.86917,
+                longitude: -97.1391,
+            }),
+            Location::Point(GeoLocation {
+                latitude: 49.8327,
+                longitude: -97.10887,
+            }),
+            vec![
+                TripFilter::Date(Local::now().naive_local().date()),
+                TripFilter::Time(Local::now().naive_local().time()),
+                TripFilter::Mode(TripMode::DepartAfter),
+                TripFilter::WalkSpeed(1.5),
+                TripFilter::MaxWalkTime(10),
+                TripFilter::MinTransferWait(5),
+                TripFilter::MaxTransferWait(10),
+                TripFilter::MaxTransfers(2),
+            ],
             Usage::Normal,
         ))
         .unwrap();

@@ -479,14 +479,14 @@ pub enum TripFilter {
 impl From<TripFilter> for UrlParameter {
     fn from(value: TripFilter) -> Self {
         Self(match value {
-            TripFilter::Date(d) => format!("&date={}", d.format("%Y-%m-%d").to_string()),
-            TripFilter::Time(t) => format!("&time={}", t.format("%H:%M:%S").to_string()),
+            TripFilter::Date(d) => format!("&date={}", d.format("%Y-%m-%d")),
+            TripFilter::Time(t) => format!("&time={}", t.format("%H:%M:%S")),
             TripFilter::Mode(m) => format!("&mode={}", m),
             TripFilter::WalkSpeed(s) => format!("&walk-speed={}", s),
-            TripFilter::MaxWalkTime(t) => format!(""),
-            TripFilter::MinTransferWait(t) => format!(""),
-            TripFilter::MaxTransferWait(t) => format!(""),
-            TripFilter::MaxTransfers(t) => format!(""),
+            TripFilter::MaxWalkTime(t) => format!("&max-walk-time={}", t),
+            TripFilter::MinTransferWait(t) => format!("&min-transfer-wait={}", t),
+            TripFilter::MaxTransferWait(t) => format!("&ax-transfer-wait={}", t),
+            TripFilter::MaxTransfers(t) => format!("&max-transfers={}", t),
         })
     }
 }
