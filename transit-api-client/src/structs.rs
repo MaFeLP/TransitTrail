@@ -126,9 +126,7 @@ impl<'de> serde::de::Deserialize<'de> for GeoLocation {
 
         if map.contains_key("centre") {
             let centre: &serde_json::Value = map.get("centre").unwrap();
-            return Ok(
-                serde_json::from_value::<GeoLocation>(centre.clone()).map_err(D::Error::custom)?
-            );
+            return serde_json::from_value::<GeoLocation>(centre.clone()).map_err(D::Error::custom);
         }
 
         let geographic: &serde_json::Value = map
