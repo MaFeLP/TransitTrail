@@ -1,5 +1,5 @@
 use crate::structs::{
-    stops::{Stop, StopFeature, StopSchedule},
+    stops::{Feature, Schedule, Stop},
     UrlParameter, Usage, TIME_FORMAT,
 };
 use chrono::NaiveDateTime;
@@ -27,11 +27,11 @@ impl crate::TransitClient {
         Ok(out.stop)
     }
 
-    pub async fn stop_features(&self, stop: u32, usage: Usage) -> Result<Vec<StopFeature>, Error> {
+    pub async fn stop_features(&self, stop: u32, usage: Usage) -> Result<Vec<Feature>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
             #[serde(rename = "stop-features")]
-            stop_features: Vec<StopFeature>,
+            stop_features: Vec<Feature>,
         }
 
         let response = self
@@ -55,11 +55,11 @@ impl crate::TransitClient {
         end: Option<NaiveDateTime>,
         limit: Option<u32>,
         usage: Usage,
-    ) -> Result<StopSchedule, Error> {
+    ) -> Result<Schedule, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
             #[serde(rename = "stop-schedule")]
-            stop_schedule: StopSchedule,
+            stop_schedule: Schedule,
         }
 
         let response = self
@@ -96,11 +96,11 @@ impl crate::TransitClient {
         end: Option<NaiveDateTime>,
         max_results_per_route: Option<u32>,
         usage: Usage,
-    ) -> Result<StopSchedule, Error> {
+    ) -> Result<Schedule, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
             #[serde(rename = "stop-schedule")]
-            stop_schedule: StopSchedule,
+            stop_schedule: Schedule,
         }
 
         let mut routes_param = "&route=".to_string();
@@ -142,7 +142,7 @@ impl crate::TransitClient {
 mod test {
     use crate::structs::{
         common::{GeoLocation, Street, StreetType},
-        stops::{Stop, StopDirection, StopFeature, StopSide},
+        stops::{Direction, Feature, Side, Stop},
         Usage,
     };
 
@@ -159,11 +159,11 @@ mod test {
             .block_on(client.stop_features(10064, Usage::Normal))
             .unwrap();
         let mut expected = vec![
-            StopFeature {
+            Feature {
                 name: "Bench".to_string(),
                 count: 1,
             },
-            StopFeature {
+            Feature {
                 name: "Unheated Shelter".to_string(),
                 count: 1,
             },
@@ -175,15 +175,15 @@ mod test {
             .block_on(client.stop_features(10172, Usage::Normal))
             .unwrap();
         expected = vec![
-            StopFeature {
+            Feature {
                 name: "BUSwatch Electronic Sign".to_string(),
                 count: 1,
             },
-            StopFeature {
+            Feature {
                 name: "Bench".to_string(),
                 count: 2,
             },
-            StopFeature {
+            Feature {
                 name: "Unheated Shelter".to_string(),
                 count: 1,
             },
@@ -206,8 +206,8 @@ mod test {
             key: 10168,
             name: "Westbound River at Cauchon".to_string(),
             number: 10168,
-            direction: StopDirection::Westbound,
-            side: StopSide::DirectOpposite,
+            direction: Direction::Westbound,
+            side: Side::DirectOpposite,
             street: Street {
                 key: 3057,
                 name: "River Avenue".to_string(),
@@ -233,8 +233,8 @@ mod test {
             key: 10087,
             name: "Northbound Stafford at Stafford Loop".to_string(),
             number: 10087,
-            direction: StopDirection::Northbound,
-            side: StopSide::NA,
+            direction: Direction::Northbound,
+            side: Side::NA,
             street: Street {
                 key: 50000299,
                 name: "Stafford".to_string(),
@@ -273,8 +273,8 @@ mod test {
             key: 10064,
             name: "Northbound Osborne at Glasgow".to_string(),
             number: 10064,
-            direction: StopDirection::Northbound,
-            side: StopSide::Nearside,
+            direction: Direction::Northbound,
+            side: Side::Nearside,
             street: Street {
                 key: 2715,
                 name: "Osborne Street".to_string(),
@@ -322,8 +322,8 @@ mod test {
             key: 10185,
             name: "Southbound Osborne at Wardlaw".to_string(),
             number: 10185,
-            direction: StopDirection::Southbound,
-            side: StopSide::Nearside,
+            direction: Direction::Southbound,
+            side: Side::Nearside,
             street: Street {
                 key: 2715,
                 name: "Osborne Street".to_string(),

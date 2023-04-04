@@ -1,12 +1,12 @@
-use crate::structs::{routes::RouteVariante, UrlParameter, Usage};
+use crate::structs::{routes::Variant, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
 
 impl crate::TransitClient {
-    pub async fn variant_by_key(&self, key: &str, usage: Usage) -> Result<RouteVariante, Error> {
+    pub async fn variant_by_key(&self, key: &str, usage: Usage) -> Result<Variant, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
-            variant: RouteVariante,
+            variant: Variant,
         }
 
         let response = self
@@ -23,14 +23,10 @@ impl crate::TransitClient {
         Ok(out.variant)
     }
 
-    pub async fn variants_by_stop(
-        &self,
-        stop: u32,
-        usage: Usage,
-    ) -> Result<Vec<RouteVariante>, Error> {
+    pub async fn variants_by_stop(&self, stop: u32, usage: Usage) -> Result<Vec<Variant>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
-            variants: Vec<RouteVariante>,
+            variants: Vec<Variant>,
         }
 
         let response = self
@@ -52,10 +48,10 @@ impl crate::TransitClient {
         &self,
         stops: Vec<u32>,
         usage: Usage,
-    ) -> Result<Vec<RouteVariante>, Error> {
+    ) -> Result<Vec<Variant>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
-            variants: Vec<RouteVariante>,
+            variants: Vec<Variant>,
         }
 
         let response = self
@@ -84,7 +80,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use crate::structs::{routes::RouteVariante, Usage};
+    use crate::structs::{routes::Variant, Usage};
 
     #[test]
     fn variant_by_key() {
@@ -99,7 +95,7 @@ mod test {
         let actual = rt
             .block_on(client.variant_by_key("17-1-G", Usage::Normal))
             .unwrap();
-        let expected = RouteVariante {
+        let expected = Variant {
             key: "17-1-G".to_string(),
             name: Some("McGregor to Garden City Centre".to_string()),
         };

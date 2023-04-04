@@ -1,6 +1,6 @@
 use super::{
     common::{Address, GeoLocation, Intersection, Monument},
-    routes::{Route, RouteVariante},
+    routes::{Route, Variant},
     stops::Bus,
     UrlParameter,
 };
@@ -9,10 +9,10 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
 #[derive(Debug)]
-pub enum TripFilter {
+pub enum Filter {
     Date(NaiveDate),
     Time(NaiveTime),
-    Mode(TripMode),
+    Mode(Mode),
     WalkSpeed(f32),
     MaxWalkTime(i32),
     MinTransferWait(i32),
@@ -20,30 +20,30 @@ pub enum TripFilter {
     MaxTransfers(i32),
 }
 
-impl From<TripFilter> for UrlParameter {
-    fn from(value: TripFilter) -> Self {
+impl From<Filter> for UrlParameter {
+    fn from(value: Filter) -> Self {
         Self(match value {
-            TripFilter::Date(d) => format!("&date={}", d.format("%Y-%m-%d")),
-            TripFilter::Time(t) => format!("&time={}", t.format("%H:%M:%S")),
-            TripFilter::Mode(m) => format!("&mode={}", m),
-            TripFilter::WalkSpeed(s) => format!("&walk-speed={}", s),
-            TripFilter::MaxWalkTime(t) => format!("&max-walk-time={}", t),
-            TripFilter::MinTransferWait(t) => format!("&min-transfer-wait={}", t),
-            TripFilter::MaxTransferWait(t) => format!("&ax-transfer-wait={}", t),
-            TripFilter::MaxTransfers(t) => format!("&max-transfers={}", t),
+            Filter::Date(d) => format!("&date={}", d.format("%Y-%m-%d")),
+            Filter::Time(t) => format!("&time={}", t.format("%H:%M:%S")),
+            Filter::Mode(m) => format!("&mode={}", m),
+            Filter::WalkSpeed(s) => format!("&walk-speed={}", s),
+            Filter::MaxWalkTime(t) => format!("&max-walk-time={}", t),
+            Filter::MinTransferWait(t) => format!("&min-transfer-wait={}", t),
+            Filter::MaxTransferWait(t) => format!("&ax-transfer-wait={}", t),
+            Filter::MaxTransfers(t) => format!("&max-transfers={}", t),
         })
     }
 }
 
 #[derive(Debug)]
-pub enum TripMode {
+pub enum Mode {
     DepartBefore,
     DepartAfter,
     ArriveBefore,
     ArriveAfter,
 }
 
-impl Display for TripMode {
+impl Display for Mode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::DepartBefore => write!(f, "depart-before"),
@@ -55,21 +55,21 @@ impl Display for TripMode {
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct TripPlan {
+pub struct Plan {
     pub number: u32,
-    pub times: TripTimes,
-    pub segments: Vec<TripSegment>,
+    pub times: Times,
+    pub segments: Vec<Segment>,
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct TripTimes {
+pub struct Times {
     pub start: NaiveDateTime,
     pub end: NaiveDateTime,
-    pub durations: TripDurations,
+    pub durations: Durations,
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct TripDurations {
+pub struct Durations {
     #[serde(default)]
     pub total: u32,
     #[serde(default)]
@@ -82,33 +82,32 @@ pub struct TripDurations {
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
-pub enum TripSegment {
-    // No field "type"
+pub enum Segment {
     #[serde(rename = "walk")]
-    Walk(TripSegmentWalk),
+    Walk(SegmentWalk),
     #[serde(rename = "ride")]
-    Ride(TripSegmentRide),
+    Ride(SegmentRide),
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct TripSegmentWalk {
-    pub bounds: TripBounds,
+pub struct SegmentWalk {
+    pub bounds: Bounds,
     pub from: TripStop,
-    pub times: TripTimes,
+    pub times: Times,
     pub to: TripStop,
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct TripSegmentRide {
-    pub bounds: TripBounds,
+pub struct SegmentRide {
+    pub bounds: Bounds,
     pub bus: Bus,
     pub route: Route,
-    pub times: TripTimes,
-    pub variant: RouteVariante,
+    pub times: Times,
+    pub variant: Variant,
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct TripBounds {
+pub struct Bounds {
     pub maximum: GeoLocation,
     pub minimum: GeoLocation,
 }
@@ -118,9 +117,15 @@ pub enum TripStop {
     #[serde(rename = "origin")]
     Origin(TripLocation),
     #[serde(rename = "stop")]
-    Stop(TripStopStop),
+    Stop(Stop),
     #[serde(rename = "destination")]
     Destination(TripLocation),
+}
+
+impl Default for TripStop {
+    fn default() -> Self {
+        Self::Stop(Stop::default())
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -136,14 +141,8 @@ pub enum TripLocation {
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct TripStopStop {
+pub struct Stop {
     pub centre: GeoLocation,
     pub key: u32,
     pub name: String,
-}
-
-impl Default for TripStop {
-    fn default() -> Self {
-        Self::Stop(TripStopStop::default())
-    }
 }

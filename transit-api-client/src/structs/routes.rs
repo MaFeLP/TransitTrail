@@ -1,50 +1,50 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RouteRegular {
+pub struct Regular {
     pub key: u32,
     pub number: u32,
     pub name: String,
     #[serde(rename = "customer-type")]
-    pub customer_type: RouteCustomer,
-    pub coverage: RouteCoverage,
+    pub customer_type: Customer,
+    pub coverage: Coverage,
     #[serde(rename = "badge-label")]
     pub badge_label: u32,
     #[serde(rename = "badge-style")]
     pub badge_style: badges::Style,
     // Is always set on the 'routes' endpoint, but not set in the 'stops' endpoint
-    pub variants: Option<Vec<RouteVariante>>,
+    pub variants: Option<Vec<Variant>>,
 }
 
 #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RouteBlue {
+pub struct Blue {
     pub key: String,
     pub number: String,
     #[serde(rename = "customer-type")]
-    pub customer_type: RouteCustomer,
-    pub coverage: RouteCoverage,
+    pub customer_type: Customer,
+    pub coverage: Coverage,
     #[serde(rename = "badge-label")]
     pub badge_label: String,
     #[serde(rename = "badge-style")]
     pub badge_style: badges::Style,
-    pub variants: Option<Vec<RouteVariante>>,
+    pub variants: Option<Vec<Variant>>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Route {
-    Blue(RouteBlue),
-    Regular(RouteRegular),
+    Blue(Blue),
+    Regular(Regular),
 }
 
 impl Default for Route {
     fn default() -> Self {
-        Self::Regular(RouteRegular::default())
+        Self::Regular(Regular::default())
     }
 }
 
 #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
-pub enum RouteCustomer {
+pub enum Customer {
     #[default]
     #[serde(rename = "regular")]
     Regular,
@@ -59,7 +59,7 @@ pub enum RouteCustomer {
 }
 
 #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
-pub enum RouteCoverage {
+pub enum Coverage {
     #[default]
     #[serde(rename = "regular")]
     Regular,
@@ -72,7 +72,7 @@ pub enum RouteCoverage {
 }
 
 #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RouteVariante {
+pub struct Variant {
     pub key: String,
     pub name: Option<String>,
 }

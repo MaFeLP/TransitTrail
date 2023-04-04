@@ -57,7 +57,7 @@ mod test {
     use crate::structs::{
         routes::{
             badges::{ClassNames, Style},
-            {Route, RouteBlue, RouteCoverage, RouteCustomer, RouteRegular, RouteVariante},
+            {Blue, Coverage, Customer, Regular, Route, Variant},
         },
         Usage,
     };
@@ -73,12 +73,12 @@ mod test {
             std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
         );
         let actual = rt.block_on(client.route(25, Usage::Normal)).unwrap();
-        let expected = Route::Regular(RouteRegular {
+        let expected = Route::Regular(Regular {
             key: 25,
             number: 25,
             name: "Route 25 Ness Super Express".to_string(),
-            customer_type: RouteCustomer::Regular,
-            coverage: RouteCoverage::SuperExpress,
+            customer_type: Customer::Regular,
+            coverage: Coverage::SuperExpress,
             badge_label: 25,
             badge_style: Style {
                 class_names: ClassNames {
@@ -89,11 +89,11 @@ mod test {
                 color: "#000000".to_string(),
             },
             variants: Some(vec![
-                RouteVariante {
+                Variant {
                     key: "25-0-U".to_string(),
                     name: None,
                 },
-                RouteVariante {
+                Variant {
                     key: "25-1-D".to_string(),
                     name: None,
                 },
@@ -118,12 +118,12 @@ mod test {
             .block_on(client.routes_by_stop(50254, Usage::Normal))
             .unwrap();
         let expected = vec![
-            Route::Regular(RouteRegular {
+            Route::Regular(Regular {
                 key: 57,
                 number: 57,
                 name: "Route 57 Southdale Express".to_string(),
-                customer_type: RouteCustomer::Regular,
-                coverage: RouteCoverage::Express,
+                customer_type: Customer::Regular,
+                coverage: Coverage::Express,
                 badge_label: 57,
                 badge_style: Style {
                     class_names: ClassNames {
@@ -134,22 +134,22 @@ mod test {
                     color: "#000000".to_string(),
                 },
                 variants: Some(vec![
-                    RouteVariante {
+                    Variant {
                         key: "57-1-D".to_string(),
                         name: None,
                     },
-                    RouteVariante {
+                    Variant {
                         key: "57-0-S".to_string(),
                         name: None,
                     },
                 ]),
             }),
-            Route::Regular(RouteRegular {
+            Route::Regular(Regular {
                 key: 19,
                 number: 19,
                 name: "Route 19 Marion-Logan-Notre Dame".to_string(),
-                customer_type: RouteCustomer::Regular,
-                coverage: RouteCoverage::Regular,
+                customer_type: Customer::Regular,
+                coverage: Coverage::Regular,
                 badge_label: 19,
                 badge_style: Style {
                     class_names: ClassNames {
@@ -160,31 +160,31 @@ mod test {
                     color: "#000000".to_string(),
                 },
                 variants: Some(vec![
-                    RouteVariante {
+                    Variant {
                         key: "19-0-#".to_string(),
                         name: None,
                     },
-                    RouteVariante {
+                    Variant {
                         key: "19-1-N".to_string(),
                         name: None,
                     },
-                    RouteVariante {
+                    Variant {
                         key: "19-0-N".to_string(),
                         name: None,
                     },
-                    RouteVariante {
+                    Variant {
                         key: "19-0-E".to_string(),
                         name: None,
                     },
-                    RouteVariante {
+                    Variant {
                         key: "19-1-D".to_string(),
                         name: None,
                     },
-                    RouteVariante {
+                    Variant {
                         key: "19-1-A".to_string(),
                         name: None,
                     },
-                    RouteVariante {
+                    Variant {
                         key: "19-0-L".to_string(),
                         name: None,
                     },
@@ -207,11 +207,11 @@ mod test {
             std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
         );
         let actual = rt.block_on(client.route("BLUE", Usage::Normal)).unwrap();
-        let expected = Route::Blue(RouteBlue {
+        let expected = Route::Blue(Blue {
             key: "BLUE".to_string(),
             number: "BLUE".to_string(),
-            customer_type: RouteCustomer::Regular,
-            coverage: RouteCoverage::RapidTransit,
+            customer_type: Customer::Regular,
+            coverage: Coverage::RapidTransit,
             badge_label: "B".to_string(),
             badge_style: Style {
                 class_names: ClassNames {
@@ -222,15 +222,15 @@ mod test {
                 color: "#ffffff".to_string(),
             },
             variants: Some(vec![
-                RouteVariante {
+                Variant {
                     key: "BLUE-0-S".to_string(),
                     name: None,
                 },
-                RouteVariante {
+                Variant {
                     key: "BLUE-0-U".to_string(),
                     name: None,
                 },
-                RouteVariante {
+                Variant {
                     key: "BLUE-1-D".to_string(),
                     name: None,
                 },

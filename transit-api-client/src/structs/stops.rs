@@ -1,7 +1,7 @@
 use super::{
     common::{GeoLocation, Street},
     deserialize_string_to_bool,
-    routes::{Route, RouteVariante},
+    routes::{Route, Variant},
 };
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
@@ -11,8 +11,8 @@ pub struct Stop {
     pub key: u32,
     pub name: String,
     pub number: u32,
-    pub direction: StopDirection,
-    pub side: StopSide,
+    pub direction: Direction,
+    pub side: Side,
     pub street: Street,
     #[serde(rename = "cross-street")]
     pub cross_street: Street,
@@ -20,7 +20,7 @@ pub struct Stop {
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub enum StopDirection {
+pub enum Direction {
     Northbound,
     Eastbound,
     Southbound,
@@ -28,7 +28,7 @@ pub enum StopDirection {
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub enum StopSide {
+pub enum Side {
     #[serde(rename = "Direct Opposite")]
     DirectOpposite, // stop: 10168
     Farside, //  stop: 10095
@@ -41,13 +41,13 @@ pub enum StopSide {
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct StopFeature {
+pub struct Feature {
     pub name: String,
     pub count: u32,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct StopSchedule {
+pub struct Schedule {
     pub stop: Stop,
     #[serde(rename = "route-schedules")]
     pub route_schedules: Vec<RouteSchedule>,
@@ -66,7 +66,7 @@ pub struct ScheduledStop {
     #[serde(deserialize_with = "deserialize_string_to_bool")]
     pub cancelled: bool,
     pub times: ScheduledTimes,
-    pub variant: RouteVariante,
+    pub variant: Variant,
     pub bus: Bus,
 }
 

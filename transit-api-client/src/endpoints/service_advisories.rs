@@ -1,5 +1,5 @@
 use crate::structs::{
-    service_advisories::{ServiceAdvisory, ServiceAdvisoryCategory, ServiceAdvisoryPriority},
+    service_advisories::{Category, Priority, ServiceAdvisory},
     UrlParameter, Usage,
 };
 use reqwest::Error;
@@ -29,8 +29,8 @@ impl crate::TransitClient {
 
     pub async fn service_advisories(
         &self,
-        priority: Option<ServiceAdvisoryPriority>,
-        category: Option<ServiceAdvisoryCategory>,
+        priority: Option<Priority>,
+        category: Option<Category>,
         max_age: Option<u32>,
         limit: Option<u32>,
         usage: Usage,
@@ -68,7 +68,7 @@ impl crate::TransitClient {
 #[cfg(test)]
 mod test {
     use crate::structs::{
-        service_advisories::{ServiceAdvisory, ServiceAdvisoryCategory, ServiceAdvisoryPriority},
+        service_advisories::{Category, Priority, ServiceAdvisory},
         Usage,
     };
     use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
@@ -87,10 +87,10 @@ mod test {
             .unwrap();
         let expected = ServiceAdvisory {
             key: 96,
-            priority: ServiceAdvisoryPriority::VeryHigh,
+            priority: Priority::VeryHigh,
             title: "Blue Priority Service".to_string(),
             body: "Winnipeg Transit is operating a Blue Priority Service. Please check the website or call 311 for information on service delays and route cancellations. ".to_string(),
-            category: ServiceAdvisoryCategory::Transit,
+            category: Category::Transit,
             updated_at: NaiveDateTime::new(NaiveDate::from_ymd_opt(2009, 2, 10).unwrap(), NaiveTime::from_hms_opt(15, 41, 30).unwrap()),
         };
         //dbg!("{:?},{:?}", &actual, &expected);

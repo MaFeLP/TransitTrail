@@ -6,17 +6,17 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ServiceAdvisory {
     pub key: u32,
-    pub priority: ServiceAdvisoryPriority,
+    pub priority: Priority,
     pub title: String,
     pub body: String,
-    pub category: ServiceAdvisoryCategory,
+    pub category: Category,
     #[serde(rename = "updated-at")]
     pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
-pub enum ServiceAdvisoryPriority {
+pub enum Priority {
     VeryHigh = 1,
     High = 2,
     Medium = 3,
@@ -25,36 +25,36 @@ pub enum ServiceAdvisoryPriority {
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub enum ServiceAdvisoryCategory {
+pub enum Category {
     Transit,
     #[serde(rename = "Handi-Transit")]
     HandiTransit,
     All,
 }
 
-impl Default for ServiceAdvisoryCategory {
+impl Default for Category {
     fn default() -> Self {
         Self::All
     }
 }
 
-impl From<ServiceAdvisoryPriority> for UrlParameter {
-    fn from(value: ServiceAdvisoryPriority) -> Self {
+impl From<Priority> for UrlParameter {
+    fn from(value: Priority) -> Self {
         Self(format!(
             "&priority={}",
             match value {
-                ServiceAdvisoryPriority::VeryHigh => 1,
-                ServiceAdvisoryPriority::High => 2,
-                ServiceAdvisoryPriority::Medium => 3,
-                ServiceAdvisoryPriority::Low => 4,
-                ServiceAdvisoryPriority::VeryLow => 5,
+                Priority::VeryHigh => 1,
+                Priority::High => 2,
+                Priority::Medium => 3,
+                Priority::Low => 4,
+                Priority::VeryLow => 5,
             }
         ))
     }
 }
 
-impl From<Option<ServiceAdvisoryPriority>> for UrlParameter {
-    fn from(value: Option<ServiceAdvisoryPriority>) -> Self {
+impl From<Option<Priority>> for UrlParameter {
+    fn from(value: Option<Priority>) -> Self {
         match value {
             Some(v) => Self::from(v),
             None => Self("".to_string()),
@@ -62,21 +62,21 @@ impl From<Option<ServiceAdvisoryPriority>> for UrlParameter {
     }
 }
 
-impl From<ServiceAdvisoryCategory> for UrlParameter {
-    fn from(value: ServiceAdvisoryCategory) -> Self {
+impl From<Category> for UrlParameter {
+    fn from(value: Category) -> Self {
         Self(format!(
             "&category={}",
             match value {
-                ServiceAdvisoryCategory::Transit => "transit",
-                ServiceAdvisoryCategory::HandiTransit => "handi-transit",
-                ServiceAdvisoryCategory::All => "all",
+                Category::Transit => "transit",
+                Category::HandiTransit => "handi-transit",
+                Category::All => "all",
             }
         ))
     }
 }
 
-impl From<Option<ServiceAdvisoryCategory>> for UrlParameter {
-    fn from(value: Option<ServiceAdvisoryCategory>) -> Self {
+impl From<Option<Category>> for UrlParameter {
+    fn from(value: Option<Category>) -> Self {
         match value {
             Some(v) => Self::from(v),
             None => Self("".to_string()),

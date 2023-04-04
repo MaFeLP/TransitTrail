@@ -1,6 +1,6 @@
 use crate::structs::{
     common::Location,
-    trip_planner::{TripFilter, TripPlan},
+    trip_planner::{Filter, Plan},
     UrlParameter, Usage,
 };
 use reqwest::Error;
@@ -11,12 +11,12 @@ impl crate::TransitClient {
         &self,
         origin: Location,
         destination: Location,
-        filters: Vec<TripFilter>,
+        filters: Vec<Filter>,
         usage: Usage,
-    ) -> Result<Vec<TripPlan>, Error> {
+    ) -> Result<Vec<Plan>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
-            plans: Vec<TripPlan>,
+            plans: Vec<Plan>,
         }
 
         let mut filter_parameters = String::new();
@@ -46,7 +46,7 @@ impl crate::TransitClient {
 mod test {
     use crate::structs::{
         common::{GeoLocation, Location},
-        trip_planner::{TripFilter, TripMode},
+        trip_planner::{Filter, Mode},
         Usage,
     };
     use chrono::offset::Local;
@@ -96,14 +96,14 @@ mod test {
                 longitude: -97.10887,
             }),
             vec![
-                TripFilter::Date(Local::now().naive_local().date()),
-                TripFilter::Time(Local::now().naive_local().time()),
-                TripFilter::Mode(TripMode::DepartAfter),
-                TripFilter::WalkSpeed(1.5),
-                TripFilter::MaxWalkTime(10),
-                TripFilter::MinTransferWait(5),
-                TripFilter::MaxTransferWait(10),
-                TripFilter::MaxTransfers(2),
+                Filter::Date(Local::now().naive_local().date()),
+                Filter::Time(Local::now().naive_local().time()),
+                Filter::Mode(Mode::DepartAfter),
+                Filter::WalkSpeed(1.5),
+                Filter::MaxWalkTime(10),
+                Filter::MinTransferWait(5),
+                Filter::MaxTransferWait(10),
+                Filter::MaxTransfers(2),
             ],
             Usage::Normal,
         ))
