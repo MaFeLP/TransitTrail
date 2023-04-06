@@ -1,6 +1,7 @@
-use crate::structs::{routes::Variant, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
+
+use crate::structs::{routes::Variant, UrlParameter, Usage};
 
 impl crate::TransitClient {
     pub async fn variant_by_key(&self, key: &str, usage: Usage) -> Result<Variant, Error> {
@@ -82,18 +83,12 @@ impl crate::TransitClient {
 mod test {
     use crate::structs::{routes::Variant, Usage};
 
-    #[test]
-    fn variant_by_key() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        let actual = rt
-            .block_on(client.variant_by_key("17-1-G", Usage::Normal))
+    #[tokio::test]
+    async fn variant_by_key() {
+        let client = crate::testing_client();
+        let actual = client
+            .variant_by_key("17-1-G", Usage::Normal)
+            .await
             .unwrap();
         let expected = Variant {
             key: "17-1-G".to_string(),
@@ -104,31 +99,18 @@ mod test {
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn variants_by_stop() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        rt.block_on(client.variants_by_stop(50254, Usage::Normal))
-            .unwrap();
+    #[tokio::test]
+    async fn variants_by_stop() {
+        let client = crate::testing_client();
+        client.variants_by_stop(50254, Usage::Normal).await.unwrap();
     }
 
-    #[test]
-    fn variants_by_stops() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        rt.block_on(client.variants_by_stops(vec![10652, 10907], Usage::Normal))
+    #[tokio::test]
+    async fn variants_by_stops() {
+        let client = crate::testing_client();
+        client
+            .variants_by_stops(vec![10652, 10907], Usage::Normal)
+            .await
             .unwrap();
     }
 }

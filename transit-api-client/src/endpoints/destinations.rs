@@ -33,18 +33,12 @@ impl crate::TransitClient {
 mod test {
     use super::*;
 
-    #[test]
-    fn destinations() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        let actual = rt
-            .block_on(client.destinations("16-1-K".to_string(), Usage::Normal))
+    #[tokio::test]
+    async fn destinations() {
+        let client = crate::testing_client();
+        let actual = client
+            .destinations("16-1-K".to_string(), Usage::Normal)
+            .await
             .unwrap();
         let expected = vec![
             Destination {

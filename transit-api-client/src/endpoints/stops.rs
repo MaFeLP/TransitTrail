@@ -1,10 +1,11 @@
-use crate::structs::{
-    stops::{Feature, Schedule, Stop},
-    UrlParameter, Usage, TIME_FORMAT,
-};
 use chrono::NaiveDateTime;
 use reqwest::Error;
 use serde::Deserialize;
+
+use crate::structs::{
+    stops::{Feature, Schedule, Stop},
+    TIME_FORMAT, UrlParameter, Usage,
+};
 
 impl crate::TransitClient {
     pub async fn stop_info(&self, stop: u32, usage: Usage) -> Result<Stop, Error> {
@@ -146,18 +147,10 @@ mod test {
         Usage,
     };
 
-    #[test]
-    fn stop_features() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client =
-            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
-        let mut actual = rt
-            .block_on(client.stop_features(10064, Usage::Normal))
-            .unwrap();
+    #[tokio::test]
+    async fn stop_features() {
+        let client = crate::testing_client();
+        let mut actual = client.stop_features(10064, Usage::Normal).await.unwrap();
         let mut expected = vec![
             Feature {
                 name: "Bench".to_string(),
@@ -171,9 +164,7 @@ mod test {
         //dbg!("{:?},{:?}", &actual, &expected);
         assert_eq!(actual, expected);
 
-        actual = rt
-            .block_on(client.stop_features(10172, Usage::Normal))
-            .unwrap();
+        actual = client.stop_features(10172, Usage::Normal).await.unwrap();
         expected = vec![
             Feature {
                 name: "BUSwatch Electronic Sign".to_string(),
@@ -192,16 +183,10 @@ mod test {
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn stop_info() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client =
-            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
-        let mut actual = rt.block_on(client.stop_info(10168, Usage::Normal)).unwrap();
+    #[tokio::test]
+    async fn stop_info() {
+        let client = crate::testing_client();
+        let mut actual = client.stop_info(10168, Usage::Normal).await.unwrap();
         let mut expected = Stop {
             key: 10168,
             name: "Westbound River at Cauchon".to_string(),
@@ -228,7 +213,7 @@ mod test {
         //dbg!("{:?},{:?}", &actual, &expected);
         assert_eq!(actual, expected);
 
-        actual = rt.block_on(client.stop_info(10087, Usage::Normal)).unwrap();
+        actual = client.stop_info(10087, Usage::Normal).await.unwrap();
         expected = Stop {
             key: 10087,
             name: "Northbound Stafford at Stafford Loop".to_string(),
@@ -256,17 +241,12 @@ mod test {
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn stop_schedule() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client =
-            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
-        let actual = rt
-            .block_on(client.stop_schedule(10064, None, None, Some(3), Usage::Normal))
+    #[tokio::test]
+    async fn stop_schedule() {
+        let client = crate::testing_client();
+        let actual = client
+            .stop_schedule(10064, None, None, Some(3), Usage::Normal)
+            .await
             .unwrap();
 
         let expected_stop = Stop {
@@ -298,24 +278,12 @@ mod test {
         assert_eq!(actual.route_schedules[0].scheduled_stops.len(), 3);
     }
 
-    #[test]
-    fn stop_schedule_route_filter() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client =
-            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
-        let actual = rt
-            .block_on(client.stop_schedule_route_filter(
-                10185,
-                vec![18, 60],
-                None,
-                None,
-                Some(3),
-                Usage::Normal,
-            ))
+    #[tokio::test]
+    async fn stop_schedule_route_filter() {
+        let client = crate::testing_client();
+        let actual = client
+            .stop_schedule_route_filter(10185, vec![18, 60], None, None, Some(3), Usage::Normal)
+            .await
             .unwrap();
 
         let expected_stop = Stop {

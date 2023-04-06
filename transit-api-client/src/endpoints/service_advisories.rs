@@ -1,9 +1,10 @@
+use reqwest::Error;
+use serde::Deserialize;
+
 use crate::structs::{
     service_advisories::{Category, Priority, ServiceAdvisory},
     UrlParameter, Usage,
 };
-use reqwest::Error;
-use serde::Deserialize;
 
 impl crate::TransitClient {
     pub async fn service_advisory(&self, key: u32, usage: Usage) -> Result<ServiceAdvisory, Error> {
@@ -67,24 +68,17 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
+    use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
     use crate::structs::{
         service_advisories::{Category, Priority, ServiceAdvisory},
         Usage,
-    };
-    use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+        };
 
-    #[test]
-    fn service_adviory() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client =
-            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
-        let actual = rt
-            .block_on(client.service_advisory(96, Usage::Normal))
-            .unwrap();
+    #[tokio::test]
+    async fn service_adviory() {
+        let client = crate::testing_client();
+        let actual = client.service_advisory(96, Usage::Normal).await.unwrap();
         let expected = ServiceAdvisory {
             key: 96,
             priority: Priority::VeryHigh,
@@ -97,17 +91,12 @@ mod test {
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn service_advisories() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client =
-            crate::TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap_or_default());
-        let actual = rt
-            .block_on(client.service_advisories(None, None, None, Some(3), Usage::Normal))
+    #[tokio::test]
+    async fn service_advisories() {
+        let client = crate::testing_client();
+        let actual = client
+            .service_advisories(None, None, None, Some(3), Usage::Normal)
+            .await
             .unwrap();
         // Can only test serialization, as advisories from this query change often. Unit tests
         // would therefore fail automatically after a while.

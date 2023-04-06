@@ -1,10 +1,11 @@
+use reqwest::Error;
+use serde::Deserialize;
+
 use crate::structs::{
     common::Location,
     trip_planner::{Filter, Plan},
     UrlParameter, Usage,
 };
-use reqwest::Error;
-use serde::Deserialize;
 
 impl crate::TransitClient {
     pub async fn trip_planner(
@@ -44,69 +45,60 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
+    use chrono::offset::Local;
+
     use crate::structs::{
         common::{GeoLocation, Location},
         trip_planner::{Filter, Mode},
         Usage,
-    };
-    use chrono::offset::Local;
+        };
 
-    #[test]
-    fn default_trip() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        rt.block_on(client.trip_planner(
-            Location::Point(GeoLocation {
-                latitude: 49.86917,
-                longitude: -97.1391,
-            }),
-            Location::Point(GeoLocation {
-                latitude: 49.8327,
-                longitude: -97.10887,
-            }),
-            Vec::new(),
-            Usage::Normal,
-        ))
-        .unwrap();
+    #[tokio::test]
+    async fn default_trip() {
+        let client = crate::testing_client();
+        client
+            .trip_planner(
+                Location::Point(GeoLocation {
+                    latitude: 49.86917,
+                    longitude: -97.1391,
+                }),
+                Location::Point(GeoLocation {
+                    latitude: 49.8327,
+                    longitude: -97.10887,
+                }),
+                Vec::new(),
+                Usage::Normal,
+            )
+            .await
+            .unwrap();
     }
 
-    #[test]
-    fn filters() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        rt.block_on(client.trip_planner(
-            Location::Point(GeoLocation {
-                latitude: 49.86917,
-                longitude: -97.1391,
-            }),
-            Location::Point(GeoLocation {
-                latitude: 49.8327,
-                longitude: -97.10887,
-            }),
-            vec![
-                Filter::Date(Local::now().naive_local().date()),
-                Filter::Time(Local::now().naive_local().time()),
-                Filter::Mode(Mode::DepartAfter),
-                Filter::WalkSpeed(1.5),
-                Filter::MaxWalkTime(10),
-                Filter::MinTransferWait(5),
-                Filter::MaxTransferWait(10),
-                Filter::MaxTransfers(2),
-            ],
-            Usage::Normal,
-        ))
-        .unwrap();
+    #[tokio::test]
+    async fn filters() {
+        let client = crate::testing_client();
+        client
+            .trip_planner(
+                Location::Point(GeoLocation {
+                    latitude: 49.86917,
+                    longitude: -97.1391,
+                }),
+                Location::Point(GeoLocation {
+                    latitude: 49.8327,
+                    longitude: -97.10887,
+                }),
+                vec![
+                    Filter::Date(Local::now().naive_local().date()),
+                    Filter::Time(Local::now().naive_local().time()),
+                    Filter::Mode(Mode::DepartAfter),
+                    Filter::WalkSpeed(1.5),
+                    Filter::MaxWalkTime(10),
+                    Filter::MinTransferWait(5),
+                    Filter::MaxTransferWait(10),
+                    Filter::MaxTransfers(2),
+                ],
+                Usage::Normal,
+            )
+            .await
+            .unwrap();
     }
 }

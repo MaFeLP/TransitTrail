@@ -1,6 +1,7 @@
-use crate::structs::{routes::Route, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
+
+use crate::structs::{routes::Route, UrlParameter, Usage};
 
 impl crate::TransitClient {
     pub async fn route<T: std::fmt::Display>(
@@ -56,23 +57,16 @@ impl crate::TransitClient {
 mod test {
     use crate::structs::{
         routes::{
-            badges::{ClassNames, Style},
             {Blue, Coverage, Customer, Regular, Route, Variant},
+            badges::{ClassNames, Style},
         },
         Usage,
     };
 
-    #[test]
-    fn normal_route() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        let actual = rt.block_on(client.route(25, Usage::Normal)).unwrap();
+    #[tokio::test]
+    async fn normal_route() {
+        let client = crate::testing_client();
+        let actual = client.route(25, Usage::Normal).await.unwrap();
         let expected = Route::Regular(Regular {
             key: 25,
             number: 25,
@@ -104,19 +98,10 @@ mod test {
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn normal_routes_by_stop() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        let actual = rt
-            .block_on(client.routes_by_stop(50254, Usage::Normal))
-            .unwrap();
+    #[tokio::test]
+    async fn normal_routes_by_stop() {
+        let client = crate::testing_client();
+        let actual = client.routes_by_stop(50254, Usage::Normal).await.unwrap();
         let expected = vec![
             Route::Regular(Regular {
                 key: 57,
@@ -196,17 +181,10 @@ mod test {
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn blue_route() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        let actual = rt.block_on(client.route("BLUE", Usage::Normal)).unwrap();
+    #[tokio::test]
+    async fn blue_route() {
+        let client = crate::testing_client();
+        let actual = client.route("BLUE", Usage::Normal).await.unwrap();
         let expected = Route::Blue(Blue {
             key: "BLUE".to_string(),
             number: "BLUE".to_string(),

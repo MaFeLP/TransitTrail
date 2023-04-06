@@ -1,7 +1,8 @@
-use crate::structs::common::{GeoLocation, Location};
-use crate::structs::{UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
+
+use crate::structs::{UrlParameter, Usage};
+use crate::structs::common::{GeoLocation, Location};
 
 impl crate::TransitClient {
     pub async fn locations(
@@ -41,22 +42,16 @@ impl crate::TransitClient {
 mod test {
     use crate::structs::{common::*, Usage};
 
-    #[test]
-    fn locations() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
+    #[tokio::test]
+    async fn locations() {
+        let client = crate::testing_client();
         let position = GeoLocation {
             latitude: 49.895,
             longitude: -97.138,
         };
-        let actual = rt
-            .block_on(client.locations(&position, None, None, Usage::Normal))
+        let actual = client
+            .locations(&position, None, None, Usage::Normal)
+            .await
             .unwrap();
         let expected = vec![
             Location::Monument(Monument {

@@ -1,6 +1,7 @@
-use crate::structs::{common::Street, UrlParameter, Usage};
 use reqwest::Error;
 use serde::Deserialize;
+
+use crate::structs::{common::Street, UrlParameter, Usage};
 
 impl crate::TransitClient {
     pub async fn street(&self, name: String, usage: Usage) -> Result<Vec<Street>, Error> {
@@ -31,18 +32,12 @@ mod test {
         Usage,
     };
 
-    #[test]
-    fn main_street() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        let actual = rt
-            .block_on(client.street("Main Street".to_string(), Usage::Normal))
+    #[tokio::test]
+    async fn main_street() {
+        let client = crate::testing_client();
+        let actual = client
+            .street("Main Street".to_string(), Usage::Normal)
+            .await
             .unwrap();
         let expected = vec![
             Street {
@@ -62,18 +57,12 @@ mod test {
         assert_eq!(actual, expected);
     }
 
-    #[test]
-    fn portage() {
-        // Read .env file for environment variables
-        dotenv::dotenv().unwrap();
-        // Create a runtime, to run async functions
-        let rt = tokio::runtime::Runtime::new().unwrap();
-
-        let client = crate::TransitClient::new(
-            std::env::var("WPG_TRANSIT_API_KEY").unwrap_or(String::from("")),
-        );
-        let actual = rt
-            .block_on(client.street("Portage Ave".to_string(), Usage::Normal))
+    #[tokio::test]
+    async fn portage() {
+        let client = crate::testing_client();
+        let actual = client
+            .street("Portage Ave".to_string(), Usage::Normal)
+            .await
             .unwrap();
         let expected = vec![
             Street {
