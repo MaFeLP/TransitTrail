@@ -79,3 +79,12 @@ impl TransitClient {
         self.base_url = base_url;
     }
 }
+
+/// Creates a Transit Client from environment variables
+#[cfg(any(test, doctest))]
+pub fn testing_client() -> TransitClient {
+    TransitClient::new(
+        dotenv::var("WPG_TRANSIT_API_KEY")
+            .expect("No environment variable `WPG_TRANSIT_API_KEY` found!"),
+    )
+}
