@@ -1,11 +1,36 @@
+//!
+//! Structures used in multiple endpoints.
+//!
+
 use serde::{de::Error, Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::fmt::Display;
 
+/// A point on the Earth: A geographic location, represented by longitude and latitude.
+///
+/// Winnipeg is roughly in the bounds:
+///
+/// Latitude: North = 49.97; South = 49.75
+/// Longitude: East = -96.96; West
 #[derive(Debug, Default, PartialEq, Serialize)]
 pub struct GeoLocation {
+    /// The latitude of the point
     pub latitude: f64,
+
+    /// The longitude of the point.
     pub longitude: f64,
+}
+
+impl GeoLocation {
+    /// Create a new instance of a Geolocation in shorter form.
+    ///
+    /// Default constructor
+    pub fn new(latitude: f64, longitude: f64) -> Self {
+        Self {
+            latitude,
+            longitude,
+        }
+    }
 }
 
 impl Eq for GeoLocation {}
@@ -70,15 +95,24 @@ impl<'de> serde::de::Deserialize<'de> for GeoLocation {
     }
 }
 
+/// Locations tagged with "type": TYPE in the JSON response. They represent a
+/// position or a point on the map that is significant or by address.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Location {
+    /// The address of a Location
     #[serde(rename = "address")]
     Address(Address),
+
+    /// The location is a significant point of interest
     #[serde(rename = "monument")]
     Monument(Monument),
+
+    /// The location is at an intersection of two streets
     #[serde(rename = "intersection")]
     Intersection(Intersection),
+
+    /// A geographic point
     #[serde(rename = "point")]
     Point(GeoLocation),
 }
@@ -100,57 +134,114 @@ impl Display for Location {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+/// Represents a Street, as it is returned from the API
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Street {
+    /// The unique key of the street
     pub key: u32,
+
+    /// The name of the street.
+    ///
+    /// Can be more or less verbose, if [Usage](super::Usage) is not set to
+    /// [Usage::Normal](super::Usage::Normal) in the request.
     pub name: String,
+
+    /// Optionally a Street Type may be specified, e.g. Road, Boulevard, Street, etc.
     #[serde(rename = "type")]
     pub street_type: Option<StreetType>,
+
+    /// If this street is split into more than one parts, a street leg is given
     pub leg: Option<StreetLeg>,
 }
 
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+/// What type of street it actually is
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StreetType {
+    /// The street is an avenue (Ave)
     Avenue,
+
+    /// The street is a boulevard (Blvd)
     Boulevard,
+
+    /// The street is a crescent (Cres)
     Crescent,
+
+    /// The street is a drive (Dr)
     Drive,
+
+    /// The street is a bus loop
     Loop,
+
+    /// The street is a road (Rd)
     Road,
+
+    /// The street is a street (St)
     #[default]
     Street,
 }
 
+/// The part of the street if it is split up in more than one parts
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StreetLeg {
+    /// The North part of the street (N)
     North,
+
+    /// The East part of the street (E)
     East,
+
+    /// The South part of the street (S)
     South,
+
+    /// The West part of the street (W)
     West,
 }
 
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+/// A residential address
+#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Address {
+    /// The unique key of the address
     pub key: u32,
+
+    /// What street the address is located on
     pub street: Street,
+
+    /// The house number/street number of the address
     #[serde(rename = "street-number")]
     pub street_number: u32,
+
+    /// The geographic centre of the address
     pub centre: GeoLocation,
 }
 
+/// A significant point of interest
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Monument {
+    /// The unique key of the point of interest
     pub key: u32,
+
+    /// What the point of interest is called
     pub name: String,
+
+    /// Which categories the point of interest has
     pub categories: Vec<String>,
+
+    /// The address of the point of interest
     pub address: Address,
 }
 
+/// The intersection of two streets
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Intersection {
+    /// The unique key of the intersection. Composed of the unique keys of the two streets
     pub key: String,
+
+    /// The main street of the crossing streets
     pub street: Street,
+
+    /// The street crossing the main street
     #[serde(rename = "cross-street")]
     pub cross_street: Street,
+
+    /// The geographic centre of the intersection
     pub centre: GeoLocation,
 }
