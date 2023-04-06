@@ -1,4 +1,5 @@
-#![warn(missing_docs, invalid_doc_attributes)]
+#![warn(missing_docs, invalid_doc_attributes, missing_debug_implementations)]
+#![deny(non_ascii_idents, unused_crate_dependencies)]
 //! Winnipeg Api Client
 //!
 //! This crate provides endpoints for version 3 of the official Winnipeg Transit API. It requires
@@ -17,11 +18,12 @@
 //! # });
 //! ```
 
-#[allow(missing_docs, invalid_doc_attributes)]
+#[allow(missing_docs)]
 pub mod endpoints;
 pub mod structs;
 
 /// The client that houses all the methods for the API and handles connections to the API.
+#[derive(Debug)]
 pub struct TransitClient {
     api_key: String,
     base_url: String,
