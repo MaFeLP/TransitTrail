@@ -3,15 +3,17 @@
 //! [trip_planner](crate::TransitClient::trip_planner) endpoint
 //!
 
+use std::fmt::Display;
+
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use serde::{Deserialize, Serialize};
+
 use super::{
     common::{Address, GeoLocation, Intersection, Monument},
     routes::{Route, Variant},
     stops::Bus,
     UrlParameter,
 };
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 
 /// Specify filters for the trip planning
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -243,12 +245,10 @@ pub enum TripStop {
     /// #     },
     /// #     TransitClient,
     /// # };
-    /// # dotenv::dotenv().unwrap();
+    /// # let client = transit_api_client::testing_client();
     /// // use ...
     /// // let client = ...;
-    /// let client = TransitClient::new(std::env::var("WPG_TRANSIT_API_KEY").unwrap());
-    /// # let mut rt = tokio::runtime::Runtime::new().unwrap();
-    /// # rt.block_on(async move {
+    /// # tokio_test::block_on(async move {
     /// let plans = client.trip_planner(
     ///     Location::Point(GeoLocation::new(49.86917, -97.1391)),
     ///     Location::Point(GeoLocation::new(49.8327, -97.10887)),

@@ -9,14 +9,18 @@
 //! ```
 //! use transit_api_client::{structs::Usage, TransitClient};
 //! use std::env;
-//! # let mut rt = tokio::runtime::Runtime::new().unwrap();
-//! # rt.block_on(async move {
+//! # tokio_test::block_on(async {
 //! # dotenv::dotenv().unwrap();
 //!
 //! let client = TransitClient::new(env::var("WPG_TRANSIT_API_KEY").expect("Expected API key"));
 //! let stop = client.stop_info(10167, Usage::Normal).await.unwrap();
 //! # });
 //! ```
+
+// Need to use this, so cargo doesn't complain, if we don't use it in test, but it's needed for
+// doctests.
+#[cfg(test)]
+use tokio_test as _;
 
 #[allow(missing_docs)]
 pub mod endpoints;
