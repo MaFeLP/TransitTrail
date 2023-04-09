@@ -2,13 +2,14 @@
 //! Structures for the [service_advisories endpoint](crate::endpoints::service_advisories)
 //!
 
-use super::UrlParameter;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
+use super::UrlParameter;
+
 /// A service advisory containing data about the advisory
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ServiceAdvisory {
     /// A unique key to identify the advisory
     pub key: u32,
@@ -31,7 +32,7 @@ pub struct ServiceAdvisory {
 }
 
 /// A numerical indicator of how urgent the advisory is. The lower the number, the more urgent it is
-#[derive(Debug, Default, Eq, PartialEq, Serialize_repr, Deserialize_repr)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum Priority {
     /// Priority of this advisory is very high
@@ -52,7 +53,7 @@ pub enum Priority {
 }
 
 /// Service advisories belong to a category
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Category {
     /// Only transit vehicles are effected
     Transit,

@@ -2,9 +2,10 @@
 //! Structures used in multiple endpoints.
 //!
 
+use std::fmt::Display;
+
 use serde::{de::Error, Deserialize, Serialize};
 use serde_json::{Map, Value};
-use std::fmt::Display;
 
 /// A point on the Earth: A geographic location, represented by longitude and latitude.
 ///
@@ -12,7 +13,7 @@ use std::fmt::Display;
 ///
 /// Latitude: North = 49.97; South = 49.75
 /// Longitude: East = -96.96; West
-#[derive(Debug, Default, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize)]
 pub struct GeoLocation {
     /// The latitude of the point
     pub latitude: f64,
@@ -97,7 +98,7 @@ impl<'de> serde::de::Deserialize<'de> for GeoLocation {
 
 /// Locations tagged with "type": TYPE in the JSON response. They represent a
 /// position or a point on the map that is significant or by address.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Location {
     /// The address of a Location
@@ -135,7 +136,7 @@ impl Display for Location {
 }
 
 /// Represents a Street, as it is returned from the API
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Street {
     /// The unique key of the street
     pub key: u32,
@@ -155,7 +156,7 @@ pub struct Street {
 }
 
 /// What type of street it actually is
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StreetType {
     /// The street is an avenue (Ave)
     Avenue,
@@ -181,7 +182,7 @@ pub enum StreetType {
 }
 
 /// The part of the street if it is split up in more than one parts
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StreetLeg {
     /// The North part of the street (N)
     North,
@@ -197,7 +198,7 @@ pub enum StreetLeg {
 }
 
 /// A residential address
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Address {
     /// The unique key of the address
     pub key: u32,
@@ -214,7 +215,7 @@ pub struct Address {
 }
 
 /// A significant point of interest
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Monument {
     /// The unique key of the point of interest
     pub key: u32,
@@ -230,7 +231,7 @@ pub struct Monument {
 }
 
 /// The intersection of two streets
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Intersection {
     /// The unique key of the intersection. Composed of the unique keys of the two streets
     pub key: String,

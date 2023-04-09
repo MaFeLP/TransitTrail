@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Represents a NON-BLUE route.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Regular {
     /// The unique key of the route, most of the time the same as the number
     pub key: u32,
@@ -40,7 +40,7 @@ pub struct Regular {
 }
 
 /// Represents BLUE routes, as they have Strings as keys and numbers
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Blue {
     /// The unique key of the route, most of the time the same as the number
     pub key: String,
@@ -72,7 +72,7 @@ pub struct Blue {
 
 /// Collects all types of routes. BLUE routes are rapid-transit lines and have
 /// strings as their route number and key.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Route {
     /// The BLUE routes
@@ -89,7 +89,7 @@ impl Default for Route {
 }
 
 /// The type of service provided by this route.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Customer {
     /// Regular Service at this route
     #[default]
@@ -114,7 +114,7 @@ pub enum Customer {
 }
 
 /// Categorization of how fully a route services stops along it's segments.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Coverage {
     /// services all stops
     #[default]
@@ -135,7 +135,7 @@ pub enum Coverage {
 }
 
 /// A variant is a variation of a route, distinguished by its intermediate destination points.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Variant {
     ///  A unique identifier for this variant.
     pub key: String,
@@ -155,7 +155,7 @@ pub mod badges {
     use serde::{Deserialize, Serialize};
 
     /// How the route should be styler
-    #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+    #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
     pub struct Style {
         /// Additional classes to apply to nodes for styling
         #[serde(rename = "class-names")]
@@ -171,7 +171,7 @@ pub mod badges {
     }
 
     /// Additional class names are nested in here
-    #[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+    #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
     pub struct ClassNames {
         /// Additional class names that should be applied
         #[serde(rename = "class-name")]

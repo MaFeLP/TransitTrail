@@ -2,16 +2,17 @@
 //! Data structures for the [stops endpoint](crate::endpoints::stops)
 //!
 
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
+
 use super::{
     common::{GeoLocation, Street},
     deserialize_string_to_bool,
     routes::{Route, Variant},
 };
-use chrono::NaiveDateTime;
-use serde::{Deserialize, Serialize};
 
 /// A stop
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Stop {
     /// A unique identifier for this stop.
     pub key: u32,
@@ -42,7 +43,7 @@ pub struct Stop {
 }
 
 /// Specifies which direction buses which service the stop are heading.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Direction {
     /// The bus is going North
     Northbound,
@@ -58,7 +59,7 @@ pub enum Direction {
 }
 
 /// Specifies which side of the intersection the stop lies on.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Side {
     /// The stop is directly on the opposite side
     ///
@@ -98,7 +99,7 @@ pub enum Side {
 /// information about any stop features
 ///
 /// This includes: Benches, (Un-)heated shelters, etc.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Feature {
     /// The name of the stop feature
     pub name: String,
@@ -108,7 +109,7 @@ pub struct Feature {
 }
 
 /// A schedule of what buses are leaving from this stop
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Schedule {
     /// The stop which the schedule information is for. See the [Stop] for more details.
     pub stop: Stop,
@@ -119,7 +120,7 @@ pub struct Schedule {
 }
 
 /// A route schedule of a route and where it is going.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RouteSchedule {
     /// Basic route information.
     pub route: Route,
@@ -130,7 +131,7 @@ pub struct RouteSchedule {
 }
 
 /// Contains information about when a bus will pass by the stop.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ScheduledStop {
     /// A unique identifier for this scheduled-stop.
     pub key: String,
@@ -152,7 +153,7 @@ pub struct ScheduledStop {
 }
 
 /// Information about the arrival and departure times
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ScheduledTimes {
     /// Times of when the bus is scheduled and estimated to arrive
     pub arrival: Time,
@@ -162,7 +163,7 @@ pub struct ScheduledTimes {
 }
 
 /// Holds scheduled and estimated times for departure or arrival
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Time {
     /// When the bus is scheduled
     pub scheduled: NaiveDateTime,
@@ -173,7 +174,7 @@ pub struct Time {
 
 /// Information about the passing bus. Will typically be present in today's schedule results
 /// and omitted for past and future dates.
-#[derive(Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Bus {
     /// A unique identifier for the bus.
     pub key: u32,

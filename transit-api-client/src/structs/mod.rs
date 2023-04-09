@@ -17,7 +17,7 @@ pub mod trip_planner;
 /// How [chrono] should read time stamps and format time stamps.
 pub(crate) static TIME_FORMAT: &str = "%Y-%m-%dT%H:%M:%S";
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 /// A tuple struct that wraps a string. Other types can `impl<T> From<T> for UrlParameter` so that
 /// each individual endpoint can easily format and use the structs, without modifying their Display
 /// or Debug behaviours.
@@ -29,7 +29,7 @@ impl Display for UrlParameter {
     }
 }
 
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 /// If the API should yield shorter, longer, or normal names.
 pub enum Usage {
     #[default]

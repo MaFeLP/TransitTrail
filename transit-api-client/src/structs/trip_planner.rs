@@ -92,7 +92,7 @@ impl Display for Mode {
 
 /// Each plan describes a different trip or path which can be used to get from the origin to
 /// the destination.
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Plan {
     /// The how many-th plan this is
     pub number: u32,
@@ -107,7 +107,7 @@ pub struct Plan {
 
 /// Time information about the [Plan]/[Segment]: when it starts/ends and how much time is
 /// spent with what.
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Times {
     /// When the ride/walk of the plan/segment starts
     pub start: NaiveDateTime,
@@ -120,7 +120,7 @@ pub struct Times {
 }
 
 /// Times for how long is spent riding/walking/waiting and total
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Durations {
     /// Total time spent. Defaults to 0
     #[serde(default)]
@@ -140,7 +140,7 @@ pub struct Durations {
 }
 
 /// Segments can either be of type [SegmentWalk], [SegmentRide] or [SegmentTransfer]
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Segment {
     // TODO refactor into their own submodule `segment`
@@ -158,7 +158,7 @@ pub enum Segment {
 }
 
 /// Information about a walking route
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct SegmentWalk {
     /// Shows the boundaries of the trip
     pub bounds: Bounds,
@@ -176,7 +176,7 @@ pub struct SegmentWalk {
 }
 
 /// Information about a riding route
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct SegmentRide {
     /// Shows the boundaries of the trip
     pub bounds: Bounds,
@@ -196,7 +196,7 @@ pub struct SegmentRide {
 }
 
 /// Information about a transfer
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct SegmentTransfer {
     /// Shows the boundaries of the trip
     pub bounds: Bounds,
@@ -214,7 +214,7 @@ pub struct SegmentTransfer {
 }
 
 /// The geographic boundaries of the segment/plan
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Bounds {
     /// The maximum point
     pub maximum: GeoLocation,
@@ -224,7 +224,7 @@ pub struct Bounds {
 }
 
 /// Differentiate between stops at the origin, a stop, or the end of the trip
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum TripStop {
     /// The segment starts at the origin of the [Plan]
     #[serde(rename = "origin")]
@@ -291,7 +291,7 @@ impl Default for TripStop {
 /// A representation of [Location](crate::structs::common::Location), that is serialized and
 /// deserialized as an untagged enum.
 /// It represents a position or a point on the map that is significant or by address.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum TripLocation {
     /// The address of a Location
     #[serde(rename = "address")]
@@ -311,7 +311,7 @@ pub enum TripLocation {
 }
 
 /// Basic information about a stop on the Trip.
-#[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Stop {
     /// A unique identifier for this stop.
     pub key: u32,
