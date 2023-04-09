@@ -5,10 +5,12 @@
 use reqwest::Error;
 use serde::Deserialize;
 
+use crate::filters;
 use crate::structs::{
     common::Location,
-    trip_planner::{Filter, Plan},
-    UrlParameter, Usage,
+    trip_planner::Plan,
+    UrlParameter,
+    Usage,
 };
 
 impl crate::TransitClient {
@@ -66,7 +68,7 @@ impl crate::TransitClient {
         &self,
         origin: Location,
         destination: Location,
-        filters: Vec<Filter>,
+        filters: Vec<filters::TripPlan>,
         usage: Usage,
     ) -> Result<Vec<Plan>, Error> {
         #[derive(Debug, Deserialize)]
@@ -101,10 +103,12 @@ impl crate::TransitClient {
 mod test {
     use chrono::offset::Local;
 
-    use crate::structs::{
-        common::{GeoLocation, Location},
-        trip_planner::{Filter, Mode},
-        Usage,
+    use crate::{
+        filters::{Mode, TripPlan},
+        structs::{
+            common::{GeoLocation, Location},
+            Usage,
+        },
     };
 
     #[tokio::test]
@@ -141,14 +145,14 @@ mod test {
                     longitude: -97.10887,
                 }),
                 vec![
-                    Filter::Date(Local::now().naive_local().date()),
-                    Filter::Time(Local::now().naive_local().time()),
-                    Filter::Mode(Mode::DepartAfter),
-                    Filter::WalkSpeed(1.5),
-                    Filter::MaxWalkTime(10),
-                    Filter::MinTransferWait(5),
-                    Filter::MaxTransferWait(10),
-                    Filter::MaxTransfers(2),
+                    TripPlan::Date(Local::now().naive_local().date()),
+                    TripPlan::Time(Local::now().naive_local().time()),
+                    TripPlan::Mode(Mode::DepartAfter),
+                    TripPlan::WalkSpeed(1.5),
+                    TripPlan::MaxWalkTime(10),
+                    TripPlan::MinTransferWait(5),
+                    TripPlan::MaxTransferWait(10),
+                    TripPlan::MaxTransfers(2),
                 ],
                 Usage::Normal,
             )

@@ -82,15 +82,6 @@ impl From<Priority> for UrlParameter {
     }
 }
 
-impl From<Option<Priority>> for UrlParameter {
-    fn from(value: Option<Priority>) -> Self {
-        match value {
-            Some(v) => Self::from(v),
-            None => Self("".to_string()),
-        }
-    }
-}
-
 impl From<Category> for UrlParameter {
     fn from(value: Category) -> Self {
         Self(format!(
@@ -101,14 +92,5 @@ impl From<Category> for UrlParameter {
                 Category::All => "all",
             }
         ))
-    }
-}
-
-impl From<Option<Category>> for UrlParameter {
-    fn from(value: Option<Category>) -> Self {
-        match value {
-            Some(v) => Self::from(v),
-            None => Self("".to_string()),
-        }
     }
 }

@@ -3,92 +3,14 @@
 //! [trip_planner](crate::TransitClient::trip_planner) endpoint
 //!
 
-use std::fmt::Display;
-
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 use super::{
     common::{Address, GeoLocation, Intersection, Monument},
     routes::{Route, Variant},
     stops::Bus,
-    UrlParameter,
 };
-
-/// Specify filters for the trip planning
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-pub enum Filter {
-    /// The date for which to get navigo results. Defaults to today, if not included as a filter
-    Date(NaiveDate),
-
-    /// The time of the trip. Defaults to now, if not included as a filter.
-    ///
-    /// What the time means can be customized with a [Mode]
-    Time(NaiveTime),
-
-    /// The mode with which the trip should be planned
-    ///
-    /// What the time applies to: If the time specifies where to be when, or when to leave
-    Mode(Mode),
-
-    /// Walking speed in km/h.
-    WalkSpeed(f32),
-
-    /// The maximum number of minutes to spend walking.
-    MaxWalkTime(i32),
-
-    /// The minimum number of minutes to spend waiting for a transfer.
-    MinTransferWait(i32),
-
-    /// The maximum number of minutes to spend waiting for a transfer.
-    MaxTransferWait(i32),
-
-    /// The maximum number of total transfers.
-    MaxTransfers(i32),
-}
-
-impl From<Filter> for UrlParameter {
-    fn from(value: Filter) -> Self {
-        Self(match value {
-            Filter::Date(d) => format!("&date={}", d.format("%Y-%m-%d")),
-            Filter::Time(t) => format!("&time={}", t.format("%H:%M:%S")),
-            Filter::Mode(m) => format!("&mode={}", m),
-            Filter::WalkSpeed(s) => format!("&walk-speed={}", s),
-            Filter::MaxWalkTime(t) => format!("&max-walk-time={}", t),
-            Filter::MinTransferWait(t) => format!("&min-transfer-wait={}", t),
-            Filter::MaxTransferWait(t) => format!("&ax-transfer-wait={}", t),
-            Filter::MaxTransfers(t) => format!("&max-transfers={}", t),
-        })
-    }
-}
-
-/// What the time applies to: If the time specifies where to be when, or when to leave
-#[derive(Debug, Default, Eq, PartialEq, Clone, Serialize, Deserialize)]
-pub enum Mode {
-    /// Depart before the given time.
-    DepartBefore,
-
-    /// Depart after the given time.
-    #[default]
-    DepartAfter,
-
-    /// Arrive before the given time.
-    ArriveBefore,
-
-    /// Arrive after the given time.
-    ArriveAfter,
-}
-
-impl Display for Mode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::DepartBefore => write!(f, "depart-before"),
-            Self::DepartAfter => write!(f, "depart-after"),
-            Self::ArriveBefore => write!(f, "arrive-before"),
-            Self::ArriveAfter => write!(f, "depart-after"),
-        }
-    }
-}
 
 /// Each plan describes a different trip or path which can be used to get from the origin to
 /// the destination.

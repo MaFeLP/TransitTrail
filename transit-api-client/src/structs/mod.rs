@@ -21,7 +21,7 @@ pub(crate) static TIME_FORMAT: &str = "%Y-%m-%dT%H:%M:%S";
 /// A tuple struct that wraps a string. Other types can `impl<T> From<T> for UrlParameter` so that
 /// each individual endpoint can easily format and use the structs, without modifying their Display
 /// or Debug behaviours.
-pub(crate) struct UrlParameter(String);
+pub(crate) struct UrlParameter(pub(crate) String);
 
 impl Display for UrlParameter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

@@ -5,8 +5,9 @@
 use reqwest::Error;
 use serde::Deserialize;
 
+use crate::filters;
 use crate::structs::{
-    service_advisories::{Category, Priority, ServiceAdvisory},
+    service_advisories::ServiceAdvisory,
     UrlParameter, Usage,
 };
 
@@ -71,33 +72,29 @@ impl crate::TransitClient {
     ///
     /// # tokio_test::block_on(async {
     /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
-    /// let advisories = client.service_advisories(None, None, None, None, Usage::Normal).await.unwrap();
+    /// let advisories = client.service_advisories(Vec::new(), Usage::Normal).await.unwrap();
     /// # });
     /// ```
     pub async fn service_advisories(
         &self,
-        priority: Option<Priority>,
-        category: Option<Category>,
-        max_age: Option<u32>,
-        limit: Option<u32>,
+        filters: Vec<filters::ServiceAdvisory>,
         usage: Usage,
     ) -> Result<Vec<ServiceAdvisory>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
             #[serde(rename = "service-advisories")]
-            service_adviory: Vec<ServiceAdvisory>,
+            service_advisory: Vec<ServiceAdvisory>,
         }
 
-        // Format only given parameters, create empty strings for None variants
-        let priority: UrlParameter = priority.into();
-        let category: UrlParameter = category.into();
-        let max_age = max_age.map(|a| format!("&max_age={a}")).unwrap_or_default();
-        let limit = limit.map(|l| format!("&limit={l}")).unwrap_or_default();
+        let mut filter_parameters = String::new();
+        for filter in filters {
+            filter_parameters.push_str(&UrlParameter::from(filter).0);
+        }
 
         let response = self
             .client
             .get(format!(
-                "{base}/service-advisories.json?api-key={api_key}{usage}{priority}{category}{max_age}{limit}",
+                "{base}/service-advisories.json?api-key={api_key}{usage}{filter_parameters}",
                 base = self.base_url,
                 api_key = self.api_key,
                 usage = UrlParameter::from(usage),
@@ -108,7 +105,7 @@ impl crate::TransitClient {
         let text = response.text().await?;
         dbg!(&text);
         let out: Response = serde_json::from_str(text.as_str()).unwrap();
-        Ok(out.service_adviory)
+        Ok(out.service_advisory)
     }
 }
 
@@ -116,6 +113,7 @@ impl crate::TransitClient {
 mod test {
     use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
+    use crate::filters;
     use crate::structs::{
         service_advisories::{Category, Priority, ServiceAdvisory},
         Usage,
@@ -141,7 +139,7 @@ mod test {
     async fn service_advisories() {
         let client = crate::testing_client();
         let actual = client
-            .service_advisories(None, None, None, Some(3), Usage::Normal)
+            .service_advisories(vec![filters::ServiceAdvisory::Limit(3)], Usage::Normal)
             .await
             .unwrap();
         // Can only test serialization, as advisories from this query change often. Unit tests
