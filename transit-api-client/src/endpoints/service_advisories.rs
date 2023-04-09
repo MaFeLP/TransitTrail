@@ -1,3 +1,7 @@
+//!
+//! Holds methods to get information about service advisories
+//!
+
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -7,6 +11,25 @@ use crate::structs::{
 };
 
 impl crate::TransitClient {
+    /// Get information about a specified service advisory
+    ///
+    /// # Arguments
+    ///
+    /// * `key`: The unique key of the service advisory to get information about.
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<ServiceAdvisory, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let advisory = client.service_advisory(96, Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn service_advisory(&self, key: u32, usage: Usage) -> Result<ServiceAdvisory, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
@@ -28,6 +51,29 @@ impl crate::TransitClient {
         Ok(out.service_advisory)
     }
 
+    /// Get recent service advisories
+    ///
+    /// # Arguments
+    ///
+    /// * `priority`: Only return service advisories of this priority or higher.
+    ///   (default: [Priority::VeryLow])
+    /// * `category`: Only return service advisories of this category (default: [Category::All])
+    /// * `max_age`: Only returns advisories created or updated in the last N days.
+    /// * `limit`: Only show the top N service advisories -- no more than the given limit.
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<ServiceAdvisory>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let advisories = client.service_advisories(None, None, None, None, Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn service_advisories(
         &self,
         priority: Option<Priority>,
@@ -73,7 +119,7 @@ mod test {
     use crate::structs::{
         service_advisories::{Category, Priority, ServiceAdvisory},
         Usage,
-        };
+    };
 
     #[tokio::test]
     async fn service_adviory() {

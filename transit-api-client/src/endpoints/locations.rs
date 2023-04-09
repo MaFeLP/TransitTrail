@@ -1,10 +1,52 @@
+//!
+//! Holds functions to get locations (can be an [Address], a [Monument], or an [Intersection])
+//! from the API.
+//!
+//! [Address]: crate::structs::common::Address
+//! [Monument]: crate::structs::common::Monument
+//! [Intersection]: crate::structs::common::Intersection
+//!
+
 use reqwest::Error;
 use serde::Deserialize;
 
-use crate::structs::{UrlParameter, Usage};
-use crate::structs::common::{GeoLocation, Location};
+use crate::structs::{
+    common::{GeoLocation, Location},
+    UrlParameter, Usage,
+};
 
 impl crate::TransitClient {
+    /// Get locations near a specified position.
+    ///
+    /// # Arguments
+    ///
+    /// * `position`: The geo location of the point to find locations near.
+    /// * `distance`: The distance in metres from the given point which returned locations must
+    ///   fall within. (default: `100`)
+    /// * `max_results`: The number of locations to return -- closer locations will be prioritized.
+    ///   (default: `5`)
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<Location>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::{common::GeoLocation, Usage};
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let locations = client.locations(
+    ///         &GeoLocation {
+    ///             latitude: 49.895,
+    ///             longitude: -97.138,
+    ///         },
+    ///         None,
+    ///         None,
+    ///         Usage::Normal
+    /// ).await.expect("Could not get locations");
+    /// # });
+    /// ```
     pub async fn locations(
         &self,
         position: &GeoLocation,
@@ -49,6 +91,20 @@ mod test {
             latitude: 49.895,
             longitude: -97.138,
         };
+        let main_street = Address {
+            key: 133579,
+            street_number: 333,
+            street: Street {
+                key: 2265,
+                name: "Main Street".to_string(),
+                street_type: Some(StreetType::Street),
+                leg: None,
+            },
+            centre: GeoLocation {
+                latitude: 49.89491,
+                longitude: -97.13763,
+            },
+        };
         let actual = client
             .locations(&position, None, None, Usage::Normal)
             .await
@@ -58,54 +114,15 @@ mod test {
                 key: 4152,
                 name: "MTS - Corporate Head Office".to_string(),
                 categories: vec!["Services: Utilities".to_string()],
-                address: Address {
-                    key: 133579,
-                    street_number: 333,
-                    street: Street {
-                        key: 2265,
-                        name: "Main Street".to_string(),
-                        street_type: Some(StreetType::Street),
-                        leg: None,
-                    },
-                    centre: GeoLocation {
-                        latitude: 49.89491,
-                        longitude: -97.13763,
-                    },
-                },
+                address: main_street.clone(),
             }),
             Location::Monument(Monument {
                 key: 4153,
                 name: "Bank of Montreal Building".to_string(),
                 categories: vec!["Office Buildings".to_string()],
-                address: Address {
-                    key: 133579,
-                    street_number: 333,
-                    street: Street {
-                        key: 2265,
-                        name: "Main Street".to_string(),
-                        street_type: Some(StreetType::Street),
-                        leg: None,
-                    },
-                    centre: GeoLocation {
-                        latitude: 49.89491,
-                        longitude: -97.13763,
-                    },
-                },
+                address: main_street.clone(),
             }),
-            Location::Address(Address {
-                key: 133579,
-                street_number: 333,
-                street: Street {
-                    key: 2265,
-                    name: "Main Street".to_string(),
-                    street_type: Some(StreetType::Street),
-                    leg: None,
-                },
-                centre: GeoLocation {
-                    latitude: 49.89491,
-                    longitude: -97.13763,
-                },
-            }),
+            Location::Address(main_street),
             Location::Intersection(Intersection {
                 key: "41059:2265@2871".to_string(),
                 street: Street {

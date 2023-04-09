@@ -1,9 +1,32 @@
+//!
+//! Holds functions to get information about a variant
+//!
+
 use reqwest::Error;
 use serde::Deserialize;
 
 use crate::structs::{routes::Variant, UrlParameter, Usage};
 
 impl crate::TransitClient {
+    /// Get information about a variant
+    ///
+    /// # Arguments
+    ///
+    /// * `key`: The variant's unique key, to get information about
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Variant, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let variant = client.variant_by_key("17-1-G", Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn variant_by_key(&self, key: &str, usage: Usage) -> Result<Variant, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
@@ -24,6 +47,25 @@ impl crate::TransitClient {
         Ok(out.variant)
     }
 
+    /// Get all variants that service a stop
+    ///
+    /// # Arguments
+    ///
+    /// * `stop`: The stop number to get the variants about
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<Variant, Global>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let variants = client.variants_by_stop(50254, Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn variants_by_stop(&self, stop: u32, usage: Usage) -> Result<Vec<Variant>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
@@ -45,6 +87,25 @@ impl crate::TransitClient {
         Ok(out.variants)
     }
 
+    /// Get all the variants that service **all** of the stops
+    ///
+    /// # Arguments
+    ///
+    /// * `stops`: A vector of stops that filter the variants
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<Variant, Global>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let variants = client.variants_by_stops(vec![10652, 10907], Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn variants_by_stops(
         &self,
         stops: Vec<u32>,

@@ -1,9 +1,35 @@
+//!
+//! Holds functions to get route information from the API
+//!
+
 use reqwest::Error;
 use serde::Deserialize;
 
 use crate::structs::{routes::Route, UrlParameter, Usage};
 
 impl crate::TransitClient {
+    /// Get information about a specified route. Routes can either be a number, or `BLUE`.
+    ///
+    /// # Arguments
+    ///
+    /// * `route_number`: The number to get information about. Can either be an integer, or `BLUE`
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Route, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// // Get information about route number 47
+    /// let route = client.route(47, Usage::Normal).await.unwrap();
+    /// // Get information about the "BLUE" route
+    /// let blue = client.route("BLUE", Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn route<T: std::fmt::Display>(
         &self,
         route_number: T,
@@ -28,6 +54,25 @@ impl crate::TransitClient {
         Ok(out.route)
     }
 
+    /// Get all routes that service the specified stop.
+    ///
+    /// # Arguments
+    ///
+    /// * `stop_number`: The stop to get serving routes of.
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<Route, Global>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let route = client.routes_by_stop(50245, Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn routes_by_stop(
         &self,
         stop_number: u32,

@@ -1,11 +1,6 @@
-pub mod destinations;
-pub mod locations;
-pub mod routes;
-pub mod service_advisories;
-pub mod stops;
-pub mod street;
-pub mod trip_planner;
-pub mod variants;
+//!
+//! This module holds and exports all endpoints of the API.
+//!
 
 pub use destinations::*;
 pub use locations::*;
@@ -15,3 +10,13 @@ pub use stops::*;
 pub use street::*;
 pub use trip_planner::*;
 pub use variants::*;
+
+pub mod destinations;
+pub mod locations;
+pub mod routes;
+pub mod service_advisories;
+pub mod stops;
+pub mod street;
+pub mod trip_planner;
+pub mod variants;
+

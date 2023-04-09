@@ -1,3 +1,7 @@
+//!
+//! Holds functions to get information about stops from the API
+//!
+
 use chrono::NaiveDateTime;
 use reqwest::Error;
 use serde::Deserialize;
@@ -8,6 +12,25 @@ use crate::structs::{
 };
 
 impl crate::TransitClient {
+    /// Get information about a specific stop
+    ///
+    /// # Arguments
+    ///
+    /// * `stop`: They stop number to get information about
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Stop, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let stop = client.stop_info(10168, Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn stop_info(&self, stop: u32, usage: Usage) -> Result<Stop, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
@@ -28,6 +51,25 @@ impl crate::TransitClient {
         Ok(out.stop)
     }
 
+    /// Returns information about any features related to the requested stop.
+    ///
+    /// # Arguments
+    ///
+    /// * `stop`: They stop number to get information about
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<Feature>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let stop_features = client.stop_features(10168, Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn stop_features(&self, stop: u32, usage: Usage) -> Result<Vec<Feature>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
@@ -49,6 +91,29 @@ impl crate::TransitClient {
         Ok(out.stop_features)
     }
 
+    /// Returns the schedule information for the requested stop.
+    ///
+    /// # Arguments
+    ///
+    /// * `stop`: They stop number to get information about
+    /// * `start`: The start time. (default: now)
+    /// * `end`: The end time. (default: in two hours from now)
+    /// * `limit`: The maximum number of scheduled stop times returned for each route stopping
+    ///   at this stop.
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Schedule, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let stop_schedule = client.stop_schedule(10168, None, None, None, Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
     pub async fn stop_schedule(
         &self,
         stop: u32,
@@ -89,6 +154,8 @@ impl crate::TransitClient {
         Ok(out.stop_schedule)
     }
 
+    // This function will be deprecated, in favour of a filter vector in stop_schedule
+    #[allow(missing_docs)]
     pub async fn stop_schedule_route_filter(
         &self,
         stop: u32,

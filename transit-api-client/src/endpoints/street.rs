@@ -1,10 +1,35 @@
+//!
+//! Holds function to get information about physical streets in the city
+//!
+
 use reqwest::Error;
 use serde::Deserialize;
 
 use crate::structs::{common::Street, UrlParameter, Usage};
 
+// TODO add streets_by_key
+// TODO add type and leg filters?
 impl crate::TransitClient {
-    pub async fn street(&self, name: String, usage: Usage) -> Result<Vec<Street>, Error> {
+    /// Returns information about physical streets in the city
+    ///
+    /// # Arguments
+    ///
+    /// * `name`: The name of the street to match.
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<Street, Global>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::Usage;
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let street = client.street("Portage Ave", Usage::Normal).await.unwrap();
+    /// # });
+    /// ```
+    pub async fn street(&self, name: &str, usage: Usage) -> Result<Vec<Street>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
             streets: Vec<Street>,
@@ -35,10 +60,7 @@ mod test {
     #[tokio::test]
     async fn main_street() {
         let client = crate::testing_client();
-        let actual = client
-            .street("Main Street".to_string(), Usage::Normal)
-            .await
-            .unwrap();
+        let actual = client.street("Main Street", Usage::Normal).await.unwrap();
         let expected = vec![
             Street {
                 key: 2265,
@@ -60,10 +82,7 @@ mod test {
     #[tokio::test]
     async fn portage() {
         let client = crate::testing_client();
-        let actual = client
-            .street("Portage Ave".to_string(), Usage::Normal)
-            .await
-            .unwrap();
+        let actual = client.street("Portage Ave", Usage::Normal).await.unwrap();
         let expected = vec![
             Street {
                 key: 2903,

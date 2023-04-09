@@ -22,7 +22,6 @@
 #[cfg(test)]
 use tokio_test as _;
 
-#[allow(missing_docs)]
 pub mod endpoints;
 pub mod structs;
 
@@ -85,7 +84,7 @@ impl TransitClient {
 }
 
 /// Creates a Transit Client from environment variables
-#[cfg(any(test, doctest))]
+#[cfg(test)]
 pub fn testing_client() -> TransitClient {
     TransitClient::new(
         dotenv::var("WPG_TRANSIT_API_KEY")

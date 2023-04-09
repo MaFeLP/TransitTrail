@@ -1,3 +1,7 @@
+//!
+//! Holds functions to plan a trip using the Navigo engine
+//!
+
 use reqwest::Error;
 use serde::Deserialize;
 
@@ -8,6 +12,56 @@ use crate::structs::{
 };
 
 impl crate::TransitClient {
+    /// Uses the Navigo engine to plan optimal trips from an origin to a destination.
+    ///
+    /// # Arguments
+    ///
+    /// * `origin`: A location, where the trip should start
+    /// * `destination`: A location, where the trip should end
+    /// * `filters`: Any potential filters, to personalize the trip
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Vec<Plan, Global>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use chrono::offset::Local;
+    /// use transit_api_client::structs::{
+    ///     common::{Location, GeoLocation},
+    ///     trip_planner::{Filter, Mode},
+    ///     Usage
+    /// };
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let trip_plan = client
+    ///     .trip_planner(
+    ///         Location::Point(GeoLocation {
+    ///             latitude: 49.86917,
+    ///             longitude: -97.1391,
+    ///         }),
+    ///         Location::Point(GeoLocation {
+    ///             latitude: 49.8327,
+    ///             longitude: -97.10887,
+    ///         }),
+    ///         vec![
+    ///             // These are all available filters
+    ///             Filter::Date(Local::now().naive_local().date()),
+    ///             Filter::Time(Local::now().naive_local().time()),
+    ///             Filter::Mode(Mode::DepartAfter),
+    ///             Filter::WalkSpeed(1.5),
+    ///             Filter::MaxWalkTime(10),
+    ///             Filter::MinTransferWait(5),
+    ///             Filter::MaxTransferWait(10),
+    ///             Filter::MaxTransfers(2),
+    ///         ],
+    ///         Usage::Normal,
+    ///         )
+    ///     .await
+    ///     .unwrap();
+    /// # });
+    /// ```
     pub async fn trip_planner(
         &self,
         origin: Location,
@@ -51,7 +105,7 @@ mod test {
         common::{GeoLocation, Location},
         trip_planner::{Filter, Mode},
         Usage,
-        };
+    };
 
     #[tokio::test]
     async fn default_trip() {
