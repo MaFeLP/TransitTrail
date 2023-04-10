@@ -64,6 +64,10 @@ impl crate::TransitClient {
     /// * `usage`: If the API should yield shorter, longer, or normal names.
     ///
     /// returns: Result<Vec<ServiceAdvisory>, Error>
+    /// returns: Result<Vec\<ServiceAdvisory\>, Error>
+    ///
+    /// [Priority::VeryLow]: crate::structs::service_advisories::Priority::VeryLow
+    /// [Category::All]: crate::structs::service_advisories::Category::All
     ///
     /// # Examples
     ///

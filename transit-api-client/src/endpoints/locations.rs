@@ -27,7 +27,7 @@ impl crate::TransitClient {
     ///   (default: `5`)
     /// * `usage`: If the API should yield shorter, longer, or normal names.
     ///
-    /// returns: Result<Vec<Location>, Error>
+    /// returns: Result<Vec\<Location\>, Error>
     ///
     /// # Examples
     ///

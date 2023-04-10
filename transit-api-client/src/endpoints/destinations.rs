@@ -18,7 +18,7 @@ impl crate::TransitClient {
     ///
     /// [Variant]: crate::structs::routes::Variant
     ///
-    /// returns: Result<Vec<Destination>, Error>
+    /// returns: Result<Vec\<Destination\>, Error>
     ///
     /// # Examples
     ///
