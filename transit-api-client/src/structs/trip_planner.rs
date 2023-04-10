@@ -158,7 +158,7 @@ pub enum TripStop {
     /// to retrieve the remaining information of the stop.
     ///
     /// # Example
-    /// ```
+    /// ```no_run
     /// # use transit_api_client::{
     /// #     structs::{
     /// #         common::{GeoLocation, Location},
@@ -167,9 +167,8 @@ pub enum TripStop {
     /// #     },
     /// #     TransitClient,
     /// # };
-    /// # let client = transit_api_client::testing_client();
     /// // use ...
-    /// // let client = ...;
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// # tokio_test::block_on(async move {
     /// let plans = client.trip_planner(
     ///     Location::Point(GeoLocation::new(49.86917, -97.1391)),

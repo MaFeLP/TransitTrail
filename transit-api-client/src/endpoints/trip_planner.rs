@@ -6,12 +6,6 @@ use reqwest::Error;
 use serde::Deserialize;
 
 use crate::filters;
-use crate::structs::{
-    common::Location,
-    trip_planner::Plan,
-    UrlParameter,
-    Usage,
-};
 use crate::structs::{common::Location, trip_planner::Plan, UrlParameter, Usage};
 
 impl crate::TransitClient {
@@ -30,10 +24,6 @@ impl crate::TransitClient {
     ///
     /// ```no_run
     /// use chrono::offset::Local;
-    /// use transit_api_client::structs::{
-    ///     common::{Location, GeoLocation},
-    ///     trip_planner::{Filter, Mode},
-    ///     Usage
     /// use transit_api_client::{
     ///     filters,
     ///     structs::{
@@ -56,14 +46,14 @@ impl crate::TransitClient {
     ///         }),
     ///         vec![
     ///             // These are all available filters
-    ///             Filter::Date(Local::now().naive_local().date()),
-    ///             Filter::Time(Local::now().naive_local().time()),
-    ///             Filter::Mode(Mode::DepartAfter),
-    ///             Filter::WalkSpeed(1.5),
-    ///             Filter::MaxWalkTime(10),
-    ///             Filter::MinTransferWait(5),
-    ///             Filter::MaxTransferWait(10),
-    ///             Filter::MaxTransfers(2),
+    ///             filters::TripPlan::Date(Local::now().naive_local().date()),
+    ///             filters::TripPlan::Time(Local::now().naive_local().time()),
+    ///             filters::TripPlan::Mode(filters::Mode::DepartAfter),
+    ///             filters::TripPlan::WalkSpeed(1.5),
+    ///             filters::TripPlan::MaxWalkTime(10),
+    ///             filters::TripPlan::MinTransferWait(5),
+    ///             filters::TripPlan::MaxTransferWait(10),
+    ///             filters::TripPlan::MaxTransfers(2),
     ///         ],
     ///         Usage::Normal,
     ///         )
