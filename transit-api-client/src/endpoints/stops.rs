@@ -8,7 +8,7 @@ use serde::Deserialize;
 
 use crate::structs::{
     stops::{Feature, Schedule, Stop},
-    TIME_FORMAT, UrlParameter, Usage,
+    UrlParameter, Usage, TIME_FORMAT,
 };
 
 impl crate::TransitClient {
@@ -58,7 +58,6 @@ impl crate::TransitClient {
     /// * `stop`: They stop number to get information about
     /// * `usage`: If the API should yield shorter, longer, or normal names.
     ///
-    /// returns: Result<Vec<Feature>, Error>
     /// returns: Result<Vec\<Feature\>, Error>
     ///
     /// # Examples

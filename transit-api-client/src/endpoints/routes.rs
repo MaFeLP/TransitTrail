@@ -102,8 +102,8 @@ impl crate::TransitClient {
 mod test {
     use crate::structs::{
         routes::{
-            {Blue, Coverage, Customer, Regular, Route, Variant},
             badges::{ClassNames, Style},
+            {Blue, Coverage, Customer, Regular, Route, Variant},
         },
         Usage,
     };

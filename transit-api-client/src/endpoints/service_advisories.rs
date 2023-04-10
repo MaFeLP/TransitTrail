@@ -6,10 +6,7 @@ use reqwest::Error;
 use serde::Deserialize;
 
 use crate::filters;
-use crate::structs::{
-    service_advisories::ServiceAdvisory,
-    UrlParameter, Usage,
-};
+use crate::structs::{service_advisories::ServiceAdvisory, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Get information about a specified service advisory
@@ -63,7 +60,6 @@ impl crate::TransitClient {
     /// * `limit`: Only show the top N service advisories -- no more than the given limit.
     /// * `usage`: If the API should yield shorter, longer, or normal names.
     ///
-    /// returns: Result<Vec<ServiceAdvisory>, Error>
     /// returns: Result<Vec\<ServiceAdvisory\>, Error>
     ///
     /// [Priority::VeryLow]: crate::structs::service_advisories::Priority::VeryLow

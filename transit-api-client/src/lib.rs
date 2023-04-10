@@ -23,8 +23,8 @@
 use tokio_test as _;
 
 pub mod endpoints;
-pub mod structs;
 pub mod filters;
+pub mod structs;
 
 /// The client that houses all the methods for the API and handles connections to the API.
 #[derive(Debug)]

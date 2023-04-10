@@ -19,4 +19,3 @@ pub mod stops;
 pub mod street;
 pub mod trip_planner;
 pub mod variants;
-

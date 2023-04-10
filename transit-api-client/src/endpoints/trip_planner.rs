@@ -12,6 +12,7 @@ use crate::structs::{
     UrlParameter,
     Usage,
 };
+use crate::structs::{common::Location, trip_planner::Plan, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Uses the Navigo engine to plan optimal trips from an origin to a destination.
@@ -33,6 +34,12 @@ impl crate::TransitClient {
     ///     common::{Location, GeoLocation},
     ///     trip_planner::{Filter, Mode},
     ///     Usage
+    /// use transit_api_client::{
+    ///     filters,
+    ///     structs::{
+    ///         common::{Location, GeoLocation},
+    ///         Usage,
+    ///     },
     /// };
     ///
     /// # tokio_test::block_on(async {
