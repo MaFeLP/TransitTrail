@@ -87,8 +87,16 @@ impl TransitClient {
 /// Creates a Transit Client from environment variables
 #[cfg(test)]
 pub fn testing_client() -> TransitClient {
+    // Load testing environment from `.env` file
+    dotenv::dotenv().unwrap();
+
+    // Create a logging instance
+    // See https://docs.rs/env_logger/latest/env_logger/#capturing-logs-in-tests for more info
+    let _ = env_logger::builder().is_test(true).try_init();
+
+    // Create and return a default instance of the TransitClient
     TransitClient::new(
-        dotenv::var("WPG_TRANSIT_API_KEY")
+        std::env::var("WPG_TRANSIT_API_KEY")
             .expect("No environment variable `WPG_TRANSIT_API_KEY` found!"),
     )
 }

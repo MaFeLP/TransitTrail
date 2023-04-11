@@ -45,7 +45,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for street (`{name}`): {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.streets)
     }
 }
@@ -75,7 +78,7 @@ mod test {
                 leg: None,
             },
         ];
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 
@@ -97,7 +100,7 @@ mod test {
                 leg: Some(StreetLeg::East),
             },
         ];
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 }

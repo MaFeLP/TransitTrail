@@ -50,7 +50,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for route: {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.route)
     }
 
@@ -93,7 +96,13 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!(
+            "Got response for routes (by stop #{stop_number}): {:?}",
+            &response
+        );
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.routes)
     }
 }
@@ -139,7 +148,7 @@ mod test {
             ]),
         });
 
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 
@@ -222,7 +231,7 @@ mod test {
             }),
         ];
 
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 
@@ -260,7 +269,7 @@ mod test {
             ]),
         });
 
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 }

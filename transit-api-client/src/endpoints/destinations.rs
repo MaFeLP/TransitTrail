@@ -46,7 +46,9 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for destinations: {response:?}");
         let out: Response = response.json().await?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.destinations)
     }
@@ -75,7 +77,7 @@ mod test {
             },
         ];
 
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 }

@@ -45,7 +45,13 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!(
+            "Got response for service_advisory (#{key}): {:?}",
+            &response
+        );
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.service_advisory)
     }
 
@@ -87,8 +93,8 @@ impl crate::TransitClient {
         }
 
         let mut filter_parameters = String::new();
-        for filter in filters {
-            filter_parameters.push_str(&UrlParameter::from(filter).0);
+        for filter in &filters {
+            filter_parameters.push_str(&UrlParameter::from(filter.clone()).0);
         }
 
         let response = self
@@ -101,10 +107,13 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
-        dbg!(&response);
-        let text = response.text().await?;
-        dbg!(&text);
-        let out: Response = serde_json::from_str(text.as_str()).unwrap();
+        log::debug!(
+            "Got response for service advisories (filters: {filters:?}: {:?}",
+            &response
+        );
+        let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.service_advisory)
     }
 }
@@ -120,7 +129,7 @@ mod test {
     };
 
     #[tokio::test]
-    async fn service_adviory() {
+    async fn service_advisory() {
         let client = crate::testing_client();
         let actual = client.service_advisory(96, Usage::Normal).await.unwrap();
         let expected = ServiceAdvisory {
@@ -131,7 +140,7 @@ mod test {
             category: Category::Transit,
             updated_at: NaiveDateTime::new(NaiveDate::from_ymd_opt(2009, 2, 10).unwrap(), NaiveTime::from_hms_opt(15, 41, 30).unwrap()),
         };
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 
@@ -144,6 +153,7 @@ mod test {
             .unwrap();
         // Can only test serialization, as advisories from this query change often. Unit tests
         // would therefore fail automatically after a while.
+        log::info!("actual={:?}", &actual);
         assert_eq!(actual.len(), 3);
     }
 }

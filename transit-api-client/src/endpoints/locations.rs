@@ -73,8 +73,9 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for locations: {response:?}");
         let out: Response = response.json().await?;
-        //let out: Response = serde_json::from_str(text.as_str()).unwrap();
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.locations)
     }
@@ -163,7 +164,7 @@ mod test {
             }),
         ];
 
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 }

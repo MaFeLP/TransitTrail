@@ -88,10 +88,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
-        //dbg!(&response);
-        //let text = response.text().await?;
-        //let out = serde_json::from_str::<Response>(&text).unwrap();
+        log::debug!("Got response for trip plan: {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.plans)
     }
 }
@@ -111,7 +111,7 @@ mod test {
     #[tokio::test]
     async fn default_trip() {
         let client = crate::testing_client();
-        client
+        let actual = client
             .trip_planner(
                 Location::Point(GeoLocation {
                     latitude: 49.86917,
@@ -126,12 +126,13 @@ mod test {
             )
             .await
             .unwrap();
+        log::info!("actual={:?}", &actual);
     }
 
     #[tokio::test]
     async fn filters() {
         let client = crate::testing_client();
-        client
+        let actual = client
             .trip_planner(
                 Location::Point(GeoLocation {
                     latitude: 49.86917,
@@ -155,5 +156,6 @@ mod test {
             )
             .await
             .unwrap();
+        log::info!("actual={:?}", &actual);
     }
 }

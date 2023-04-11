@@ -47,7 +47,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for stop (info; #{stop}): {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.stop)
     }
 
@@ -87,7 +90,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for stop (features; #{stop}): {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.stop_features)
     }
 
@@ -150,7 +156,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for stop (schedule; #{stop}): {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.stop_schedule)
     }
 
@@ -201,7 +210,13 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!(
+            "Got response for stop (schedule with route filter; #{stop}): {:?}",
+            &response
+        );
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.stop_schedule)
     }
 }
@@ -228,7 +243,7 @@ mod test {
                 count: 1,
             },
         ];
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
 
         actual = client.stop_features(10172, Usage::Normal).await.unwrap();
@@ -246,7 +261,7 @@ mod test {
                 count: 1,
             },
         ];
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 
@@ -277,7 +292,7 @@ mod test {
                 longitude: -97.14116,
             },
         };
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
 
         actual = client.stop_info(10087, Usage::Normal).await.unwrap();
@@ -304,7 +319,7 @@ mod test {
                 longitude: -97.15236,
             },
         };
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 
@@ -339,6 +354,8 @@ mod test {
                 longitude: -97.1375,
             },
         };
+
+        log::info!("actual={:?}", &actual);
         assert_eq!(actual.stop, expected_stop);
         // Can only test length here, as schedule changes live. This still tests the deserialization
         assert_eq!(actual.route_schedules.len(), 1);
@@ -376,6 +393,7 @@ mod test {
                 longitude: -97.14414,
             },
         };
+        log::info!("actual={:?}", &actual);
         assert_eq!(actual.stop, expected_stop);
         // Can only test length here, as schedule changes live. This still tests the deserialization
         assert_eq!(actual.route_schedules.len(), 2);

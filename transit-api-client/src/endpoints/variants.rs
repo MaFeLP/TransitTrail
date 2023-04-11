@@ -43,7 +43,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
+        log::debug!("Got response for variant (key: {key}): {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.variant)
     }
 
@@ -82,8 +85,10 @@ impl crate::TransitClient {
             ))
             .send()
             .await?;
-        dbg!(&response);
+        log::debug!("Got response for variants (stop #{stop}): {:?}", &response);
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.variants)
     }
 
@@ -116,6 +121,15 @@ impl crate::TransitClient {
             variants: Vec<Variant>,
         }
 
+        let stops_formatted = {
+            let mut s = String::new();
+            for stop in stops {
+                s.push_str(&stop.to_string());
+                s.push(',');
+            }
+            s.pop();
+            s
+        };
         let response = self
             .client
             .get(format!(
@@ -123,19 +137,16 @@ impl crate::TransitClient {
                 base = self.base_url,
                 api_key = self.api_key,
                 usage = UrlParameter::from(usage),
-                stops_formatted = {
-                    let mut s = String::new();
-                    for stop in stops {
-                        s.push_str(&stop.to_string());
-                        s.push(',');
-                    }
-                    s.pop();
-                    s
-                }
             ))
             .send()
             .await?;
+        log::debug!(
+            "Got response for variants (stop #s: {stops_formatted}): {:?}",
+            &response
+        );
         let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
         Ok(out.variants)
     }
 }
@@ -156,22 +167,24 @@ mod test {
             name: Some("McGregor to Garden City Centre".to_string()),
         };
 
-        //dbg!("{:?},{:?}", &actual, &expected);
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }
 
     #[tokio::test]
     async fn variants_by_stop() {
         let client = crate::testing_client();
-        client.variants_by_stop(50254, Usage::Normal).await.unwrap();
+        let actual = client.variants_by_stop(50254, Usage::Normal).await.unwrap();
+        log::info!("actual={:?}", &actual);
     }
 
     #[tokio::test]
     async fn variants_by_stops() {
         let client = crate::testing_client();
-        client
+        let actual = client
             .variants_by_stops(vec![10652, 10907], Usage::Normal)
             .await
             .unwrap();
+        log::info!("actual={:?}", &actual);
     }
 }
