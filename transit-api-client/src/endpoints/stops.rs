@@ -2,13 +2,13 @@
 //! Holds functions to get information about stops from the API
 //!
 
-use chrono::NaiveDateTime;
 use reqwest::Error;
 use serde::Deserialize;
+use time::{macros::format_description, Time};
 
 use crate::structs::{
     stops::{Feature, Schedule, Stop},
-    UrlParameter, Usage, TIME_FORMAT,
+    UrlParameter, Usage,
 };
 
 impl crate::TransitClient {
@@ -123,8 +123,8 @@ impl crate::TransitClient {
     pub async fn stop_schedule(
         &self,
         stop: u32,
-        start: Option<NaiveDateTime>,
-        end: Option<NaiveDateTime>,
+        start: Option<Time>,
+        end: Option<Time>,
         limit: Option<u32>,
         usage: Usage,
     ) -> Result<Schedule, Error> {
@@ -142,11 +142,19 @@ impl crate::TransitClient {
                 api_key = self.api_key,
                 usage = UrlParameter::from(usage),
                 start = match start {
-                    Some(t) => format!("&start={}", t.format(TIME_FORMAT)),
+                    Some(t) => format!(
+                        "&start={}",
+                        t.format(format_description!("[hour]:[minute]:[second]"))
+                            .unwrap()
+                    ),
                     None => "".to_string(),
                 },
                 end = match end {
-                    Some(t) => format!("&end={}", t.format(TIME_FORMAT)),
+                    Some(t) => format!(
+                        "&end={}",
+                        t.format(format_description!("[hour]:[minute]:[second]"))
+                            .unwrap()
+                    ),
                     None => "".to_string(),
                 },
                 limit = match limit {
@@ -169,8 +177,8 @@ impl crate::TransitClient {
         &self,
         stop: u32,
         routes: Vec<u32>,
-        start: Option<NaiveDateTime>,
-        end: Option<NaiveDateTime>,
+        start: Option<Time>,
+        end: Option<Time>,
         max_results_per_route: Option<u32>,
         usage: Usage,
     ) -> Result<Schedule, Error> {
@@ -196,11 +204,11 @@ impl crate::TransitClient {
                 api_key = self.api_key,
                 usage = UrlParameter::from(usage),
                 start = match start {
-                    Some(t) => format!("&start={}", t.format(TIME_FORMAT)),
+                    Some(t) => format!("&start={}", t.format(format_description!("[hour]:[minute]:[second]")).unwrap()),
                     None => "".to_string(),
                 },
                 end = match end {
-                    Some(t) => format!("&end={}", t.format(TIME_FORMAT)),
+                    Some(t) => format!("&end={}", t.format(format_description!("[hour]:[minute]:[second]")).unwrap()),
                     None => "".to_string(),
                 },
                 limit = match max_results_per_route {

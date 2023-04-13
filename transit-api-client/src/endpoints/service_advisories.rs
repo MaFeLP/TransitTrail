@@ -120,7 +120,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+    use time::macros::datetime;
 
     use crate::filters;
     use crate::structs::{
@@ -138,7 +138,7 @@ mod test {
             title: "Blue Priority Service".to_string(),
             body: "Winnipeg Transit is operating a Blue Priority Service. Please check the website or call 311 for information on service delays and route cancellations. ".to_string(),
             category: Category::Transit,
-            updated_at: NaiveDateTime::new(NaiveDate::from_ymd_opt(2009, 2, 10).unwrap(), NaiveTime::from_hms_opt(15, 41, 30).unwrap()),
+            updated_at: datetime!(2009-02-10 15:41:30),
         };
         log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);

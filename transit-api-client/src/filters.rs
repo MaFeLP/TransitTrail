@@ -4,8 +4,8 @@
 
 use std::fmt::Display;
 
-use chrono::{NaiveDate, NaiveTime};
 use serde::{Deserialize, Serialize};
+use time::{macros::format_description, Date, Time};
 
 use crate::structs::{
     service_advisories::{Category, Priority},
@@ -43,12 +43,12 @@ impl From<ServiceAdvisory> for UrlParameter {
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum TripPlan {
     /// The date for which to get navigo results. Defaults to today, if not included as a filter
-    Date(NaiveDate),
+    Date(Date),
 
     /// The time of the trip. Defaults to now, if not included as a filter.
     ///
     /// What the time means can be customized with a [Mode]
-    Time(NaiveTime),
+    Time(Time),
 
     /// The mode with which the trip should be planned
     ///
@@ -74,8 +74,16 @@ pub enum TripPlan {
 impl From<TripPlan> for UrlParameter {
     fn from(value: TripPlan) -> Self {
         Self(match value {
-            TripPlan::Date(d) => format!("&date={}", d.format("%Y-%m-%d")),
-            TripPlan::Time(t) => format!("&time={}", t.format("%H:%M:%S")),
+            TripPlan::Date(d) => format!(
+                "&date={}",
+                d.format(format_description!("[year]-[month]-[day]"))
+                    .unwrap()
+            ),
+            TripPlan::Time(t) => format!(
+                "&time={}",
+                t.format(format_description!("[hour]:[minute]:[second]"))
+                    .unwrap()
+            ),
             TripPlan::Mode(m) => format!("&mode={}", m),
             TripPlan::WalkSpeed(s) => format!("&walk-speed={}", s),
             TripPlan::MaxWalkTime(t) => format!("&max-walk-time={}", t),

@@ -22,6 +22,8 @@
 #[cfg(test)]
 use tokio_test as _;
 
+use time::{macros::datetime, PrimitiveDateTime};
+
 pub mod endpoints;
 pub mod filters;
 pub mod structs;
@@ -83,6 +85,10 @@ impl TransitClient {
         self.base_url = base_url;
     }
 }
+
+/// A [PrimitiveDateTime] that represents the UNIX Epoch (January 1st, 1970 at 12:00 am).
+/// This value can then be used as a default value for PrimitiveDateTimes
+pub(crate) const UNIX_EPOCH: PrimitiveDateTime = datetime!(1970-01-01 0:00);
 
 /// Creates a Transit Client from environment variables
 #[cfg(test)]

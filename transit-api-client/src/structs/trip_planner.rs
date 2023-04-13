@@ -3,11 +3,12 @@
 //! [trip_planner](crate::TransitClient::trip_planner) endpoint
 //!
 
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+use time::PrimitiveDateTime;
 
 use super::{
     common::{Address, GeoLocation, Intersection, Monument},
+    datetime_formatter,
     routes::{Route, Variant},
     stops::Bus,
 };
@@ -29,16 +30,28 @@ pub struct Plan {
 
 /// Time information about the [Plan]/[Segment]: when it starts/ends and how much time is
 /// spent with what.
-#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Times {
     /// When the ride/walk of the plan/segment starts
-    pub start: NaiveDateTime,
+    #[serde(with = "datetime_formatter")]
+    pub start: PrimitiveDateTime,
 
     /// When the ride/walk of the plan/segment end
-    pub end: NaiveDateTime,
+    #[serde(with = "datetime_formatter")]
+    pub end: PrimitiveDateTime,
 
     /// How much time is spent on different transport options (walking, riding, waiting, total time)
     pub durations: Durations,
+}
+
+impl Default for Times {
+    fn default() -> Self {
+        Self {
+            start: crate::UNIX_EPOCH,
+            end: crate::UNIX_EPOCH,
+            durations: Default::default(),
+        }
+    }
 }
 
 /// Times for how long is spent riding/walking/waiting and total

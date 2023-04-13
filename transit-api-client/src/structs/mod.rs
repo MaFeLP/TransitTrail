@@ -14,9 +14,6 @@ pub mod service_advisories;
 pub mod stops;
 pub mod trip_planner;
 
-/// How [chrono] should read time stamps and format time stamps.
-pub(crate) static TIME_FORMAT: &str = "%Y-%m-%dT%H:%M:%S";
-
 #[derive(Clone, Debug, Default)]
 /// A tuple struct that wraps a string. Other types can `impl<T> From<T> for UrlParameter` so that
 /// each individual endpoint can easily format and use the structs, without modifying their Display
@@ -98,3 +95,9 @@ where
 
     Ok(bool_value)
 }
+
+time::serde::format_description!(
+    datetime_formatter,
+    PrimitiveDateTime,
+    "[year]-[month]-[day]T[hour]:[minute]:[second]"
+);

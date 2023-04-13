@@ -23,7 +23,7 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use chrono::offset::Local;
+    /// use time::{OffsetDateTime, macros::offset};
     /// use transit_api_client::{
     ///     filters,
     ///     structs::{
@@ -34,6 +34,7 @@ impl crate::TransitClient {
     ///
     /// # tokio_test::block_on(async {
     /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let now = OffsetDateTime::now_utc().to_offset(offset!(-7));
     /// let trip_plan = client
     ///     .trip_planner(
     ///         Location::Point(GeoLocation {
@@ -46,8 +47,8 @@ impl crate::TransitClient {
     ///         }),
     ///         vec![
     ///             // These are all available filters
-    ///             filters::TripPlan::Date(Local::now().naive_local().date()),
-    ///             filters::TripPlan::Time(Local::now().naive_local().time()),
+    ///             filters::TripPlan::Date(now.date()),
+    ///             filters::TripPlan::Time(now.time()),
     ///             filters::TripPlan::Mode(filters::Mode::DepartAfter),
     ///             filters::TripPlan::WalkSpeed(1.5),
     ///             filters::TripPlan::MaxWalkTime(10),
@@ -98,8 +99,6 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use chrono::offset::Local;
-
     use crate::{
         filters::{Mode, TripPlan},
         structs::{
@@ -107,6 +106,7 @@ mod test {
             Usage,
         },
     };
+    use time::{macros::offset, OffsetDateTime};
 
     #[tokio::test]
     async fn default_trip() {
@@ -132,6 +132,7 @@ mod test {
     #[tokio::test]
     async fn filters() {
         let client = crate::testing_client();
+        let now = OffsetDateTime::now_utc().to_offset(offset!(-7));
         let actual = client
             .trip_planner(
                 Location::Point(GeoLocation {
@@ -143,8 +144,8 @@ mod test {
                     longitude: -97.10887,
                 }),
                 vec![
-                    TripPlan::Date(Local::now().naive_local().date()),
-                    TripPlan::Time(Local::now().naive_local().time()),
+                    TripPlan::Date(now.date()),
+                    TripPlan::Time(now.time()),
                     TripPlan::Mode(Mode::DepartAfter),
                     TripPlan::WalkSpeed(1.5),
                     TripPlan::MaxWalkTime(10),

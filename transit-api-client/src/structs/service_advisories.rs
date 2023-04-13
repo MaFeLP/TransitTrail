@@ -2,14 +2,14 @@
 //! Structures for the [service_advisories endpoint](crate::endpoints::service_advisories)
 //!
 
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use time::PrimitiveDateTime;
 
-use super::UrlParameter;
+use super::{datetime_formatter, UrlParameter};
 
 /// A service advisory containing data about the advisory
-#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ServiceAdvisory {
     /// A unique key to identify the advisory
     pub key: u32,
@@ -28,7 +28,21 @@ pub struct ServiceAdvisory {
 
     /// Timestamp of when the advisory was last updated.
     #[serde(rename = "updated-at")]
-    pub updated_at: NaiveDateTime,
+    #[serde(with = "datetime_formatter")]
+    pub updated_at: PrimitiveDateTime,
+}
+
+impl Default for ServiceAdvisory {
+    fn default() -> Self {
+        Self {
+            key: Default::default(),
+            priority: Default::default(),
+            title: Default::default(),
+            body: Default::default(),
+            category: Default::default(),
+            updated_at: crate::UNIX_EPOCH,
+        }
+    }
 }
 
 /// A numerical indicator of how urgent the advisory is. The lower the number, the more urgent it is

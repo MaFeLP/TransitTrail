@@ -2,12 +2,12 @@
 //! Data structures for the [stops endpoint](crate::endpoints::stops)
 //!
 
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+use time::PrimitiveDateTime;
 
 use super::{
     common::{GeoLocation, Street},
-    deserialize_string_to_bool,
+    datetime_formatter, deserialize_string_to_bool,
     routes::{Route, Variant},
 };
 
@@ -163,13 +163,24 @@ pub struct ScheduledTimes {
 }
 
 /// Holds scheduled and estimated times for departure or arrival
-#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Time {
     /// When the bus is scheduled
-    pub scheduled: NaiveDateTime,
+    #[serde(with = "datetime_formatter")]
+    pub scheduled: PrimitiveDateTime,
 
     /// When the bus is estimated
-    pub estimated: NaiveDateTime,
+    #[serde(with = "datetime_formatter")]
+    pub estimated: PrimitiveDateTime,
+}
+
+impl Default for Time {
+    fn default() -> Self {
+        Self {
+            scheduled: crate::UNIX_EPOCH,
+            estimated: crate::UNIX_EPOCH,
+        }
+    }
 }
 
 /// Information about the passing bus. Will typically be present in today's schedule results
