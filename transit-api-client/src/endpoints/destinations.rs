@@ -64,16 +64,16 @@ mod test {
         let actual = client.destinations("16-1-K", Usage::Normal).await.unwrap();
         let expected = vec![
             Destination {
-                key: 10,
-                name: "City Hall".to_string(),
+                key: 5,
+                name: "Downtown".to_string(),
             },
             Destination {
                 key: 164,
                 name: "Kingston Row".to_string(),
             },
             Destination {
-                key: 5,
-                name: "Downtown".to_string(),
+                key: 10,
+                name: "City Hall".to_string(),
             },
         ];
 

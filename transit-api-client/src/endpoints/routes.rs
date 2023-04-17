@@ -111,8 +111,8 @@ impl crate::TransitClient {
 mod test {
     use crate::structs::{
         routes::{
-            badges::{ClassNames, Style},
             {Blue, Coverage, Customer, Regular, Route, Variant},
+            badges::{ClassNames, Style},
         },
         Usage,
     };
@@ -138,11 +138,11 @@ mod test {
             },
             variants: Some(vec![
                 Variant {
-                    key: "25-0-U".to_string(),
+                    key: "25-1-D".to_string(),
                     name: None,
                 },
                 Variant {
-                    key: "25-1-D".to_string(),
+                    key: "25-0-U".to_string(),
                     name: None,
                 },
             ]),
@@ -157,32 +157,6 @@ mod test {
         let client = crate::testing_client();
         let actual = client.routes_by_stop(50254, Usage::Normal).await.unwrap();
         let expected = vec![
-            Route::Regular(Regular {
-                key: 57,
-                number: 57,
-                name: "Route 57 Southdale Express".to_string(),
-                customer_type: Customer::Regular,
-                coverage: Coverage::Express,
-                badge_label: 57,
-                badge_style: Style {
-                    class_names: ClassNames {
-                        class_name: vec!["badge-label".to_string(), "express".to_string()],
-                    },
-                    background_color: "#eed700".to_string(),
-                    border_color: "#cab700".to_string(),
-                    color: "#000000".to_string(),
-                },
-                variants: Some(vec![
-                    Variant {
-                        key: "57-1-D".to_string(),
-                        name: None,
-                    },
-                    Variant {
-                        key: "57-0-S".to_string(),
-                        name: None,
-                    },
-                ]),
-            }),
             Route::Regular(Regular {
                 key: 19,
                 number: 19,
@@ -200,15 +174,15 @@ mod test {
                 },
                 variants: Some(vec![
                     Variant {
-                        key: "19-0-#".to_string(),
-                        name: None,
-                    },
-                    Variant {
-                        key: "19-1-N".to_string(),
+                        key: "19-0-L".to_string(),
                         name: None,
                     },
                     Variant {
                         key: "19-0-N".to_string(),
+                        name: None,
+                    },
+                    Variant {
+                        key: "19-1-A".to_string(),
                         name: None,
                     },
                     Variant {
@@ -220,11 +194,37 @@ mod test {
                         name: None,
                     },
                     Variant {
-                        key: "19-1-A".to_string(),
+                        key: "19-0-#".to_string(),
                         name: None,
                     },
                     Variant {
-                        key: "19-0-L".to_string(),
+                        key: "19-1-N".to_string(),
+                        name: None,
+                    },
+                ]),
+            }),
+            Route::Regular(Regular {
+                key: 57,
+                number: 57,
+                name: "Route 57 Southdale Express".to_string(),
+                customer_type: Customer::Regular,
+                coverage: Coverage::Express,
+                badge_label: 57,
+                badge_style: Style {
+                    class_names: ClassNames {
+                        class_name: vec!["badge-label".to_string(), "express".to_string()],
+                    },
+                    background_color: "#eed700".to_string(),
+                    border_color: "#cab700".to_string(),
+                    color: "#000000".to_string(),
+                },
+                variants: Some(vec![
+                    Variant {
+                        key: "57-0-S".to_string(),
+                        name: None,
+                    },
+                    Variant {
+                        key: "57-1-D".to_string(),
                         name: None,
                     },
                 ]),
