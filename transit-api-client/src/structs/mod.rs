@@ -96,6 +96,52 @@ where
     Ok(bool_value)
 }
 
+/// Wrapper method for deserializing a field in a struct, that holds a [u32], but has quotation
+/// marks. (Who came up with this idea?)
+///
+/// # Arguments
+///
+/// * `deserializer`: The deserialization object.
+///
+/// returns: Result<bool, <D as Deserializer>::Error>
+///
+/// # Examples
+///
+/// ```
+/// # use serde_json::Value;
+/// # use serde::de::Error;
+/// use serde::Deserialize;
+/// #
+/// # pub(crate) fn deserialize_string_to_float<'de, D>(deserializer: D) -> Result<f32, D::Error>
+/// #     where
+/// #         D: serde::Deserializer<'de>,
+/// # {
+/// #     let value = <Value>::deserialize(deserializer)?;
+/// #     let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;
+/// #     let float_value: f32 = string_value.parse().map_err(Error::custom)?;
+/// #
+/// #     Ok(float_value)
+/// # }
+///
+/// #[derive(Debug, Deserialize)]
+/// struct Test {
+///     #[serde(deserialize_with = "deserialize_string_to_float")]
+///     float_string_field: f32,
+/// }
+///
+/// let test: Test = serde_json::from_str(r#"{ "float_string_field": "12.34" }"#).unwrap();
+/// ```
+pub(crate) fn deserialize_string_to_float<'de, D>(deserializer: D) -> Result<f32, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = <Value>::deserialize(deserializer)?;
+    let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;
+    let float_value: f32 = string_value.parse().map_err(Error::custom)?;
+
+    Ok(float_value)
+}
+
 time::serde::format_description!(
     datetime_formatter,
     PrimitiveDateTime,

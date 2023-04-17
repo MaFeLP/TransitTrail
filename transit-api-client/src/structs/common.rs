@@ -4,6 +4,7 @@
 
 use std::fmt::Display;
 
+use crate::structs::UrlParameter;
 use serde::{de::Error, Deserialize, Serialize};
 use serde_json::{Map, Value};
 
@@ -96,6 +97,12 @@ impl<'de> serde::de::Deserialize<'de> for GeoLocation {
     }
 }
 
+impl From<GeoLocation> for UrlParameter {
+    fn from(value: GeoLocation) -> Self {
+        Self(format!("&lat={}&lon={}", value.latitude, value.longitude))
+    }
+}
+
 /// Locations tagged with "type": TYPE in the JSON response. They represent a
 /// position or a point on the map that is significant or by address.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -179,6 +186,9 @@ pub enum StreetType {
     /// The street is a street (St)
     #[default]
     Street,
+
+    /// The street is a way (Wy)
+    Way,
 }
 
 /// The part of the street if it is split up in more than one parts

@@ -6,6 +6,7 @@ use reqwest::Error;
 use serde::Deserialize;
 use time::{macros::format_description, Time};
 
+use crate::structs::common::GeoLocation;
 use crate::structs::{
     stops::{Feature, Schedule, Stop},
     UrlParameter, Usage,
@@ -52,6 +53,58 @@ impl crate::TransitClient {
         log::debug!("Response body: {out:?}");
 
         Ok(out.stop)
+    }
+
+    /// Get information about nearby stops
+    ///
+    /// # Arguments
+    ///
+    /// * `location`: The location from which to search stops from.
+    /// * `distance`: The distance in meters within the stops must fall.
+    /// * `usage`: If the API should yield shorter, longer, or normal names.
+    ///
+    /// returns: Result<Stop, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::{common::GeoLocation, Usage};
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let stops = client
+    ///     .stops_nearby(GeoLocation::new(49.895, -97.138), 250, Usage::Normal)
+    ///     .await
+    ///     .unwrap();
+    /// # });
+    /// ```
+    pub async fn stops_nearby(
+        &self,
+        location: GeoLocation,
+        distance: u32,
+        usage: Usage,
+    ) -> Result<Vec<Stop>, Error> {
+        #[derive(Debug, Deserialize)]
+        struct Response {
+            stops: Vec<Stop>,
+        }
+
+        let response = self
+            .client
+            .get(format!(
+                "{base}/stops.json?api-key={api_key}{usage}{location}&distance={distance}&walking=true",
+                base = self.base_url,
+                api_key = self.api_key,
+                usage = UrlParameter::from(usage),
+                location = UrlParameter::from(location),
+            ))
+            .send()
+            .await?;
+        log::debug!("Got response for nearby stops: {:?}", &response);
+        let out: Response = response.json().await?;
+        log::debug!("Response body: {out:?}");
+
+        Ok(out.stops)
     }
 
     /// Returns information about any features related to the requested stop.
@@ -231,6 +284,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
+    use crate::structs::stops::Distances;
     use crate::structs::{
         common::{GeoLocation, Street, StreetType},
         stops::{Direction, Feature, Side, Stop},
@@ -281,6 +335,7 @@ mod test {
             key: 10168,
             name: "Westbound River at Cauchon".to_string(),
             number: 10168,
+            distances: None,
             direction: Direction::Westbound,
             side: Side::DirectOpposite,
             street: Street {
@@ -308,6 +363,7 @@ mod test {
             key: 10087,
             name: "Northbound Stafford at Stafford Loop".to_string(),
             number: 10087,
+            distances: None,
             direction: Direction::Northbound,
             side: Side::NA,
             street: Street {
@@ -332,6 +388,74 @@ mod test {
     }
 
     #[tokio::test]
+    async fn stops_nearby() {
+        let client = crate::testing_client();
+        let actual = client
+            .stops_nearby(GeoLocation::new(49.895, -97.138), 100, Usage::Normal)
+            .await
+            .unwrap();
+        let expected = vec![
+            Stop {
+                key: 10627,
+                name: "Northbound Main at Pioneer".to_string(),
+                number: 10627,
+                direction: Direction::Northbound,
+                side: Side::Farside,
+                street: Street {
+                    key: 2265,
+                    name: "Main Street".to_string(),
+                    street_type: Some(StreetType::Street),
+                    leg: None,
+                },
+                cross_street: Street {
+                    key: 2871,
+                    name: "Pioneer Avenue".to_string(),
+                    street_type: Some(StreetType::Avenue),
+                    leg: None,
+                },
+                centre: GeoLocation {
+                    latitude: 49.89491,
+                    longitude: -97.1379,
+                },
+                distances: Some(Distances {
+                    direct: 12.28,
+                    walking: 16.31,
+                }),
+            },
+            Stop {
+                key: 10761,
+                name: "Westbound Pioneer at Main".to_string(),
+                number: 10761,
+                direction: Direction::Westbound,
+                side: Side::Nearside,
+                street: Street {
+                    key: 2871,
+                    name: "Pioneer Avenue".to_string(),
+                    street_type: Some(StreetType::Avenue),
+                    leg: None,
+                },
+                cross_street: Street {
+                    key: 2265,
+                    name: "Main Street".to_string(),
+                    street_type: Some(StreetType::Street),
+                    leg: None,
+                },
+                centre: GeoLocation {
+                    latitude: 49.89452,
+                    longitude: -97.13759,
+                },
+                distances: Some(Distances {
+                    direct: 60.92,
+                    walking: 102.52,
+                }),
+            },
+        ];
+
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
+        assert_eq!(actual, expected);
+    }
+
+    #[tokio::test]
     async fn stop_schedule() {
         let client = crate::testing_client();
         let actual = client
@@ -343,6 +467,7 @@ mod test {
             key: 10064,
             name: "Northbound Osborne at Glasgow".to_string(),
             number: 10064,
+            distances: None,
             direction: Direction::Northbound,
             side: Side::Nearside,
             street: Street {
@@ -382,6 +507,7 @@ mod test {
             key: 10185,
             name: "Southbound Osborne at Wardlaw".to_string(),
             number: 10185,
+            distances: None,
             direction: Direction::Southbound,
             side: Side::Nearside,
             street: Street {

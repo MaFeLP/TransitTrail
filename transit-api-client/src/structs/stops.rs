@@ -7,7 +7,7 @@ use time::PrimitiveDateTime;
 
 use super::{
     common::{GeoLocation, Street},
-    datetime_formatter, deserialize_string_to_bool,
+    datetime_formatter, deserialize_string_to_bool, deserialize_string_to_float,
     routes::{Route, Variant},
 };
 
@@ -23,8 +23,10 @@ pub struct Stop {
     /// The stop number
     pub number: u32,
 
-    // TODO add distances
-    // pub distance: Option<Distances>,
+    /// When a location was specified, these are the distances it takes
+    /// to get to the stop.
+    pub distances: Option<Distances>,
+
     /// Specifies which direction buses which service the stop are heading.
     pub direction: Direction,
 
@@ -41,6 +43,20 @@ pub struct Stop {
     /// A geographical point describing where the stop is located.
     pub centre: GeoLocation,
 }
+
+/// Distances in meters to the stop
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct Distances {
+    /// The direct distance to the stop
+    #[serde(deserialize_with = "deserialize_string_to_float")]
+    pub direct: f32,
+
+    /// The distance it takes to walk there
+    #[serde(deserialize_with = "deserialize_string_to_float")]
+    pub walking: f32,
+}
+
+impl Eq for Distances {}
 
 /// Specifies which direction buses which service the stop are heading.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
