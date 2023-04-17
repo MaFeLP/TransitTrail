@@ -7,7 +7,7 @@ use time::PrimitiveDateTime;
 
 use super::{
     common::{GeoLocation, Street},
-    datetime_formatter, deserialize_string_to_bool, deserialize_string_to_float,
+    datetime_formatter, deserialize_from_string,
     routes::{Route, Variant},
 };
 
@@ -48,11 +48,11 @@ pub struct Stop {
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Distances {
     /// The direct distance to the stop
-    #[serde(deserialize_with = "deserialize_string_to_float")]
+    #[serde(deserialize_with = "deserialize_from_string")]
     pub direct: f32,
 
     /// The distance it takes to walk there
-    #[serde(deserialize_with = "deserialize_string_to_float")]
+    #[serde(deserialize_with = "deserialize_from_string")]
     pub walking: f32,
 }
 
@@ -153,7 +153,7 @@ pub struct ScheduledStop {
     pub key: String,
 
     /// Boolean field describing whether or not this scheduled stop has been cancelled.
-    #[serde(deserialize_with = "deserialize_string_to_bool")]
+    #[serde(deserialize_with = "deserialize_from_string")]
     pub cancelled: bool,
 
     /// Times of when the bus is schedules/estimated to arrive/departure
@@ -207,10 +207,10 @@ pub struct Bus {
     pub key: u32,
 
     /// Whether or not the bus has a bike rack
-    #[serde(deserialize_with = "deserialize_string_to_bool", rename = "bike-rack")]
+    #[serde(deserialize_with = "deserialize_from_string", rename = "bike-rack")]
     pub bike_rack: bool,
 
     /// Whether or not the bus has wifi
-    #[serde(deserialize_with = "deserialize_string_to_bool")]
+    #[serde(deserialize_with = "deserialize_from_string")]
     pub wifi: bool,
 }

@@ -3,6 +3,7 @@
 //!
 
 use std::fmt::Display;
+use std::str::FromStr;
 
 use serde::{de::Error, Deserialize};
 use serde_json::Value;
@@ -50,96 +51,62 @@ impl From<Usage> for UrlParameter {
     }
 }
 
-/// Wrapper method for deserializing a field in a struct, that holds a boolean, but has quotation
-/// marks. (Who came up with this idea?)
+/// Wrapper method for deserializing a field in a struct, that holds a different type than a
+/// [String] but has quotation marks around its value. (Who came up with this idea?)
 ///
 /// # Arguments
 ///
 /// * `deserializer`: The deserialization object.
 ///
-/// returns: Result<bool, <D as Deserializer>::Error>
+/// returns: Result<T, <D as Deserializer>::Error>
 ///
 /// # Examples
 ///
 /// ```
+/// # use std::fmt::Display;
+/// # use std::str::FromStr;
 /// # use serde_json::Value;
 /// # use serde::de::Error;
 /// use serde::Deserialize;
 /// #
-/// # fn deserialize_string_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
+/// # pub(crate) fn deserialize_from_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
 /// #     where
 /// #         D: serde::Deserializer<'de>,
+/// #         T: FromStr, <T as FromStr>::Err: Display,
 /// # {
 /// #     let value = <Value>::deserialize(deserializer)?;
 /// #     let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;
-/// #     let bool_value: bool = string_value.parse().map_err(Error::custom)?;
+/// #     let t_value: T = string_value.parse().map_err(Error::custom)?;
 /// #
-/// #     Ok(bool_value)
+/// #     Ok(t_value)
 /// # }
 ///
 /// #[derive(Debug, Deserialize)]
 /// struct Test {
-///     #[serde(deserialize_with = "deserialize_string_to_bool")]
-///     boolean_string_field: bool,
-/// }
-///
-/// let test: Test = serde_json::from_str(r#"{ "boolean_string_field": "false" }"#).unwrap();
-/// ```
-pub(crate) fn deserialize_string_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let value = <Value>::deserialize(deserializer)?;
-    let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;
-    let bool_value: bool = string_value.parse().map_err(Error::custom)?;
-
-    Ok(bool_value)
-}
-
-/// Wrapper method for deserializing a field in a struct, that holds a [u32], but has quotation
-/// marks. (Who came up with this idea?)
-///
-/// # Arguments
-///
-/// * `deserializer`: The deserialization object.
-///
-/// returns: Result<bool, <D as Deserializer>::Error>
-///
-/// # Examples
-///
-/// ```
-/// # use serde_json::Value;
-/// # use serde::de::Error;
-/// use serde::Deserialize;
-/// #
-/// # pub(crate) fn deserialize_string_to_float<'de, D>(deserializer: D) -> Result<f32, D::Error>
-/// #     where
-/// #         D: serde::Deserializer<'de>,
-/// # {
-/// #     let value = <Value>::deserialize(deserializer)?;
-/// #     let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;
-/// #     let float_value: f32 = string_value.parse().map_err(Error::custom)?;
-/// #
-/// #     Ok(float_value)
-/// # }
-///
-/// #[derive(Debug, Deserialize)]
-/// struct Test {
-///     #[serde(deserialize_with = "deserialize_string_to_float")]
+///     #[serde(deserialize_with = "deserialize_from_string")]
 ///     float_string_field: f32,
+///     #[serde(deserialize_with = "deserialize_from_string")]
+///     integer_string_field: u32,
+///     #[serde(deserialize_with = "deserialize_from_string")]
+///     bool_string_field: bool,
 /// }
 ///
-/// let test: Test = serde_json::from_str(r#"{ "float_string_field": "12.34" }"#).unwrap();
+/// let test: Test = serde_json::from_str(r#"{
+///     "float_string_field": "12.34",
+///     "integer_string_field": "1234",
+///     "bool_string_field": "true"
+/// }"#).unwrap();
 /// ```
-pub(crate) fn deserialize_string_to_float<'de, D>(deserializer: D) -> Result<f32, D::Error>
-where
-    D: serde::Deserializer<'de>,
+pub(crate) fn deserialize_from_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+        T: FromStr, <T as FromStr>::Err: Display,
 {
     let value = <Value>::deserialize(deserializer)?;
     let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;
-    let float_value: f32 = string_value.parse().map_err(Error::custom)?;
+    let t_value: T = string_value.parse().map_err(Error::custom)?;
 
-    Ok(float_value)
+    Ok(t_value)
 }
 
 time::serde::format_description!(
