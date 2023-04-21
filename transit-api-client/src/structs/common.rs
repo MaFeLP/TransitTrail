@@ -2,11 +2,10 @@
 //! Structures used in multiple endpoints.
 //!
 
-use std::fmt::Display;
-
 use crate::structs::UrlParameter;
 use serde::{de::Error, Deserialize, Serialize};
 use serde_json::{Map, Number, Value};
+use std::fmt::{Display, Formatter};
 
 /// A point on the Earth: A geographic location, represented by longitude and latitude.
 ///
@@ -208,6 +207,39 @@ pub enum StreetType {
     Way,
 }
 
+impl TryFrom<&str> for StreetType {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.to_ascii_lowercase().as_str() {
+            "avenue" => Ok(Self::Avenue),
+            "boulevard"=> Ok(Self::Boulevard),
+            "crescent"=> Ok(Self::Crescent),
+            "drive"=> Ok(Self::Drive),
+            "loop" => Ok(Self::Loop),
+            "road" => Ok(Self::Road),
+            "street" => Ok(Self::Street),
+            "way" => Ok(Self::Way),
+            _ => Err("Not equal to `avenue`, `boulevard`, `crescent`, `drive`, `loop`, `road`, `street`, `way`")
+        }
+    }
+}
+
+impl Display for StreetType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            StreetType::Avenue => write!(f, "Avenue"),
+            StreetType::Boulevard => write!(f, "Boulevard"),
+            StreetType::Crescent => write!(f, "Crescent"),
+            StreetType::Drive => write!(f, "Drive"),
+            StreetType::Loop => write!(f, "Loop"),
+            StreetType::Road => write!(f, "Road"),
+            StreetType::Street => write!(f, "Street"),
+            StreetType::Way => write!(f, "Way"),
+        }
+    }
+}
+
 /// The part of the street if it is split up in more than one parts
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StreetLeg {
@@ -222,6 +254,31 @@ pub enum StreetLeg {
 
     /// The West part of the street (W)
     West,
+}
+
+impl TryFrom<&str> for StreetLeg {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.to_ascii_lowercase().as_str() {
+            "north" => Ok(Self::North),
+            "east" => Ok(Self::East),
+            "south" => Ok(Self::South),
+            "west" => Ok(Self::West),
+            _ => Err("Not equal to `north`, `east`, `south`, `west`"),
+        }
+    }
+}
+
+impl Display for StreetLeg {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            StreetLeg::North => write!(f, "North"),
+            StreetLeg::East => write!(f, "East"),
+            StreetLeg::South => write!(f, "South"),
+            StreetLeg::West => write!(f, "West"),
+        }
+    }
 }
 
 /// A residential address
@@ -272,4 +329,19 @@ pub struct Intersection {
 
     /// The geographic centre of the intersection
     pub centre: GeoLocation,
+}
+
+#[cfg(test)]
+mod test {
+    use crate::structs::common::{StreetLeg, StreetType};
+    use tokio_test::assert_err;
+
+    #[test]
+    fn try_from() -> Result<(), &'static str> {
+        assert_eq!(StreetType::try_from("Street")?, StreetType::Street);
+        assert_err!(StreetType::try_from("not a valid street type"));
+        assert_eq!(StreetLeg::try_from("East")?, StreetLeg::East);
+        assert_err!(StreetLeg::try_from("not a valid street leg"));
+        Ok(())
+    }
 }

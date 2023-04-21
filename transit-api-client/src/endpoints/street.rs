@@ -6,46 +6,66 @@ use reqwest::Error;
 use serde::Deserialize;
 use std::fmt::Display;
 
+use crate::filters;
 use crate::structs::{common::Street, UrlParameter, Usage};
 
-// TODO add type and leg filters?
 impl crate::TransitClient {
     /// Returns information about physical streets in the city
     ///
     /// # Arguments
     ///
-    /// * `name`: The name of the street to match.
+    /// * `filters`: The filters to apply to the street search.
     /// * `usage`: If the API should yield shorter, longer, or normal names.
     ///
-    /// returns: Result<Vec<Street, Global>, Error>
+    /// returns: Result<Vec<Street>, Error>
     ///
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::filters;
+    /// use transit_api_client::structs::{common::{StreetLeg, StreetType}, Usage};
     ///
     /// # tokio_test::block_on(async {
     /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
-    /// let street = client.street("Portage Ave", Usage::Normal).await.unwrap();
+    /// client
+    ///     .street(
+    ///         vec![
+    ///             filters::Street::Name("Portage Ave"),
+    ///             filters::Street::Type(StreetType::Avenue),
+    ///             filters::Street::Leg(StreetLeg::East),
+    ///         ],
+    ///         Usage::Normal,
+    ///     )
+    ///     .await
+    ///     .unwrap();
     /// # });
     /// ```
-    pub async fn street(&self, name: &str, usage: Usage) -> Result<Vec<Street>, Error> {
+    pub async fn street(
+        &self,
+        filters: Vec<filters::Street<'_>>,
+        usage: Usage,
+    ) -> Result<Vec<Street>, Error> {
         #[derive(Debug, Deserialize)]
         struct Response {
             streets: Vec<Street>,
         }
 
+        let mut filter_parameters = String::new();
+        for filter in filters {
+            filter_parameters.push_str(UrlParameter::from(filter).0.as_str())
+        }
+
         let response = self
             .client
             .get(format!(
-                "{base}/streets.json?api-key={key}{usage}&name={name}",
+                "{base}/streets.json?api-key={key}{usage}{filter_parameters}",
                 base = self.base_url,
                 key = self.api_key,
                 usage = UrlParameter::from(usage),
             ))
             .send()
             .await?;
-        log::debug!("Got response for street (`{name}`): {:?}", &response);
+        log::debug!("Got response for street: {:?}", &response);
         let out: Response = response.json().await?;
         log::debug!("Response body: {out:?}");
 
@@ -100,6 +120,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
+    use crate::filters;
     use crate::structs::{
         common::{Street, StreetLeg, StreetType},
         Usage,
@@ -108,7 +129,10 @@ mod test {
     #[tokio::test]
     async fn main_street() {
         let client = crate::testing_client();
-        let actual = client.street("Main Street", Usage::Normal).await.unwrap();
+        let actual = client
+            .street(vec![filters::Street::Name("Main Street")], Usage::Normal)
+            .await
+            .unwrap();
         let expected = vec![
             Street {
                 key: 2265,
@@ -130,7 +154,10 @@ mod test {
     #[tokio::test]
     async fn portage() {
         let client = crate::testing_client();
-        let actual = client.street("Portage Ave", Usage::Normal).await.unwrap();
+        let actual = client
+            .street(vec![filters::Street::Name("Portage Ave")], Usage::Normal)
+            .await
+            .unwrap();
         let expected = vec![
             Street {
                 key: 2903,
@@ -145,6 +172,30 @@ mod test {
                 leg: Some(StreetLeg::East),
             },
         ];
+        log::info!("actual={:?}, expected:{:?}", &actual, &expected);
+        assert_eq!(actual, expected);
+    }
+
+    #[tokio::test]
+    async fn portage_east_filter() {
+        let client = crate::testing_client();
+        let actual = client
+            .street(
+                vec![
+                    filters::Street::Name("Portage Ave"),
+                    filters::Street::Type(StreetType::Avenue),
+                    filters::Street::Leg(StreetLeg::East),
+                ],
+                Usage::Normal,
+            )
+            .await
+            .unwrap();
+        let expected = vec![Street {
+            key: 2904,
+            name: "Portage Avenue".to_string(),
+            street_type: Some(StreetType::Avenue),
+            leg: Some(StreetLeg::East),
+        }];
         log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
     }

@@ -7,6 +7,7 @@ use std::fmt::Display;
 use serde::{Deserialize, Serialize};
 use time::{macros::format_description, Date, Time};
 
+use crate::structs::common::{StreetLeg, StreetType};
 use crate::structs::{
     service_advisories::{Category, Priority},
     UrlParameter,
@@ -119,5 +120,37 @@ impl Display for Mode {
             Self::ArriveBefore => write!(f, "arrive-before"),
             Self::ArriveAfter => write!(f, "depart-after"),
         }
+    }
+}
+
+/// A filter when searching for streets
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
+pub enum Street<'a> {
+    /// Filter for the name of the street
+    Name(&'a str),
+
+    /// Filter for the type of the street
+    Type(StreetType),
+
+    /// Filter for the leg of the street
+    Leg(StreetLeg),
+}
+
+impl From<Street<'_>> for UrlParameter {
+    fn from(value: Street) -> Self {
+        let out = match value {
+            Street::Name(n) => format!("&name={n}"),
+            Street::Type(t) => format!("&type={t}"),
+            Street::Leg(l) => {
+                let leg = match l {
+                    StreetLeg::North => "N",
+                    StreetLeg::East => "E",
+                    StreetLeg::South => "S",
+                    StreetLeg::West => "W",
+                };
+                format!("&leg={leg}")
+            }
+        };
+        UrlParameter(out)
     }
 }
