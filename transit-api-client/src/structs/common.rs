@@ -6,7 +6,7 @@ use std::fmt::Display;
 
 use crate::structs::UrlParameter;
 use serde::{de::Error, Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::{Map, Number, Value};
 
 /// A point on the Earth: A geographic location, represented by longitude and latitude.
 ///
@@ -66,15 +66,32 @@ impl<'de> serde::de::Deserialize<'de> for GeoLocation {
         }
 
         if map.contains_key("lat") && map.contains_key("lng") {
+            fn number_to_f64(number: &Number) -> f64 {
+                if let Some(n) = number.as_f64() {
+                    return n;
+                }
+                if let Some(n) = number.as_u64() {
+                    return n as f64;
+                }
+                if let Some(n) = number.as_i64() {
+                    return n as f64;
+                }
+                panic!(
+                    "[transit-api-client] Something went wrong with converting Number to f64! {:?}",
+                    number
+                );
+            }
             // the longitude and latitude fields are stored with quotes, so directly asking for
             // them as a float, would error out.
-            let latitude: f64 = match map.get("lat").unwrap().as_str() {
-                Some(l) => l.parse().map_err(Error::custom)?,
-                None => return Err(Error::custom("field `lat` is not of type  `str`")),
+            let latitude: f64 = match map.get("lat").unwrap() {
+                Value::String(s) => s.parse().map_err(Error::custom)?,
+                Value::Number(n) => number_to_f64(n),
+                _ => return Err(Error::custom("field `lat` is not of type `str` or `f64`")),
             };
-            let longitude: f64 = match map.get("lng").unwrap().as_str() {
-                Some(l) => l.parse().map_err(Error::custom)?,
-                None => return Err(Error::custom("field `lng` is not of type `str`")),
+            let longitude: f64 = match map.get("lng").unwrap() {
+                Value::String(s) => s.parse().map_err(Error::custom)?,
+                Value::Number(n) => number_to_f64(n),
+                _ => return Err(Error::custom("field `lng` is not of type `str` or `f64`")),
             };
 
             return Ok(Self {

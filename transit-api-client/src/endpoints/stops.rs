@@ -8,7 +8,7 @@ use time::{macros::format_description, Time};
 
 use crate::structs::common::GeoLocation;
 use crate::structs::{
-    stops::{Feature, Schedule, Stop},
+    stops::{Feature, PartialStop, Schedule, Stop},
     UrlParameter, Usage,
 };
 
@@ -280,11 +280,64 @@ impl crate::TransitClient {
 
         Ok(out.stop_schedule)
     }
+
+    /// Returns all stops in Winnipeg, using a non-official API
+    ///
+    /// The stops are not complete and only include position and an icon style.
+    /// Use [PartialStop::try_to_full_stop] to get all information about the stop.
+    pub async fn get_all_stops(&self) -> Result<Vec<PartialStop>, Error> {
+        #[derive(Debug, Deserialize)]
+        struct Response {
+            update: Response2,
+        }
+        #[derive(Debug, Deserialize)]
+        struct Response2 {
+            stops: Vec<PartialStop>,
+        }
+        let response = self
+            .client
+            .get("https://winnipegtransit.com/transit_maps_api/cache/stops?client_version=null")
+            .send()
+            .await?;
+        log::debug!("Got response for destinations: {response:?}");
+        let out: Response = response.json().await?;
+        log::debug!("Deserialized response: {out:?}");
+        Ok(out.update.stops)
+    }
+}
+
+impl PartialStop {
+    /// Tries to convert a partial stop into a normal stop, using the transit API.
+    ///
+    /// # Arguments
+    ///
+    /// * `client`: The client used to access the API.
+    ///
+    /// returns: Result<Stop, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use transit_api_client::structs::{Usage, stops::Stop};
+    ///
+    /// # tokio_test::block_on(async {
+    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let partial_stops = client.get_all_stops().await.unwrap();
+    /// let mut stops: Vec<Stop> = vec![];
+    /// // In real life, this will fail due to rate limit of maximum 100 requests per minute.
+    /// for stop in partial_stops {
+    ///     stop.try_to_full_stop(&client).await.unwrap();
+    /// }
+    /// # });
+    pub async fn try_to_full_stop(&self, client: &crate::TransitClient) -> Result<Stop, Error> {
+        client.stop_info(self.id, Usage::Normal).await
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::structs::stops::Distances;
+    use crate::structs::common::StreetLeg;
+    use crate::structs::stops::{Distances, PartialStop, PartialStopIconStyle};
     use crate::structs::{
         common::{GeoLocation, Street, StreetType},
         stops::{Direction, Feature, Side, Stop},
@@ -533,5 +586,49 @@ mod test {
         assert_eq!(actual.route_schedules.len(), 2);
         assert_eq!(actual.route_schedules[0].scheduled_stops.len(), 3);
         assert_eq!(actual.route_schedules[1].scheduled_stops.len(), 3);
+    }
+
+    #[tokio::test]
+    async fn get_all_stops() {
+        let client = crate::testing_client();
+        client.get_all_stops().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn try_to_full_stop() -> Result<(), reqwest::Error> {
+        let client = crate::testing_client();
+        let partial_stop = PartialStop {
+            id: 40811,
+            position: GeoLocation::new(49.90404, -96.96857),
+            icon_style: PartialStopIconStyle::Blue,
+        };
+        let expected = Stop {
+            key: 40811,
+            name: "Eastbound McMeans at Corliss North".to_string(),
+            number: 40811,
+            distances: None,
+            direction: Direction::Eastbound,
+            side: Side::NearsideOpposite,
+            street: Street {
+                key: 2430,
+                name: "McMeans Avenue".to_string(),
+                street_type: Some(StreetType::Avenue),
+                leg: Some(StreetLeg::East),
+            },
+            cross_street: Street {
+                key: 873,
+                name: "Corliss Crescent".to_string(),
+                street_type: Some(StreetType::Crescent),
+                leg: None,
+            },
+            centre: GeoLocation {
+                latitude: 49.90404,
+                longitude: -96.96857,
+            },
+        };
+        let actual = partial_stop.try_to_full_stop(&client).await?;
+        log::info!("actual={:?},expected={:?}", &actual, &expected);
+        assert_eq!(actual, expected);
+        Ok(())
     }
 }

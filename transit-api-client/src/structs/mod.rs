@@ -98,9 +98,10 @@ impl From<Usage> for UrlParameter {
 /// }"#).unwrap();
 /// ```
 pub(crate) fn deserialize_from_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-        T: FromStr, <T as FromStr>::Err: Display,
+where
+    D: serde::Deserializer<'de>,
+    T: FromStr,
+    <T as FromStr>::Err: Display,
 {
     let value = <Value>::deserialize(deserializer)?;
     let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;

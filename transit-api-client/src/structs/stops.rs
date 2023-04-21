@@ -44,6 +44,32 @@ pub struct Stop {
     pub centre: GeoLocation,
 }
 
+/// A Stops that only contains the minimum required.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PartialStop {
+    /// The stop number
+    #[serde(deserialize_with = "deserialize_from_string")]
+    pub id: u32,
+
+    /// Where the stop is located
+    pub position: GeoLocation,
+
+    /// What style/image the icon should have
+    #[serde(rename = "iconStyle")]
+    pub icon_style: PartialStopIconStyle,
+}
+
+/// What style a PartialStop has
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PartialStopIconStyle {
+    /// It is a normal stop, with the Blue Winnipeg Transit Logo
+    #[default]
+    Blue,
+
+    /// The Partial Stop is a RapidTransit stop, with the rt-logo
+    Rt,
+}
+
 /// Distances in meters to the stop
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Distances {
