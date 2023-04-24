@@ -29,3 +29,14 @@ cargo fmt -- --check
 cargo clippy --all-features --no-deps
 ```
 
+---
+
+## Do everything at one
+```bash
+export RUSTFLAGS="-D warnings"
+
+cargo test --all-features
+cargo doc --offline --no-deps
+cargo fmt -- --check
+cargo clippy --all-features --no-deps
+```
