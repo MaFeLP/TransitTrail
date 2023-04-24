@@ -21,10 +21,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let advisory = client.service_advisory(96, Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -74,10 +74,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let advisories = client.service_advisories(Vec::new(), Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -122,11 +122,7 @@ impl crate::TransitClient {
 mod test {
     use time::macros::datetime;
 
-    use crate::filters;
-    use crate::structs::{
-        service_advisories::{Category, Priority, ServiceAdvisory},
-        Usage,
-    };
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn service_advisory() {

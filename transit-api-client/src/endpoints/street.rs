@@ -22,11 +22,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::filters;
-    /// use transit_api_client::structs::{common::{StreetLeg, StreetType}, Usage};
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// client
     ///     .street(
     ///         vec![
@@ -84,10 +83,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let street = client.street_by_key(2094, Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -120,11 +119,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use crate::filters;
-    use crate::structs::{
-        common::{Street, StreetLeg, StreetType},
-        Usage,
-    };
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn main_street() {

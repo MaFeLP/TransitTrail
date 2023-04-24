@@ -3,15 +3,17 @@
 //! [trip_planner](crate::TransitClient::trip_planner) endpoint
 //!
 
+pub mod segment;
+
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
 
 use super::{
     common::{Address, GeoLocation, Intersection, Monument},
     datetime_formatter,
-    routes::{Route, Variant},
-    stops::Bus,
 };
+
+pub use segment::*;
 
 /// Each plan describes a different trip or path which can be used to get from the origin to
 /// the destination.
@@ -74,80 +76,6 @@ pub struct Durations {
     pub riding: u32,
 }
 
-/// Segments can either be of type [SegmentWalk], [SegmentRide] or [SegmentTransfer]
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum Segment {
-    // TODO refactor into their own submodule `segment`
-    /// The segment is of type [SegmentWalk]
-    #[serde(rename = "walk")]
-    Walk(SegmentWalk),
-
-    /// The segment is of type [SegmentRide]
-    #[serde(rename = "ride")]
-    Ride(SegmentRide),
-
-    /// The segment is of type [SegmentTransfer]
-    #[serde(rename = "transfer")]
-    Transfer(SegmentTransfer),
-}
-
-/// Information about a walking route
-#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct SegmentWalk {
-    /// Shows the boundaries of the trip
-    pub bounds: Bounds,
-
-    /// Indicates whether the walk path starts at the origin of the trip, or at a stop.
-    /// Contains location elements, or point elements which define a geographical point.
-    pub from: TripStop,
-
-    /// Individual times for walking and total. Includes default (0) values for all other fields.
-    pub times: Times,
-
-    /// Indicates whether the walk path ends at the destination of the trip, or at a stop.
-    /// Contains location elements, or point elements which define a geographical point.
-    pub to: TripStop,
-}
-
-/// Information about a riding route
-#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct SegmentRide {
-    /// Shows the boundaries of the trip
-    pub bounds: Bounds,
-
-    /// Information about the bus servicing this segment.
-    /// Typically present in plans for today but omitted for past and future dates.
-    pub bus: Option<Bus>,
-
-    /// The route this bus takes
-    pub route: Route,
-
-    /// Individual times for walking and total. Includes default (0) values for all other fields.
-    pub times: Times,
-
-    /// The variant of the bus that is servicing this route
-    pub variant: Variant,
-}
-
-/// Information about a transfer
-#[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct SegmentTransfer {
-    /// Shows the boundaries of the trip
-    pub bounds: Bounds,
-
-    /// Indicates whether the walk path starts at the origin of the trip, or at a stop.
-    /// Contains location elements, or point elements which define a geographical point.
-    pub from: TripStop,
-
-    /// Individual times for walking and total. Includes default (0) values for all other fields.
-    pub times: Times,
-
-    /// Indicates whether the walk path ends at the destination of the trip, or at a stop.
-    /// Contains location elements, or point elements which define a geographical point.
-    pub to: TripStop,
-}
-
 /// The geographic boundaries of the segment/plan
 #[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Bounds {
@@ -163,7 +91,7 @@ pub struct Bounds {
 pub enum TripStop {
     /// The segment starts at the origin of the [Plan]
     #[serde(rename = "origin")]
-    Origin(TripLocation),
+    Origin(Location),
 
     /// The segment starts/ends neither at the start, nor at the end of the [Plan].
     ///
@@ -172,16 +100,9 @@ pub enum TripStop {
     ///
     /// # Example
     /// ```no_run
-    /// # use transit_api_client::{
-    /// #     structs::{
-    /// #         common::{GeoLocation, Location},
-    /// #         trip_planner::{Segment, TripStop},
-    /// #         Usage,
-    /// #     },
-    /// #     TransitClient,
-    /// # };
-    /// // use ...
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// use transit_api_client::prelude::*;
+    ///
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// # tokio_test::block_on(async move {
     /// let plans = client.trip_planner(
     ///     Location::Point(GeoLocation::new(49.86917, -97.1391)),
@@ -193,9 +114,9 @@ pub enum TripStop {
     /// let segment = plan.segments.get(0).unwrap();
     ///
     /// match segment {
-    ///     Segment::Walk(walk) => {
+    ///     trip::Segment::Walk(walk) => {
     ///         match &walk.to {
-    ///             TripStop::Stop(stop) => {
+    ///             trip::TripStop::Stop(stop) => {
     ///                 // This is what we actually care about:
     ///                 // Get the other required information of the stop
     ///                 let stop_complete = client.stop_info(stop.key, Usage::Normal).await.unwrap();
@@ -213,7 +134,7 @@ pub enum TripStop {
 
     /// The segment ends at the [Plan]'s destination
     #[serde(rename = "destination")]
-    Destination(TripLocation),
+    Destination(Location),
 }
 
 impl Default for TripStop {
@@ -226,7 +147,7 @@ impl Default for TripStop {
 /// deserialized as an untagged enum.
 /// It represents a position or a point on the map that is significant or by address.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub enum TripLocation {
+pub enum Location {
     /// The address of a Location
     #[serde(rename = "address")]
     Address(Address),

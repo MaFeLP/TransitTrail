@@ -25,10 +25,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let stop = client.stop_info(10168, Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -68,10 +68,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::{common::GeoLocation, Usage};
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let stops = client
     ///     .stops_nearby(GeoLocation::new(49.895, -97.138), 250, Usage::Normal)
     ///     .await
@@ -119,10 +119,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let stop_features = client.stop_features(10168, Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -166,10 +166,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let stop_schedule = client.stop_schedule(10168, None, None, None, Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -225,6 +225,7 @@ impl crate::TransitClient {
     }
 
     // This function will be deprecated, in favour of a filter vector in stop_schedule
+    // TODO migrate function
     #[allow(missing_docs)]
     pub async fn stop_schedule_route_filter(
         &self,
@@ -318,10 +319,10 @@ impl PartialStop {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::{Usage, stops::Stop};
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let partial_stops = client.get_all_stops().await.unwrap();
     /// let mut stops: Vec<Stop> = vec![];
     /// // In real life, this will fail due to rate limit of maximum 100 requests per minute.
@@ -336,13 +337,7 @@ impl PartialStop {
 
 #[cfg(test)]
 mod test {
-    use crate::structs::common::StreetLeg;
-    use crate::structs::stops::{Distances, PartialStop, PartialStopIconStyle};
-    use crate::structs::{
-        common::{GeoLocation, Street, StreetType},
-        stops::{Direction, Feature, Side, Stop},
-        Usage,
-    };
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn stop_features() {

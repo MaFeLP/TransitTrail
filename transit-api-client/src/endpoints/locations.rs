@@ -32,10 +32,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::{common::GeoLocation, Usage};
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let locations = client.locations(
     ///         &GeoLocation {
     ///             latitude: 49.895,
@@ -83,7 +83,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use crate::structs::{common::*, Usage};
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn locations() {

@@ -20,10 +20,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// // Get information about route number 47
     /// let route = client.route(47, Usage::Normal).await.unwrap();
     /// // Get information about the "BLUE" route
@@ -69,10 +69,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let route = client.routes_by_stop(50245, Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -109,13 +109,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use crate::structs::{
-        routes::{
-            badges::{ClassNames, Style},
-            {Blue, Coverage, Customer, Regular, Route, Variant},
-        },
-        Usage,
-    };
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn normal_route() {
@@ -128,8 +122,8 @@ mod test {
             customer_type: Customer::Regular,
             coverage: Coverage::SuperExpress,
             badge_label: 25,
-            badge_style: Style {
-                class_names: ClassNames {
+            badge_style: badges::Style {
+                class_names: badges::ClassNames {
                     class_name: vec!["badge-label".to_string(), "express".to_string()],
                 },
                 background_color: "#eed700".to_string(),
@@ -164,8 +158,8 @@ mod test {
                 customer_type: Customer::Regular,
                 coverage: Coverage::Regular,
                 badge_label: 19,
-                badge_style: Style {
-                    class_names: ClassNames {
+                badge_style: badges::Style {
+                    class_names: badges::ClassNames {
                         class_name: vec!["badge-label".to_string(), "regular".to_string()],
                     },
                     background_color: "#ffffff".to_string(),
@@ -210,8 +204,8 @@ mod test {
                 customer_type: Customer::Regular,
                 coverage: Coverage::Express,
                 badge_label: 57,
-                badge_style: Style {
-                    class_names: ClassNames {
+                badge_style: badges::Style {
+                    class_names: badges::ClassNames {
                         class_name: vec!["badge-label".to_string(), "express".to_string()],
                     },
                     background_color: "#eed700".to_string(),
@@ -245,8 +239,8 @@ mod test {
             customer_type: Customer::Regular,
             coverage: Coverage::RapidTransit,
             badge_label: "B".to_string(),
-            badge_style: Style {
-                class_names: ClassNames {
+            badge_style: badges::Style {
+                class_names: badges::ClassNames {
                     class_name: vec!["badge-label".to_string(), "rapid-transit".to_string()],
                 },
                 background_color: "#0060a9".to_string(),

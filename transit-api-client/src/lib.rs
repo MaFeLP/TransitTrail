@@ -26,6 +26,7 @@ use time::{macros::datetime, PrimitiveDateTime};
 
 pub mod endpoints;
 pub mod filters;
+pub mod prelude;
 pub mod structs;
 
 /// The client that houses all the methods for the API and handles connections to the API.

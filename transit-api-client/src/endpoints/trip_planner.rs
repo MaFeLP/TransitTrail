@@ -24,16 +24,10 @@ impl crate::TransitClient {
     ///
     /// ```no_run
     /// use time::{OffsetDateTime, macros::offset};
-    /// use transit_api_client::{
-    ///     filters,
-    ///     structs::{
-    ///         common::{Location, GeoLocation},
-    ///         Usage,
-    ///     },
-    /// };
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let now = OffsetDateTime::now_utc().to_offset(offset!(-7));
     /// let trip_plan = client
     ///     .trip_planner(
@@ -99,13 +93,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use crate::{
-        filters::{Mode, TripPlan},
-        structs::{
-            common::{GeoLocation, Location},
-            Usage,
-        },
-    };
+    use crate::prelude::*;
     use time::{macros::offset, OffsetDateTime};
 
     #[tokio::test]
@@ -144,14 +132,14 @@ mod test {
                     longitude: -97.10887,
                 }),
                 vec![
-                    TripPlan::Date(now.date()),
-                    TripPlan::Time(now.time()),
-                    TripPlan::Mode(Mode::DepartAfter),
-                    TripPlan::WalkSpeed(1.5),
-                    TripPlan::MaxWalkTime(10),
-                    TripPlan::MinTransferWait(5),
-                    TripPlan::MaxTransferWait(10),
-                    TripPlan::MaxTransfers(2),
+                    filters::TripPlan::Date(now.date()),
+                    filters::TripPlan::Time(now.time()),
+                    filters::TripPlan::Mode(filters::Mode::DepartAfter),
+                    filters::TripPlan::WalkSpeed(1.5),
+                    filters::TripPlan::MaxWalkTime(10),
+                    filters::TripPlan::MinTransferWait(5),
+                    filters::TripPlan::MaxTransferWait(10),
+                    filters::TripPlan::MaxTransfers(2),
                 ],
                 Usage::Normal,
             )

@@ -20,10 +20,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let variant = client.variant_by_key("17-1-G", Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -62,10 +62,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let variants = client.variants_by_stop(50254, Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -104,10 +104,10 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
     /// # tokio_test::block_on(async {
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// let variants = client.variants_by_stops(vec![10652, 10907], Usage::Normal).await.unwrap();
     /// # });
     /// ```
@@ -153,7 +153,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use crate::structs::{routes::Variant, Usage};
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn variant_by_key() {

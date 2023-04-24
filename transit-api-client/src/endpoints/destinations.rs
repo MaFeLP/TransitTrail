@@ -23,9 +23,9 @@ impl crate::TransitClient {
     /// # Examples
     ///
     /// ```no_run
-    /// use transit_api_client::structs::Usage;
+    /// use transit_api_client::prelude::*;
     ///
-    /// let client = transit_api_client::TransitClient::new("<YOUR_API_TOKEN>".to_string());
+    /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// # tokio_test::block_on(async {
     /// let destinations = client.destinations("16-1-K", Usage::Normal).await.unwrap();
     /// # })
@@ -56,7 +56,7 @@ impl crate::TransitClient {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn destinations() {
