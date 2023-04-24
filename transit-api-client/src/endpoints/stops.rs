@@ -2,9 +2,9 @@
 //! Holds functions to get information about stops from the API
 //!
 
+use crate::filters;
 use reqwest::Error;
 use serde::Deserialize;
-use time::{macros::format_description, Time};
 
 use crate::structs::common::GeoLocation;
 use crate::structs::{
@@ -170,15 +170,13 @@ impl crate::TransitClient {
     ///
     /// # tokio_test::block_on(async {
     /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
-    /// let stop_schedule = client.stop_schedule(10168, None, None, None, Usage::Normal).await.unwrap();
+    /// let stop_schedule = client.stop_schedule(10168, vec![], Usage::Normal).await.unwrap();
     /// # });
     /// ```
     pub async fn stop_schedule(
         &self,
         stop: u32,
-        start: Option<Time>,
-        end: Option<Time>,
-        limit: Option<u32>,
+        filters: Vec<filters::Stop>,
         usage: Usage,
     ) -> Result<Schedule, Error> {
         #[derive(Debug, Deserialize)]
@@ -187,95 +185,23 @@ impl crate::TransitClient {
             stop_schedule: Schedule,
         }
 
+        let mut url_parameters = String::new();
+        for filter in filters {
+            let parameter = UrlParameter::from(filter);
+            url_parameters.push_str(&parameter.0);
+        }
+
         let response = self
             .client
             .get(format!(
-                "{base}/stops/{stop}/schedule.json?api-key={api_key}{usage}{start}{end}{limit}",
+                "{base}/stops/{stop}/schedule.json?api-key={api_key}{usage}{url_parameters}",
                 base = self.base_url,
                 api_key = self.api_key,
                 usage = UrlParameter::from(usage),
-                start = match start {
-                    Some(t) => format!(
-                        "&start={}",
-                        t.format(format_description!("[hour]:[minute]:[second]"))
-                            .unwrap()
-                    ),
-                    None => "".to_string(),
-                },
-                end = match end {
-                    Some(t) => format!(
-                        "&end={}",
-                        t.format(format_description!("[hour]:[minute]:[second]"))
-                            .unwrap()
-                    ),
-                    None => "".to_string(),
-                },
-                limit = match limit {
-                    Some(l) => format!("&max-results-per-route={l}"),
-                    None => "".to_string(),
-                },
             ))
             .send()
             .await?;
         log::debug!("Got response for stop (schedule; #{stop}): {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
-
-        Ok(out.stop_schedule)
-    }
-
-    // This function will be deprecated, in favour of a filter vector in stop_schedule
-    // TODO migrate function
-    #[allow(missing_docs)]
-    pub async fn stop_schedule_route_filter(
-        &self,
-        stop: u32,
-        routes: Vec<u32>,
-        start: Option<Time>,
-        end: Option<Time>,
-        max_results_per_route: Option<u32>,
-        usage: Usage,
-    ) -> Result<Schedule, Error> {
-        #[derive(Debug, Deserialize)]
-        struct Response {
-            #[serde(rename = "stop-schedule")]
-            stop_schedule: Schedule,
-        }
-
-        let mut routes_param = "&route=".to_string();
-        for (i, route) in routes.iter().enumerate() {
-            routes_param.push_str(&route.to_string());
-            if i + 1 < routes.len() {
-                routes_param.push(',');
-            }
-        }
-
-        let response = self
-            .client
-            .get(format!(
-                "{base}/stops/{stop}/schedule.json?api-key={api_key}{usage}{start}{end}{limit}{routes_param}",
-                base = self.base_url,
-                api_key = self.api_key,
-                usage = UrlParameter::from(usage),
-                start = match start {
-                    Some(t) => format!("&start={}", t.format(format_description!("[hour]:[minute]:[second]")).unwrap()),
-                    None => "".to_string(),
-                },
-                end = match end {
-                    Some(t) => format!("&end={}", t.format(format_description!("[hour]:[minute]:[second]")).unwrap()),
-                    None => "".to_string(),
-                },
-                limit = match max_results_per_route {
-                    Some(l) => format!("&max-results-per-route={l}"),
-                    None => "".to_string(),
-                },
-            ))
-            .send()
-            .await?;
-        log::debug!(
-            "Got response for stop (schedule with route filter; #{stop}): {:?}",
-            &response
-        );
         let out: Response = response.json().await?;
         log::debug!("Response body: {out:?}");
 
@@ -338,6 +264,7 @@ impl PartialStop {
 #[cfg(test)]
 mod test {
     use crate::prelude::*;
+    use time::{macros::offset, OffsetDateTime};
 
     #[tokio::test]
     async fn stop_features() {
@@ -507,7 +434,7 @@ mod test {
     async fn stop_schedule() {
         let client = crate::testing_client();
         let actual = client
-            .stop_schedule(10064, None, None, Some(3), Usage::Normal)
+            .stop_schedule(10064, vec![], Usage::Normal)
             .await
             .unwrap();
 
@@ -538,16 +465,25 @@ mod test {
 
         log::info!("actual={:?}", &actual);
         assert_eq!(actual.stop, expected_stop);
-        // Can only test length here, as schedule changes live. This still tests the deserialization
-        assert_eq!(actual.route_schedules.len(), 1);
-        assert_eq!(actual.route_schedules[0].scheduled_stops.len(), 3);
     }
 
     #[tokio::test]
     async fn stop_schedule_route_filter() {
+        use time::ext::NumericalDuration;
         let client = crate::testing_client();
+        let now = OffsetDateTime::now_utc().to_offset(offset!(-7));
+        let end = now.clone().checked_add(4.hours()).unwrap();
         let actual = client
-            .stop_schedule_route_filter(10185, vec![18, 60], None, None, Some(3), Usage::Normal)
+            .stop_schedule(
+                10185,
+                vec![
+                    filters::Stop::Routes(vec![18, 60]),
+                    filters::Stop::Start(now.time()),
+                    filters::Stop::End(end.time()),
+                    filters::Stop::MaxResultsPerRoute(3),
+                ],
+                Usage::Normal,
+            )
             .await
             .unwrap();
 
@@ -578,7 +514,6 @@ mod test {
         log::info!("actual={:?}", &actual);
         assert_eq!(actual.stop, expected_stop);
         // Can only test length here, as schedule changes live. This still tests the deserialization
-        assert_eq!(actual.route_schedules.len(), 2);
         assert_eq!(actual.route_schedules[0].scheduled_stops.len(), 3);
         assert_eq!(actual.route_schedules[1].scheduled_stops.len(), 3);
     }

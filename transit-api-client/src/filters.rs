@@ -154,3 +154,61 @@ impl From<Street<'_>> for UrlParameter {
         UrlParameter(out)
     }
 }
+
+/// A filter when getting the schedule for a stop
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
+pub enum Stop {
+    /// Only return results for the specified route
+    ///
+    /// Defaults to all routes
+    Routes(Vec<u32>),
+
+    /// Only return results after this time
+    ///
+    /// Defaults to now
+    Start(Time),
+
+    /// Only return results before this time
+    ///
+    /// Defaults to two hours from now
+    End(Time),
+
+    /// Limit the results per returned route
+    MaxResultsPerRoute(u32),
+}
+
+impl From<Stop> for UrlParameter {
+    fn from(value: Stop) -> Self {
+        let out = match value {
+            Stop::Routes(r) => {
+                match r.len() {
+                    0 => String::new(),
+                    1 => format!("&route={}", r[0]),
+                    _ => {
+                        let mut routes = "&routes=".to_string();
+                        for route in r {
+                            routes.push_str(route.to_string().as_str());
+                            routes.push(',');
+                        }
+                        routes.pop(); // Remove the last ','
+                        routes
+                    }
+                }
+            }
+            Stop::Start(s) => {
+                let time = s
+                    .format(format_description!("[hour]:[minute]:[second]"))
+                    .unwrap();
+                format!("&start={time}")
+            }
+            Stop::End(e) => {
+                let time = e
+                    .format(format_description!("[hour]:[minute]:[second]"))
+                    .unwrap();
+                format!("&end={time}")
+            }
+            Stop::MaxResultsPerRoute(m) => format!("&max-results-per-route={m}"),
+        };
+        UrlParameter(out)
+    }
+}
