@@ -21,6 +21,9 @@ devDependencies:
   svelte:
     specifier: ^3.58.0
     version: 3.58.0
+  svelte-bootstrap-icons:
+    specifier: ^2.3.1
+    version: 2.3.1
   svelte-check:
     specifier: ^3.2.0
     version: 3.2.0(svelte@3.58.0)
@@ -815,6 +818,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       min-indent: 1.0.1
+    dev: true
+
+  /svelte-bootstrap-icons@2.3.1:
+    resolution: {integrity: sha512-Vqhgmcd55hEoB/MrPESvVYo4+m++2q9l00a5lzGkgbXTiO6go21PTU9DaeAJ446WBiEmg3Q8sv9QVOBmh5c1ww==}
     dev: true
 
   /svelte-check@3.2.0(svelte@3.58.0):
