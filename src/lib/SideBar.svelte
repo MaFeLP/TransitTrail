@@ -2,6 +2,7 @@
     // Page Imports
     import Home from "./pages/Home.svelte";
     import Greet from "./pages/Greet.svelte";
+    import Settings from "./pages/Settings.svelte";
 
     // Icon imports
     import Gear from "svelte-bootstrap-icons/lib/Gear.svelte";
@@ -31,7 +32,7 @@
         </li>
     </ul>
     <div>
-        <button on:click={() => changePage(Greet, [])}>
+        <button on:click={() => changePage(Settings, [])}>
             <Gear />
             Settings
         </button>

@@ -108,3 +108,7 @@ button {
     background-color: #0f0f0f69;
   }
 }
+
+.pointer {
+  cursor: pointer;
+}
