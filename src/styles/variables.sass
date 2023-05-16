@@ -1,0 +1,29 @@
+$bg: #ffffff
+$fg: #000000
+
+$wpg-blue: #0073aa
+$wpg-blue-dark: darken($wpg-blue, 10%)
+$wpg-blue-light: lighten($wpg-blue, 25%)
+
+$nav-width: 250px
+$nav-shadow-width: 10px
+
+\:root
+  --bg: #ffffff
+  --bg-light: #{darken($bg, 15%)}
+  --fg: #000000
+  --fg-light: #{lighten($fg, 15%)}
+  --wpg-blue: #{$wpg-blue}
+  --wpg-blue-dark: #{$wpg-blue-dark}
+  --wpg-blue-light: #{$wpg-blue-light}
+  --nav-shadow: #{$nav-shadow-width 0 $nav-shadow-width #dddddd}
+
+@media (prefers-color-scheme: dark)
+  \:root
+    --bg: #{lighten($fg, 15%)}
+    --bg-light: #{lighten($fg, 50%)}
+    --fg: #{$bg}
+    --fg-light: #{darken($bg, 15%)}
+    --wpg-blue-dark: #{$wpg-blue-light}
+    --wpg-blue-light: #{$wpg-blue-dark}
+    --nav-shadow: #{$nav-shadow-width 0 $nav-shadow-width #333333}
