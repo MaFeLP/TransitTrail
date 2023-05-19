@@ -17,8 +17,9 @@
   <svelte:component this={mainComponent.component} {...mainComponent.props} />
 </main>
 
-<style>
-  main {
-    margin-left: var(--nav-width);
-  }
+<style lang="sass">
+  @import "src/styles/variables"
+
+  main
+    margin-left: $nav-width + $nav-shadow-width
 </style>
