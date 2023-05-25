@@ -9,13 +9,15 @@
   }
 </script>
 
-<main class="container">
+<div>
   <SideBar changePage={changePage} />
 
   <h1>Welcome to Tauri!</h1>
 
-  <svelte:component this={mainComponent.component} {...mainComponent.props} />
-</main>
+  <main>
+    <svelte:component this={mainComponent.component} {...mainComponent.props} />
+  </main>
+</div>
 
 <style lang="sass">
   @import "src/styles/variables"
