@@ -111,7 +111,7 @@ pub async fn test_token<R: Runtime>(
     let client = TransitClient::new(token);
     match client.stop_info(10064, Usage::Normal).await {
         Ok(_) => Ok(()),
-        Err(why) => Err(error_string(&why, "Error while testing connection")),
+        Err(why) => Err(error_string(&why, "Error while testing_stops connection")),
     }
 }
 
