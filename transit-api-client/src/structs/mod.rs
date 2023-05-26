@@ -9,12 +9,12 @@ use serde::{de::Error, Deserialize};
 use serde_json::Value;
 
 pub mod common;
+mod datetime_formatter;
 pub mod destinations;
 pub mod routes;
 pub mod service_advisories;
 pub mod stops;
 pub mod trip_planner;
-mod datetime_formatter;
 
 #[derive(Clone, Debug, Default)]
 /// A tuple struct that wraps a string. Other types can `impl<T> From<T> for UrlParameter` so that
@@ -110,4 +110,3 @@ where
 
     Ok(t_value)
 }
-
