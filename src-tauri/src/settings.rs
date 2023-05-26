@@ -1,11 +1,12 @@
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 
-use crate::{error_string, ClientState};
+use crate::{ClientState, error_string};
 use serde::{Deserialize, Serialize};
 use tauri::api::path::config_dir;
 use tauri::{Runtime, State};
 use transit_api_client::prelude::{TransitClient, Usage};
+
 
 #[derive(Serialize, Deserialize)]
 #[serde(default)]
@@ -46,7 +47,7 @@ pub fn save_settings(
                     .map_err(|why|
                         error_string(
                             &why,
-                            "Could not parse field `walking_distance` in settings.toml (not of type `i32`"
+                            "Could not parse field `walking_distance` in settings.toml (not of type `i32`",
                         ))?
             }
         },
@@ -99,7 +100,8 @@ pub fn load_settings() -> Result<Settings, &'static str> {
     let mut buf = String::new();
     file.read_to_string(&mut buf)
         .map_err(|why| error_string(&why, "Could not read settings.toml file"))?;
-    toml::from_str(&buf).map_err(|why| error_string(&why, "Could not parse settings.toml file"))
+    toml::from_str(&buf)
+        .map_err(|why| error_string(&why, "Could not parse settings.toml file"))
 }
 
 #[tauri::command]
@@ -111,7 +113,7 @@ pub async fn test_token<R: Runtime>(
     let client = TransitClient::new(token);
     match client.stop_info(10064, Usage::Normal).await {
         Ok(_) => Ok(()),
-        Err(why) => Err(error_string(&why, "Error while testing_stops connection")),
+        Err(why) => Err(error_string(&why, "Error while testing connection")),
     }
 }
 
@@ -126,10 +128,10 @@ pub fn login_to_api<R: Runtime>(
         "winnipeg-transit-api-login",
         tauri::WindowUrl::App("https://api.winnipegtransit.com/".into()),
     )
-    .title("Log In with Winnipeg Transit API")
-    .enable_clipboard_access()
-    //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
-    .build()?;
+        .title("Log In with Winnipeg Transit API")
+        .enable_clipboard_access()
+        //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
+        .build()?;
     window.open_devtools();
     window.center()?;
 

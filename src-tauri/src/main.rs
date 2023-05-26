@@ -3,7 +3,7 @@
 
 mod settings;
 
-use settings::{load_settings, save_settings, Settings, test_token};
+use settings::{load_settings, save_settings, test_token};
 use std::fmt::Debug;
 use std::sync::Mutex;
 use transit_api_client::TransitClient;
@@ -14,15 +14,15 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-pub struct ClientState(pub Mutex<TransitClient>);
-pub struct SettingsState(pub Mutex<Settings>);
+pub struct ClientState (
+    pub Mutex<TransitClient>
+);
 
 fn main() {
-    let user_settings = load_settings().unwrap_or_default();
+    let settings = load_settings().expect("Could not load the settings!");
 
     tauri::Builder::default()
-        .manage(ClientState(Mutex::new(TransitClient::new(String::from(&user_settings.api_key)))))
-        .manage(SettingsState(Mutex::new(user_settings)))
+        .manage(ClientState(Mutex::new(TransitClient::new(settings.api_key))))
         .invoke_handler(tauri::generate_handler![
             greet,
             save_settings,
