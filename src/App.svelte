@@ -13,14 +13,19 @@
   <SideBar changePage={changePage} />
   
   <h1>Welcome to Tauri!</h1>
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> stops-schedules
   <main>
     <svelte:component this={mainComponent.component} {...mainComponent.props} />
   </main>
 </div>
 
-<style>
-  main {
-    margin-left: var(--nav-width);
-  }
+<style lang="sass">
+  @import "src/styles/variables"
+
+  main
+    margin-left: $nav-width + $nav-shadow-width
 </style>

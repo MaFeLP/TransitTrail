@@ -94,7 +94,7 @@ pub(crate) const UNIX_EPOCH: PrimitiveDateTime = datetime!(1970-01-01 0:00);
 /// Creates a Transit Client from environment variables
 #[cfg(test)]
 pub fn testing_client() -> TransitClient {
-    // Load testing environment from `.env` file
+    // Load testing_stops environment from `.env` file
     dotenv::dotenv().unwrap();
 
     // Create a logging instance

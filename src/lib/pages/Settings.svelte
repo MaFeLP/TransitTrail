@@ -80,6 +80,7 @@
     <input class="pointer" type="button" on:click={save} value="Save">
 </div>
 
+<<<<<<< HEAD
 <style>
     #settings {
         margin: 15px;
@@ -97,4 +98,22 @@
     .setting label {
         width: 15em;
     }
+=======
+<style lang="sass">
+  div#settings
+    margin: 15px
+    display: flex
+    flex-direction: column
+    justify-content: start
+    gap: 15px
+
+    div.setting
+      display: flex
+      flex-direction: row
+      justify-content: start
+      gap: 10px
+
+      label
+        width: 15em
+>>>>>>> stops-schedules
 </style>

@@ -7,7 +7,7 @@ use std::fs::File;
 use std::io::prelude::*;
 
 // json parser
-use serde_json;
+//use serde_json;
 
 //use markdown;
 
@@ -43,7 +43,7 @@ async fn main() {
     // println!("{}", features_json);
     // space();
 
-    let service_advisories: Vec<ServiceAdvisory> = client.service_advisories(Vec::new(), Usage::Normal).await.unwrap();
+    //let service_advisories: Vec<ServiceAdvisory> = client.service_advisories(Vec::new(), Usage::Normal).await.unwrap();
     //println!("{:?}", service_advisories);
     // let service_advisories_json: String = serde_json::to_string(&service_advisories).unwrap();
     // println!("{}", service_advisories_json);

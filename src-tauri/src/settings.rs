@@ -7,6 +7,7 @@ use tauri::api::path::config_dir;
 use tauri::{Runtime, State};
 use transit_api_client::prelude::{TransitClient, Usage};
 
+
 #[derive(Serialize, Deserialize)]
 #[serde(default)]
 pub struct Settings {
@@ -46,7 +47,7 @@ pub fn save_settings(
                     .map_err(|why|
                         error_string(
                             &why,
-                            "Could not parse field `walking_distance` in settings.toml (not of type `i32`"
+                            "Could not parse field `walking_distance` in settings.toml (not of type `i32`",
                         ))?
             }
         },
@@ -127,10 +128,10 @@ pub fn login_to_api<R: Runtime>(
         "winnipeg-transit-api-login",
         tauri::WindowUrl::App("https://api.winnipegtransit.com/".into()),
     )
-    .title("Log In with Winnipeg Transit API")
-    .enable_clipboard_access()
-    //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
-    .build()?;
+        .title("Log In with Winnipeg Transit API")
+        .enable_clipboard_access()
+        //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
+        .build()?;
     window.open_devtools();
     window.center()?;
 

@@ -31,45 +31,61 @@
             </button>
         </li>
     </ul>
+<<<<<<< HEAD
     <div>
         <button on:click={() => changePage(Settings, [])}>
             <Gear />
             Settings
         </button>
     </div>
+=======
+    <ul>
+        <li>
+            <button on:click={() => changePage(Settings, [])}>
+                <Gear />
+                Settings
+            </button>
+        </li>
+    </ul>
+>>>>>>> stops-schedules
 </nav>
 
-<style>
-    /* A fixed-left nav bar. It has two children: the normals pages at the top, and the settings button */
-    nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: var(--nav-width);
-        border-right: white solid 1px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+<style lang="sass">
+  @import "src/styles/variables"
 
-    /* The list that holds the pages */
-    nav ul {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        list-style: none;
-    }
+  // A fixed-left nav bar. It has two children: the normals pages at the top, and the settings button
+  nav
+    position: fixed
+    top: 0
+    left: 0
+    bottom: 0
+    width: $nav-width
+    box-shadow: var(--nav-shadow)
+    display: flex
+    flex-direction: column
+    justify-content: space-between
 
-    /* The individual page selectors */
-    button {
-        width: 100%;
-        height: 100%;
-        border: none;
-        background: none;
-        color: white;
-        font-size: 1.5em;
-        font-weight: bold;
-        text-align: start;
-    }
+  // The list that holds the pages
+  nav ul
+    margin: 0
+    padding: 0
+    width: 100%
+    list-style: none
+
+  // The individual page selectors
+  button
+    width: $nav-width - 10px
+    margin: 5px
+    height: 100%
+    border: 2px solid var(--wpg-blue)
+    border-radius: 3px
+    background: var(--wpg-blue-light)
+    color: var(--fg)
+    font-size: 1.5em
+    font-weight: bold
+    text-align: start
+    cursor: pointer
+
+    &:hover
+      box-shadow: 0 0 10px var(--wpg-blue)
 </style>
