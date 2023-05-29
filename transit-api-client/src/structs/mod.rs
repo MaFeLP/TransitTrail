@@ -5,10 +5,12 @@
 use std::fmt::Display;
 use std::str::FromStr;
 
-use serde::{de::Error, Deserialize};
+use serde::{de, Deserialize};
 use serde_json::Value;
 
 pub mod common;
+#[allow(dead_code, unused_imports, clippy::init_numbered_fields)]
+mod datetime_formatter;
 pub mod destinations;
 pub mod routes;
 pub mod service_advisories;
@@ -104,14 +106,30 @@ where
     <T as FromStr>::Err: Display,
 {
     let value = <Value>::deserialize(deserializer)?;
-    let string_value = value.as_str().ok_or(Error::custom("unknown type"))?;
-    let t_value: T = string_value.parse().map_err(Error::custom)?;
+    let string_value = value.as_str().ok_or(de::Error::custom("unknown type"))?;
+    let t_value: T = string_value.parse().map_err(de::Error::custom)?;
 
     Ok(t_value)
 }
 
-time::serde::format_description!(
-    datetime_formatter,
-    PrimitiveDateTime,
-    "[year]-[month]-[day]T[hour]:[minute]:[second]"
-);
+/// A custom error in this library
+#[derive(Debug)]
+pub enum Error {
+    /// If an error occurred during deserialization
+    Json(serde_json::Error),
+
+    /// If an error occurred during the requests to the API
+    Reqwest(reqwest::Error),
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(value: reqwest::Error) -> Self {
+        Self::Reqwest(value)
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(value: serde_json::Error) -> Self {
+        Self::Json(value)
+    }
+}

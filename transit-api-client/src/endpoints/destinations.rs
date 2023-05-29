@@ -2,10 +2,9 @@
 //! Holds functions for getting destinations
 //!
 
-use reqwest::Error;
 use serde::Deserialize;
 
-use crate::structs::{destinations::Destination, UrlParameter, Usage};
+use crate::structs::{destinations::Destination, Error, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Returns destinations for the requested variant. These destinations are important landmarks
@@ -47,7 +46,9 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for destinations: {response:?}");
-        let out: Response = response.json().await?;
+        let text = response.text().await?;
+        log::info!("Response body for destinations: {text}");
+        let out: Response = serde_json::from_str(&text)?;
         log::debug!("Deserialized response: {out:?}");
 
         Ok(out.destinations)

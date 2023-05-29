@@ -2,12 +2,11 @@
 //! Holds function to get information about physical streets in the city
 //!
 
-use reqwest::Error;
 use serde::Deserialize;
 use std::fmt::Display;
 
 use crate::filters;
-use crate::structs::{common::Street, UrlParameter, Usage};
+use crate::structs::{common::Street, Error, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Returns information about physical streets in the city
@@ -65,8 +64,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for street: {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for street: {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.streets)
     }
@@ -110,8 +111,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for street (`key={key}`): {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body is: {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.street)
     }
