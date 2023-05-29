@@ -2,11 +2,10 @@
 //! Holds functions to plan a trip using the Navigo engine
 //!
 
-use reqwest::Error;
 use serde::Deserialize;
 
 use crate::filters;
-use crate::structs::{common::Location, trip_planner::Plan, UrlParameter, Usage};
+use crate::structs::{common::Location, trip_planner::Plan, Error, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Uses the Navigo engine to plan optimal trips from an origin to a destination.
@@ -84,8 +83,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for trip plan: {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for trip plan: {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.plans)
     }

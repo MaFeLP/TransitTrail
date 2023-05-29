@@ -2,10 +2,9 @@
 //! Holds functions to get route information from the API
 //!
 
-use reqwest::Error;
 use serde::Deserialize;
 
-use crate::structs::{routes::Route, UrlParameter, Usage};
+use crate::structs::{routes::Route, Error, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Get information about a specified route. Routes can either be a number, or `BLUE`.
@@ -51,8 +50,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for route: {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for route: {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.route)
     }
@@ -100,8 +101,10 @@ impl crate::TransitClient {
             "Got response for routes (by stop #{stop_number}): {:?}",
             &response
         );
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body routes (by stop #{stop_number}: {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.routes)
     }
