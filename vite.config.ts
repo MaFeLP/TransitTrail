@@ -9,6 +9,7 @@ export default defineConfig({
       preprocess: [
         sveltePreprocess({
           typescript: true,
+          scss: true,
         }),
       ],
     }),

@@ -5,7 +5,12 @@
 //! time, but tauri requires 0.3.15 of time...
 //! Use this, as long as tauri is not updated...
 //!
-//! ```no_run
+//! Formates the dates and times used in this projects easily. This module is
+//! automatically generated from the following code, which only is available in
+//! time >= 0.3.16 ; tauri however requires time = 0.3.15, so this is why this
+//! file exists.
+//!
+//! ```no_compile
 //! time::serde::format_description!(
 //!     datetime_formatter,
 //!     PrimitiveDateTime,
