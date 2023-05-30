@@ -57,7 +57,7 @@ impl TransitClient {
     pub fn new(api_key: String) -> Self {
         TransitClient {
             api_key,
-            base_url: "https://api.winnipegtransit.com/v3/".to_string(),
+            base_url: "https://api.winnipegtransit.com/v3".to_string(),
             client: reqwest::Client::default(),
         }
     }

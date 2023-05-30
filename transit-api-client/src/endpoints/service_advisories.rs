@@ -2,11 +2,10 @@
 //! Holds methods to get information about service advisories
 //!
 
-use reqwest::Error;
 use serde::Deserialize;
 
 use crate::filters;
-use crate::structs::{service_advisories::ServiceAdvisory, UrlParameter, Usage};
+use crate::structs::{service_advisories::ServiceAdvisory, Error, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Get information about a specified service advisory
@@ -49,8 +48,10 @@ impl crate::TransitClient {
             "Got response for service_advisory (#{key}): {:?}",
             &response
         );
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for service_advisory (#{key}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.service_advisory)
     }
@@ -111,8 +112,10 @@ impl crate::TransitClient {
             "Got response for service advisories (filters: {filters:?}: {:?}",
             &response
         );
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for service_advisory (filter: {filters:?}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.service_advisory)
     }

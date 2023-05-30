@@ -3,13 +3,12 @@
 //!
 
 use crate::filters;
-use reqwest::Error;
 use serde::Deserialize;
 
 use crate::structs::common::GeoLocation;
 use crate::structs::{
     stops::{Feature, PartialStop, Schedule, Stop},
-    UrlParameter, Usage,
+    Error, UrlParameter, Usage,
 };
 
 impl crate::TransitClient {
@@ -49,8 +48,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for stop (info; #{stop}): {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for stop (info; #{stop}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.stop)
     }
@@ -101,8 +102,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for nearby stops: {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for nearby stops: {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.stops)
     }
@@ -144,8 +147,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for stop (features; #{stop}): {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for stop (features; #{stop}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.stop_features)
     }
@@ -202,8 +207,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for stop (schedule; #{stop}): {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for stop (schedule; #{stop}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.stop_schedule)
     }
@@ -227,7 +234,9 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for destinations: {response:?}");
-        let out: Response = response.json().await?;
+        let text = response.text().await?;
+        log::debug!("Response body for destinations: {text}");
+        let out: Response = serde_json::from_str(&text)?;
         log::debug!("Deserialized response: {out:?}");
         Ok(out.update.stops)
     }
@@ -525,7 +534,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn try_to_full_stop() -> Result<(), reqwest::Error> {
+    async fn try_to_full_stop() -> Result<(), crate::structs::Error> {
         let client = crate::testing_client();
         let partial_stop = PartialStop {
             id: 40811,

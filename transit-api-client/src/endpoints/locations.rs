@@ -7,12 +7,11 @@
 //! [Intersection]: crate::structs::common::Intersection
 //!
 
-use reqwest::Error;
 use serde::Deserialize;
 
 use crate::structs::{
     common::{GeoLocation, Location},
-    UrlParameter, Usage,
+    Error, UrlParameter, Usage,
 };
 
 impl crate::TransitClient {
@@ -62,7 +61,7 @@ impl crate::TransitClient {
         let response = self
             .client
             .get(format!(
-                "{base}locations.json?api-key={key}{usage}&lat={lat}&lon={long}&distance={distance}&max-results={max_results}",
+                "{base}/locations.json?api-key={key}{usage}&lat={lat}&lon={long}&distance={distance}&max-results={max_results}",
                 base = self.base_url,
                 key = self.api_key,
                 usage = UrlParameter::from(usage),
@@ -74,7 +73,9 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for locations: {response:?}");
-        let out: Response = response.json().await?;
+        let text = response.text().await?;
+        log::debug!("Response body for locations: {text}");
+        let out: Response = serde_json::from_str(&text)?;
         log::debug!("Deserialized response: {out:?}");
 
         Ok(out.locations)
