@@ -31,23 +31,12 @@
             </button>
         </li>
     </ul>
-<<<<<<< HEAD
     <div>
         <button on:click={() => changePage(Settings, [])}>
             <Gear />
             Settings
         </button>
     </div>
-=======
-    <ul>
-        <li>
-            <button on:click={() => changePage(Settings, [])}>
-                <Gear />
-                Settings
-            </button>
-        </li>
-    </ul>
->>>>>>> stops-schedules
 </nav>
 
 <style lang="sass">

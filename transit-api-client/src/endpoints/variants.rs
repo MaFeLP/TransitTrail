@@ -2,10 +2,9 @@
 //! Holds functions to get information about a variant
 //!
 
-use reqwest::Error;
 use serde::Deserialize;
 
-use crate::structs::{routes::Variant, UrlParameter, Usage};
+use crate::structs::{routes::Variant, Error, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Get information about a variant
@@ -44,8 +43,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for variant (key: {key}): {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body variant (key {key}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.variant)
     }
@@ -86,8 +87,10 @@ impl crate::TransitClient {
             .send()
             .await?;
         log::debug!("Got response for variants (stop #{stop}): {:?}", &response);
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for variants (stop #{stop}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.variants)
     }
@@ -144,8 +147,10 @@ impl crate::TransitClient {
             "Got response for variants (stop #s: {stops_formatted}): {:?}",
             &response
         );
-        let out: Response = response.json().await?;
-        log::debug!("Response body: {out:?}");
+        let text = response.text().await?;
+        log::debug!("Response body for variants (stop #{stops_formatted}): {text}");
+        let out: Response = serde_json::from_str(&text)?;
+        log::debug!("Deserialized response: {out:?}");
 
         Ok(out.variants)
     }
