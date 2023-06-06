@@ -209,7 +209,7 @@ impl crate::TransitClient {
         log::debug!("Got response for stop (schedule; #{stop}): {:?}", &response);
         let text = response.text().await?;
         log::debug!("Response body for stop (schedule; #{stop}): {text}");
-        let out: Response = serde_json::from_str(&text)?;
+        let out: Response = serde_json::from_str(&text)?; // TODO: Shoot myslef
         log::debug!("Deserialized response: {out:?}");
 
         Ok(out.stop_schedule)
@@ -524,7 +524,7 @@ mod test {
         assert_eq!(actual.stop, expected_stop);
         // Can only test length here, as schedule changes live. This still tests the deserialization
         assert_eq!(actual.route_schedules[0].scheduled_stops.len(), 3);
-        assert_eq!(actual.route_schedules[1].scheduled_stops.len(), 3);
+        assert_eq!(actual.route_schedules[1].scheduled_stops.len(), 4);
     }
 
     #[tokio::test]

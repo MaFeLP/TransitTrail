@@ -1,11 +1,12 @@
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 
-use crate::{error_string, ClientState};
+use crate::{ClientState, error_string};
 use serde::{Deserialize, Serialize};
 use tauri::api::path::config_dir;
 use tauri::{Runtime, State};
 use transit_api_client::prelude::{TransitClient, Usage};
+
 
 #[derive(Serialize, Deserialize)]
 #[serde(default)]
@@ -26,11 +27,11 @@ impl Default for Settings {
 }
 
 #[tauri::command]
-pub fn save_settings(
+pub async fn save_settings(
     api_key: &str,
     walking_distance: &str,
     waiting_time: &str,
-    client: State<ClientState>,
+    client: State<'_, ClientState>,
 ) -> Result<(), &'static str> {
     let dir = config_dir().ok_or("failed to get config directory")?;
     let file_path = dir.join("wpg-transit-client").join("settings.toml");
@@ -46,7 +47,7 @@ pub fn save_settings(
                     .map_err(|why|
                         error_string(
                             &why,
-                            "Could not parse field `walking_distance` in settings.toml (not of type `i32`"
+                            "Could not parse field `walking_distance` in settings.toml (not of type `i32`",
                         ))?
             }
         },
@@ -75,7 +76,7 @@ pub fn save_settings(
     file.write_all(&toml_config.as_bytes())
         .map_err(|why| error_string(&why, "Could not write to settings.toml file"))?;
 
-    *client.0.lock().unwrap() = TransitClient::new(String::from(api_key));
+    *client.0.lock().await = TransitClient::new(String::from(api_key));
 
     Ok(())
 }
@@ -99,7 +100,8 @@ pub fn load_settings() -> Result<Settings, &'static str> {
     let mut buf = String::new();
     file.read_to_string(&mut buf)
         .map_err(|why| error_string(&why, "Could not read settings.toml file"))?;
-    toml::from_str(&buf).map_err(|why| error_string(&why, "Could not parse settings.toml file"))
+    toml::from_str(&buf)
+        .map_err(|why| error_string(&why, "Could not parse settings.toml file"))
 }
 
 #[tauri::command]
@@ -126,10 +128,10 @@ pub fn login_to_api<R: Runtime>(
         "winnipeg-transit-api-login",
         tauri::WindowUrl::App("https://api.winnipegtransit.com/".into()),
     )
-    .title("Log In with Winnipeg Transit API")
-    .enable_clipboard_access()
-    //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
-    .build()?;
+        .title("Log In with Winnipeg Transit API")
+        .enable_clipboard_access()
+        //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
+        .build()?;
     window.open_devtools();
     window.center()?;
 

@@ -11,9 +11,13 @@
 
 <div>
   <SideBar changePage={changePage} />
-
+  
   <h1>Welcome to Tauri!</h1>
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> stops-schedules
   <main>
     <svelte:component this={mainComponent.component} {...mainComponent.props} />
   </main>

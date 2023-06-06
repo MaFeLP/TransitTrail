@@ -8,7 +8,7 @@ use time::PrimitiveDateTime;
 use super::{
     common::{GeoLocation, Street},
     datetime_formatter, deserialize_from_string,
-    routes::{Route, Variant},
+    routes::Variant,
 };
 
 /// A stop
@@ -162,10 +162,10 @@ pub struct Schedule {
 }
 
 /// A route schedule of a route and where it is going.
-#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RouteSchedule {
     /// Basic route information.
-    pub route: Route,
+    pub route: FoxxRoute,
 
     /// Contains information about when a bus on the given route will pass by the stop.
     #[serde(rename = "scheduled-stops")]
@@ -239,4 +239,149 @@ pub struct Bus {
     /// Whether or not the bus has wifi
     #[serde(deserialize_with = "deserialize_from_string")]
     pub wifi: bool,
+}
+
+/// A busses route.
+///
+/// Author: [Foxx](mailto:f.pinkerton@sjsad.ca)
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct FoxxRoute {
+    /// The bus key
+    pub key: BusType,
+
+    /// The bus number
+    pub number: BusType,
+
+    /// The bus name
+    pub name: Option<String>,
+
+    /// The customer's the bus services
+    #[serde(rename = "customer-type")]
+    pub customer_type: CustomerType,
+
+    /// The bus coverage
+    pub coverage: Coverage,
+
+    /// The Badge Label
+    #[serde(rename = "badge-label")]
+    pub badge_label: BusType,
+
+    /// The Badge Style
+    #[serde(rename = "badge-style")]
+    pub badge_style: BadgeStyle,
+
+    /// The bus variants
+    pub variants: Option<Vec<Variant>>,
+}
+
+/// The bus type
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum BusType {
+    /// The bus is a regular bus
+    Regular(u32),
+
+    /// The bus is a BLUE bus
+    Blue(String),
+}
+
+impl ToString for BusType {
+    fn to_string(&self) -> String {
+        match self {
+            BusType::Regular(n) => n.to_string(),
+            BusType::Blue(s) => s.to_string(),
+        }
+    }
+}
+
+/// The customer's the bus services
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum CustomerType {
+    /// The bus is a regular bus
+    #[serde(rename = "regular")]
+    Regular,
+
+    /// The bus is a HandiTransit bus
+    HandiTransit,
+
+    /// The bus is a DART bus
+    DART,
+
+    /// The bus is a School Charter bus
+    School,
+
+    /// The bus is a Community bus
+    Community,
+
+    /// The bus is a Express bus
+    Express,
+
+    /// The bus is a Rapid Transit bus
+    RapidTransit,
+
+    /// The bus is a Unknown bus
+    Unknown,
+}
+
+/// Route coverage
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum Coverage {
+    /// The bus is a regular bus
+    #[serde(rename = "regular")]
+    Regular,
+
+    /// The bus is a Express bus
+    #[serde(rename = "express")]
+    Express,
+
+    /// The bus is a Rapid Transit bus
+    #[serde(rename = "rapid transit")]
+    RapidTransit,
+}
+
+/// Styling for the badge
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct BadgeStyle {
+    /// Classes for the badge
+    #[serde(rename = "class-names")]
+    pub class_names: RenameMe,
+
+    /// The background color of the badge
+    #[serde(rename = "background-color")]
+    pub background_color: String,
+
+    /// The border color of the badge
+    #[serde(rename = "border-color")]
+    pub border_color: String,
+
+    /// The color of the badge
+    pub color: String,
+}
+
+/// TODO: Rename me
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct RenameMe {
+    /// The class name
+    #[serde(rename = "class-name")]
+    pub class_name: Vec<FoxxClassNames>,
+}
+
+/// class names
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum FoxxClassNames {
+    /// Lable for the badge
+    #[serde(rename = "badge-label")]
+    BadgeLable,
+
+    /// Express bus
+    #[serde(rename = "express")]
+    Express,
+
+    /// Regular bus
+    #[serde(rename = "regular")]
+    Regular,
+
+    /// Rapid Transit bus
+    #[serde(rename = "rapid-transit")]
+    RapidTransit,
 }

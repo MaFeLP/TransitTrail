@@ -17,6 +17,9 @@
         "all": false,
         "message": true
       },
+      "notification": {
+        "all": true
+      },
       "shell": {
         "all": false,
         "open": true
