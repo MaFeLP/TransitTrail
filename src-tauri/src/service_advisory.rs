@@ -1,5 +1,6 @@
+use crate::ClientState;
+use tauri::State;
 use transit_api_client::prelude::*;
-use transit_api_client::TransitClient;
 
 use markdown;
 
@@ -14,24 +15,23 @@ use markdown;
 /// ```rust
 /// let service_advisories_html = client.service_advisories_html(Vec::new(), Usage::Normal).await.unwrap();
 /// ```
-async fn service_advisorie_html(
-    client: tauri::State<crate::ClientState>,
+pub async fn service_advisorie_html(
+    client: State<'_, ClientState>,
     filters: Vec<filters::ServiceAdvisory>,
-    header: u32,
 ) -> Result<String, String> {
-    /* TODO: FIX, NOT CATTING ALL `**` */
+    let client = client.0.lock().await;
     let service_advisories = client
-        .client
         .service_advisories(filters, Usage::Normal)
         .await
         .unwrap();
 
     let mut out = String::new();
     for service_advisory in service_advisories {
-        let mut temp = String::new();
+        let mut temp = r#"<details class="advisory">"#.to_string();
 
         let body = service_advisory.body;
         let title = service_advisory.title;
+        temp.push_str(&format!("<summary class=\"advisory-summary\">{title}</summary>"));
 
         let pared_markdown_body = markdown::to_html(&body);
 
@@ -54,12 +54,12 @@ async fn service_advisorie_html(
             }
         }
 
-        temp.push_str(&format!("<h{}>{}</h{}>", header, title, header));
         temp.push_str(&pared_markdown_body);
+        temp.push_str(r#"</details>"#);
         temp.push_str("<hr>");
 
         out.push_str(&temp);
     }
 
-    Ok(out)
+    Ok(out.to_string())
 }

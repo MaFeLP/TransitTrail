@@ -15,7 +15,8 @@
       "all": false,
       "dialog": {
         "all": false,
-        "message": true
+        "message": true,
+        "confirm": true
       },
       "notification": {
         "all": true
@@ -45,6 +46,7 @@
     },
     "windows": [
       {
+        "maximized": true,
         "fullscreen": false,
         "resizable": true,
         "title": "final-project",

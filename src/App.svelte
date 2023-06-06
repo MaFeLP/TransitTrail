@@ -11,13 +11,9 @@
 
 <div>
   <SideBar changePage={changePage} />
-  
-  <h1>Welcome to Tauri!</h1>
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> stops-schedules
+  <h1>Super Fancy Transit Client</h1>
+  
   <main>
     <svelte:component this={mainComponent.component} {...mainComponent.props} />
   </main>
@@ -26,6 +22,11 @@
 <style lang="sass">
   @import "src/styles/variables"
 
-  main
+  main, h1
     margin-left: $nav-width + $nav-shadow-width
+
+  h1
+    display: flex
+    align-items: center
+    justify-content: center
 </style>
