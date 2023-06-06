@@ -205,7 +205,7 @@ pub enum StreetType {
 
     /// The street is a way (Wy)
     Way,
-    
+
     /// This is a terminal
     Terminal,
 }

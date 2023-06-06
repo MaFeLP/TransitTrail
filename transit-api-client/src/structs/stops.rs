@@ -8,7 +8,7 @@ use time::PrimitiveDateTime;
 use super::{
     common::{GeoLocation, Street},
     datetime_formatter, deserialize_from_string,
-    routes::{Variant},
+    routes::Variant,
 };
 
 /// A stop
@@ -363,7 +363,7 @@ pub struct BadgeStyle {
 pub struct RenameMe {
     /// The class name
     #[serde(rename = "class-name")]
-    pub class_name: Vec<FoxxClassNames>
+    pub class_name: Vec<FoxxClassNames>,
 }
 
 /// class names
