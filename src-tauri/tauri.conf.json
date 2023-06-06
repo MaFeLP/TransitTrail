@@ -45,6 +45,7 @@
     },
     "windows": [
       {
+        "maximized": true,
         "fullscreen": false,
         "resizable": true,
         "title": "final-project",

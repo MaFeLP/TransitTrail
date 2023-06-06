@@ -3,6 +3,7 @@
     import Home from "./pages/Home.svelte";
     import Greet from "./pages/Greet.svelte";
     import Settings from "./pages/Settings.svelte";
+    import ServiceAdvisories from "./pages/ServiceAdvisories.svelte";
 
     // Icon imports
     import Gear from "svelte-bootstrap-icons/lib/Gear.svelte";
@@ -24,10 +25,17 @@
                 <House/>
                 Home
             </button>
-
+        </li>
+        <li>
             <button on:click={() => changePage(Greet, [])}>
                 <Megaphone/>
                 Greeter
+            </button>
+        </li>
+        <li>
+            <button on:click={() => changePage(ServiceAdvisories, [])}>
+                <Megaphone/>
+                Advisories
             </button>
         </li>
     </ul>
@@ -75,6 +83,6 @@
     text-align: start
     cursor: pointer
 
-    &:hover
-      box-shadow: 0 0 10px var(--wpg-blue)
+  button:hover
+    box-shadow: 0 0 10px var(--wpg-blue)
 </style>

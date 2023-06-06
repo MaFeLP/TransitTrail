@@ -2,10 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod settings;
+mod service_advisory;
 
 use settings::{load_settings, save_settings, test_token};
 use std::fmt::Debug;
-use std::sync::Mutex;
+use tauri::async_runtime::Mutex;
 use transit_api_client::TransitClient;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -25,6 +26,7 @@ fn main() {
         .manage(ClientState(Mutex::new(TransitClient::new(settings.api_key))))
         .invoke_handler(tauri::generate_handler![
             greet,
+            service_advisory::service_advisorie_html,
             save_settings,
             load_settings,
             test_token
