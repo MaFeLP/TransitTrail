@@ -524,7 +524,7 @@ mod test {
         assert_eq!(actual.stop, expected_stop);
         // Can only test length here, as schedule changes live. This still tests the deserialization
         assert_eq!(actual.route_schedules[0].scheduled_stops.len(), 3);
-        assert_eq!(actual.route_schedules[1].scheduled_stops.len(), 3);
+        assert_eq!(actual.route_schedules[1].scheduled_stops.len(), 4);
     }
 
     #[tokio::test]
