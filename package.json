@@ -15,17 +15,17 @@
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^2.2.0",
+    "@sveltejs/vite-plugin-svelte": "^2.4.1",
     "@tauri-apps/cli": "^1.3.1",
     "@tsconfig/svelte": "^3.0.0",
-    "@types/node": "^18.16.10",
+    "@types/node": "^18.16.16",
     "sass": "^1.62.1",
     "svelte": "^3.59.1",
     "svelte-bootstrap-icons": "^2.3.1",
-    "svelte-check": "^3.3.2",
-    "svelte-preprocess": "^5.0.3",
-    "tslib": "^2.5.0",
+    "svelte-check": "^3.4.3",
+    "svelte-preprocess": "^5.0.4",
+    "tslib": "^2.5.3",
     "typescript": "^4.9.5",
-    "vite": "^4.3.6"
+    "vite": "^4.3.9"
   }
 }
