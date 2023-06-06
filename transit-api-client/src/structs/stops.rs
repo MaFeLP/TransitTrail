@@ -8,7 +8,7 @@ use time::PrimitiveDateTime;
 use super::{
     common::{GeoLocation, Street},
     datetime_formatter, deserialize_from_string,
-    routes::Variant,
+    routes::{Coverage, Variant},
 };
 
 /// A stop
@@ -321,22 +321,6 @@ pub enum CustomerType {
 
     /// The bus is a Unknown bus
     Unknown,
-}
-
-/// Route coverage
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub enum Coverage {
-    /// The bus is a regular bus
-    #[serde(rename = "regular")]
-    Regular,
-
-    /// The bus is a Express bus
-    #[serde(rename = "express")]
-    Express,
-
-    /// The bus is a Rapid Transit bus
-    #[serde(rename = "rapid transit")]
-    RapidTransit,
 }
 
 /// Styling for the badge
