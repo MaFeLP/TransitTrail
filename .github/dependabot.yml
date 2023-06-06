@@ -11,6 +11,8 @@ updates:
     labels: ["dependency"]
     reviewers:
       - "MaFeLP"
+    ignore:
+      - dependency-name: "time"
 
     # Maintain dependencies for the application's rust backend
   - package-ecosystem: "cargo"
@@ -23,6 +25,8 @@ updates:
     labels: ["dependency"]
     reviewers:
       - "MaFeLP"
+    ignore:
+      - dependency-name: "time"
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -38,4 +42,3 @@ updates:
 
 # pnpm package manager is not supported, so the main dependencies
 # have to be updated manually!
-
