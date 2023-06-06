@@ -4,9 +4,11 @@
 mod settings;
 mod service_advisory;
 
-use settings::{load_settings, save_settings, test_token};
+use log::{info, error};
+use settings::{load_settings, get_settings, save_settings, Settings, test_token, reset_settings};
 use std::fmt::Debug;
 use tauri::async_runtime::Mutex;
+use tauri_plugin_log::LogTarget;
 use transit_api_client::TransitClient;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -16,26 +18,38 @@ fn greet(name: &str) -> String {
 }
 
 pub struct ClientState (
-    pub Mutex<TransitClient>
+    pub Mutex<TransitClient>,
+);
+
+pub struct SettingsState (
+    pub Mutex<Settings>
 );
 
 fn main() {
-    let settings = load_settings().expect("Could not load the settings!");
+    let user_settings = load_settings().unwrap_or_default();
+    info!("Loaded user settings: {user_settings:?}");
 
     tauri::Builder::default()
-        .manage(ClientState(Mutex::new(TransitClient::new(settings.api_key))))
+        .manage(ClientState(Mutex::new(TransitClient::new(user_settings.api_key.clone()))))
+        .manage(SettingsState(Mutex::new(user_settings)))
         .invoke_handler(tauri::generate_handler![
             greet,
             service_advisory::service_advisorie_html,
             save_settings,
-            load_settings,
-            test_token
+            get_settings,
+            reset_settings,
+            test_token,
         ])
+        .plugin(tauri_plugin_log::Builder::default().targets([
+            LogTarget::LogDir,
+            LogTarget::Stdout,
+            //LogTarget::Webview,
+        ]).build())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
 
 fn error_string<'a, E: Debug>(error: &E, message: &'a str) -> &'a str {
-    eprintln!("{message}: {error:?}");
+    error!("{message}: {error:?}");
     message
 }

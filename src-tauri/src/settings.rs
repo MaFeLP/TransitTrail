@@ -1,19 +1,18 @@
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 
-use crate::{ClientState, error_string};
+use crate::{ClientState, SettingsState, error_string};
 use serde::{Deserialize, Serialize};
-use tauri::api::path::config_dir;
-use tauri::{Runtime, State};
+use tauri::{api::path::config_dir, Runtime, State};
 use transit_api_client::prelude::{TransitClient, Usage};
 
-
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(default)]
 pub struct Settings {
     pub api_key: String,
     pub walking_distance: i32,
     pub waiting_time: i32,
+    pub walking_speed: f32,
 }
 
 impl Default for Settings {
@@ -22,6 +21,7 @@ impl Default for Settings {
             api_key: String::new(),
             walking_distance: 1000,
             waiting_time: 15,
+            walking_speed: 4.0,
         }
     }
 }
@@ -31,7 +31,9 @@ pub async fn save_settings(
     api_key: &str,
     walking_distance: &str,
     waiting_time: &str,
+    walking_speed: &str,
     client: State<'_, ClientState>,
+    user_settings: State<'_, SettingsState>,
 ) -> Result<(), &'static str> {
     let dir = config_dir().ok_or("failed to get config directory")?;
     let file_path = dir.join("wpg-transit-client").join("settings.toml");
@@ -63,6 +65,18 @@ pub async fn save_settings(
                 })?
             }
         },
+        walking_speed: {
+            if waiting_time == "" {
+                Settings::default().walking_speed
+            } else {
+                walking_speed.parse().map_err(|why| {
+                    error_string(
+                        &why,
+                        "Could not parse field `walking_speed` in settings.toml (not of type `f32`",
+                    )
+                })?
+            }
+        },
     };
 
     let toml_config = toml::to_string(&settings).unwrap();
@@ -77,11 +91,11 @@ pub async fn save_settings(
         .map_err(|why| error_string(&why, "Could not write to settings.toml file"))?;
 
     *client.0.lock().await = TransitClient::new(String::from(api_key));
+    *user_settings.0.lock().await = settings;
 
     Ok(())
 }
 
-#[tauri::command]
 pub fn load_settings() -> Result<Settings, &'static str> {
     let dir = config_dir()
         .ok_or("Failed to get config directory")?
@@ -102,6 +116,20 @@ pub fn load_settings() -> Result<Settings, &'static str> {
         .map_err(|why| error_string(&why, "Could not read settings.toml file"))?;
     toml::from_str(&buf)
         .map_err(|why| error_string(&why, "Could not parse settings.toml file"))
+}
+
+#[tauri::command]
+pub async fn get_settings(settings: State<'_, SettingsState>) -> Result<Settings, ()> {
+    let settings = settings.0.lock().await;
+    Ok(settings.clone())
+}
+
+#[tauri::command]
+pub async fn reset_settings(settings: State<'_, SettingsState>) -> Result<(), ()> {
+    let old_key = settings.0.lock().await.api_key.clone();
+    *settings.0.lock().await = Settings::default();
+    settings.0.lock().await.api_key = old_key;
+    Ok(())
 }
 
 #[tauri::command]
