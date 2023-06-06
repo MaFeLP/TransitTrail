@@ -1,24 +1,43 @@
 use transit_api_client::prelude::*;
-//use serde_json;
+use serde::{Deserialize, Serialize};
+use time::PrimitiveDateTime;
 
 #[tokio::main]
 async fn main() {
     let transit_client: TransitClient = TransitClient::new("8LmD2omXO57rTz7cbi9w".to_string());
 
-    let stop:u32 = 20137;
-    let filters: Vec<filters::Stop> = vec![];
-    let usage:Usage = Usage::Normal;
-
-    match transit_client.stop_schedule(stop, filters, usage).await {
+    const STOP: u32 = 11032;
+    const FILTERS: Vec<filters::Stop> = vec![];
+    const USAGE: Usage = Usage::Normal;
+    match transit_client.stop_schedule(STOP, FILTERS, USAGE).await {
         Ok(schedule) => {
-            // Print the raw response body for inspection
-            // let response_body = serde_json::to_string(&schedule).unwrap();
-            // println!("Raw Response: {}", response_body);
 
-            println!("{:?}", schedule)
+            /// just a quick test to see if I can get the data I want
+            #[derive(Debug, Serialize, Deserialize)]
+            struct Tester {
+                /// The name of the bus
+                bus_name: String,
 
-            // Deserialize the schedule data
-            // ...
+                /// The time the bus is scheduled to arrive
+                arrival_time: PrimitiveDateTime,
+            }
+
+            let mut tester: Vec<Tester> = Vec::new();
+
+            for route_schedules in schedule.route_schedules {
+                for stops in route_schedules.scheduled_stops {
+                   if !stops.cancelled {
+                        tester.push(Tester {
+                            bus_name: route_schedules.route.name.clone().unwrap_or("BLUE".to_string()),
+                            arrival_time: stops.times.arrival.estimated.clone(),
+                        });
+                   }
+                }
+            }
+
+            for i in tester {
+                println!("{:#?}", i);
+            }
         }
         Err(err) => {
             // Handle the error case

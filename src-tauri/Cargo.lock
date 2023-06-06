@@ -656,6 +656,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "time",
  "toml 0.7.3",
  "transit-api-client",
 ]
@@ -3263,7 +3264,7 @@ dependencies = [
 
 [[package]]
 name = "transit-api-client"
-version = "3.0.0"
+version = "3.0.1"
 dependencies = [
  "log",
  "reqwest",

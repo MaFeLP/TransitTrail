@@ -26,11 +26,11 @@ impl Default for Settings {
 }
 
 #[tauri::command]
-pub fn save_settings(
+pub async fn save_settings(
     api_key: &str,
     walking_distance: &str,
     waiting_time: &str,
-    client: State<ClientState>,
+    client: State<'_, ClientState>,
 ) -> Result<(), &'static str> {
     let dir = config_dir().ok_or("failed to get config directory")?;
     let file_path = dir.join("wpg-transit-client").join("settings.toml");
@@ -75,7 +75,7 @@ pub fn save_settings(
     file.write_all(&toml_config.as_bytes())
         .map_err(|why| error_string(&why, "Could not write to settings.toml file"))?;
 
-    *client.0.lock().unwrap() = TransitClient::new(String::from(api_key));
+    *client.0.lock().await = TransitClient::new(String::from(api_key));
 
     Ok(())
 }

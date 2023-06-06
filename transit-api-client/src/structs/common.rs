@@ -205,6 +205,9 @@ pub enum StreetType {
 
     /// The street is a way (Wy)
     Way,
+    
+    /// This is a terminal
+    Terminal,
 }
 
 impl TryFrom<&str> for StreetType {
@@ -220,6 +223,7 @@ impl TryFrom<&str> for StreetType {
             "road" => Ok(Self::Road),
             "street" => Ok(Self::Street),
             "way" => Ok(Self::Way),
+            "terminal" => Ok(Self::Terminal),
             _ => Err("Not equal to `avenue`, `boulevard`, `crescent`, `drive`, `loop`, `road`, `street`, `way`")
         }
     }
@@ -236,6 +240,7 @@ impl Display for StreetType {
             StreetType::Road => write!(f, "Road"),
             StreetType::Street => write!(f, "Street"),
             StreetType::Way => write!(f, "Way"),
+            StreetType::Terminal => write!(f, "Terminal"),
         }
     }
 }

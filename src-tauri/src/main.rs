@@ -2,11 +2,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod settings;
+mod stop_schedules;
 
 use settings::{load_settings, save_settings, Settings, test_token};
 use std::fmt::Debug;
-use std::sync::Mutex;
 use transit_api_client::TransitClient;
+use stop_schedules::stop_schedule;
+use tauri::async_runtime::Mutex;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -27,7 +29,8 @@ fn main() {
             greet,
             save_settings,
             load_settings,
-            test_token
+            test_token,
+            stop_schedule
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
