@@ -27,3 +27,7 @@ dist-ssr
 **/target/
 
 /transit-api-client/Cargo.lock
+
+# Using a file to easily format code snippets with rustfmt
+/format.rs
+
