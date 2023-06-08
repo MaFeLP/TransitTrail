@@ -166,12 +166,12 @@ pub enum Stop {
     /// Only return results after this time
     ///
     /// Defaults to now
-    Start(Time),
+    Start((u32, u32)),
 
     /// Only return results before this time
     ///
     /// Defaults to two hours from now
-    End(Time),
+    End((u32, u32)),
 
     /// Limit the results per returned route
     MaxResultsPerRoute(u32),
@@ -195,17 +195,11 @@ impl From<Stop> for UrlParameter {
                     }
                 }
             }
-            Stop::Start(s) => {
-                let time = s
-                    .format(format_description!("[hour]:[minute]:[second]"))
-                    .unwrap();
-                format!("&start={time}")
+            Stop::Start((hours, minutes)) => {
+                format!("&start={hours}:{minutes}:00")
             }
-            Stop::End(e) => {
-                let time = e
-                    .format(format_description!("[hour]:[minute]:[second]"))
-                    .unwrap();
-                format!("&end={time}")
+            Stop::End((hours, minutes)) => {
+                format!("&end={hours}:{minutes}:00")
             }
             Stop::MaxResultsPerRoute(m) => format!("&max-results-per-route={m}"),
         };

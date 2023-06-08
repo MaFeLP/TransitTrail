@@ -1,7 +1,7 @@
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 
-use crate::{ClientState, SettingsState, error_string};
+use crate::{error_string, ClientState, SettingsState};
 use serde::{Deserialize, Serialize};
 use tauri::{api::path::config_dir, Runtime, State};
 use transit_api_client::prelude::{TransitClient, Usage};
@@ -41,7 +41,7 @@ pub async fn save_settings(
     let settings = Settings {
         api_key: api_key.to_string(),
         walking_distance: {
-            if walking_distance == "" {
+            if walking_distance.is_empty() {
                 Settings::default().walking_distance
             } else {
                 walking_distance
@@ -54,7 +54,7 @@ pub async fn save_settings(
             }
         },
         waiting_time: {
-            if waiting_time == "" {
+            if waiting_time.is_empty() {
                 Settings::default().waiting_time
             } else {
                 waiting_time.parse().map_err(|why| {
@@ -66,7 +66,7 @@ pub async fn save_settings(
             }
         },
         walking_speed: {
-            if waiting_time == "" {
+            if waiting_time.is_empty() {
                 Settings::default().walking_speed
             } else {
                 walking_speed.parse().map_err(|why| {
@@ -87,7 +87,7 @@ pub async fn save_settings(
         .open(&file_path)
         .map_err(|why| error_string(&why, "Could not find settings.toml file"))?;
 
-    file.write_all(&toml_config.as_bytes())
+    file.write_all(toml_config.as_bytes())
         .map_err(|why| error_string(&why, "Could not write to settings.toml file"))?;
 
     *client.0.lock().await = TransitClient::new(String::from(api_key));
@@ -114,8 +114,7 @@ pub fn load_settings() -> Result<Settings, &'static str> {
     let mut buf = String::new();
     file.read_to_string(&mut buf)
         .map_err(|why| error_string(&why, "Could not read settings.toml file"))?;
-    toml::from_str(&buf)
-        .map_err(|why| error_string(&why, "Could not parse settings.toml file"))
+    toml::from_str(&buf).map_err(|why| error_string(&why, "Could not parse settings.toml file"))
 }
 
 #[tauri::command]
@@ -156,20 +155,17 @@ pub fn login_to_api<R: Runtime>(
         "winnipeg-transit-api-login",
         tauri::WindowUrl::App("https://api.winnipegtransit.com/".into()),
     )
-        .title("Log In with Winnipeg Transit API")
-        .enable_clipboard_access()
-        //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
-        .build()?;
+    .title("Log In with Winnipeg Transit API")
+    .enable_clipboard_access()
+    //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
+    .build()?;
     window.open_devtools();
     window.center()?;
 
     window.on_window_event(|event| {
-        match event {
-            tauri::WindowEvent::CloseRequested { .. } => {
-                println!("Window is closing");
-                //tauri::event::emit(&window, "login", Some("Hello from the login window!"));
-            }
-            _ => {}
+        if let tauri::WindowEvent::CloseRequested { .. } = event {
+            println!("Window is closing");
+            //tauri::event::emit(&window, "login", Some("Hello from the login window!"));
         }
     });
 

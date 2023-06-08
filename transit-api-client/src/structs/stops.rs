@@ -2,6 +2,7 @@
 //! Data structures for the [stops endpoint](crate::endpoints::stops)
 //!
 
+use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
 
@@ -100,6 +101,16 @@ pub enum Direction {
     Westbound,
 }
 
+impl Display for Direction {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
+            Direction::Northbound => "Northbound",
+            Direction::Eastbound => "Eastbound",
+            Direction::Southbound => "Southbound",
+            Direction::Westbound => "Westbound",
+        })
+    }
+}
 /// Specifies which side of the intersection the stop lies on.
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Side {
@@ -196,6 +207,7 @@ pub struct ScheduledStop {
 
 /// Information about the arrival and departure times
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ScheduledTimes {
     /// Times of when the bus is scheduled and estimated to arrive
     pub arrival: Time,
@@ -285,12 +297,12 @@ pub enum BusType {
     Blue(String),
 }
 
-impl ToString for BusType {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for BusType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
             BusType::Regular(n) => n.to_string(),
             BusType::Blue(s) => s.to_string(),
-        }
+        })
     }
 }
 
@@ -368,4 +380,25 @@ pub enum FoxxClassNames {
     /// Rapid Transit bus
     #[serde(rename = "rapid-transit")]
     RapidTransit,
+
+    /// A feeder bus for express and rapid transit busses
+    #[serde(rename = "feeder")]
+    Feeder,
+
+    /// A feeder bus for express and rapid transit busses, which is used at peak times
+    #[serde(rename = "peak-feeder")]
+    PeakFeeder,
+}
+
+impl Display for FoxxClassNames {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
+            FoxxClassNames::BadgeLable => "badge-label",
+            FoxxClassNames::Express => "express",
+            FoxxClassNames::Regular => "regular",
+            FoxxClassNames::RapidTransit => "rapid-transit",
+            FoxxClassNames::Feeder => "feeder",
+            FoxxClassNames::PeakFeeder => "peak-feeder",
+        })
+    }
 }

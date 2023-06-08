@@ -2,15 +2,13 @@ use crate::ClientState;
 use tauri::State;
 use transit_api_client::prelude::*;
 
-use markdown;
-
 #[tauri::command]
 /// Returns a string of HTML containing all service advisories.
-/// 
+///
 /// # Arguments
 /// * `filters` - A vector of filters to apply to the service advisories.
 /// * `header` - The header level to use for the title of each service advisory.
-/// 
+///
 /// # Example
 /// ```rust
 /// let service_advisories_html = client.service_advisories_html(Vec::new(), Usage::Normal).await.unwrap();
@@ -31,19 +29,21 @@ pub async fn service_advisorie_html(
 
         let body = service_advisory.body;
         let title = service_advisory.title;
-        temp.push_str(&format!("<summary class=\"advisory-summary\">{title}</summary>"));
+        temp.push_str(&format!(
+            "<summary class=\"advisory-summary\">{title}</summary>"
+        ));
 
         let pared_markdown_body = markdown::to_html(&body);
 
         let mut in_list = false;
         for line in pared_markdown_body.lines() {
-            if line.starts_with("** ") {
+            if let Some(stripped) = line.strip_prefix("** ") {
                 if !in_list {
                     temp.push_str("<ul>");
                     in_list = true;
                 }
                 temp.push_str("<li>");
-                temp.push_str(&line[3..]);
+                temp.push_str(stripped);
                 temp.push_str("</li>");
             } else {
                 if in_list {

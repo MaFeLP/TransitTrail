@@ -132,6 +132,14 @@ pub enum Coverage {
     /// Special Type of coverage for BLUE routes
     #[serde(rename = "rapid transit")]
     RapidTransit,
+
+    /// A feeder bus for express and rapid transit busses
+    #[serde(rename = "feeder")]
+    Feeder,
+
+    /// A feeder bus for express and rapid transit busses, which is used at peak times
+    #[serde(rename = "peak feeder")]
+    PeakFeeder,
 }
 
 /// A variant is a variation of a route, distinguished by its intermediate destination points.
