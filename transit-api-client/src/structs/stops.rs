@@ -2,8 +2,8 @@
 //! Data structures for the [stops endpoint](crate::endpoints::stops)
 //!
 
-use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
 use time::PrimitiveDateTime;
 
 use super::{
@@ -103,12 +103,16 @@ pub enum Direction {
 
 impl Display for Direction {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            Direction::Northbound => "Northbound",
-            Direction::Eastbound => "Eastbound",
-            Direction::Southbound => "Southbound",
-            Direction::Westbound => "Westbound",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                Direction::Northbound => "Northbound",
+                Direction::Eastbound => "Eastbound",
+                Direction::Southbound => "Southbound",
+                Direction::Westbound => "Westbound",
+            }
+        )
     }
 }
 /// Specifies which side of the intersection the stop lies on.
@@ -299,10 +303,14 @@ pub enum BusType {
 
 impl Display for BusType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            BusType::Regular(n) => n.to_string(),
-            BusType::Blue(s) => s.to_string(),
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                BusType::Regular(n) => n.to_string(),
+                BusType::Blue(s) => s.to_string(),
+            }
+        )
     }
 }
 
@@ -392,13 +400,17 @@ pub enum FoxxClassNames {
 
 impl Display for FoxxClassNames {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            FoxxClassNames::BadgeLable => "badge-label",
-            FoxxClassNames::Express => "express",
-            FoxxClassNames::Regular => "regular",
-            FoxxClassNames::RapidTransit => "rapid-transit",
-            FoxxClassNames::Feeder => "feeder",
-            FoxxClassNames::PeakFeeder => "peak-feeder",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                FoxxClassNames::BadgeLable => "badge-label",
+                FoxxClassNames::Express => "express",
+                FoxxClassNames::Regular => "regular",
+                FoxxClassNames::RapidTransit => "rapid-transit",
+                FoxxClassNames::Feeder => "feeder",
+                FoxxClassNames::PeakFeeder => "peak-feeder",
+            }
+        )
     }
 }
