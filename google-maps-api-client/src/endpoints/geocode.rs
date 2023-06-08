@@ -1,28 +1,35 @@
-//!
-//! Contains functions for the Geocode API
-//!
-
 use reqwest;
 use serde::{Deserialize, Serialize};
-use serde_json::Result as JsonResult;
+use crate::prelude::{GeocodeResponse, GeocodeResult};
 
 impl crate::GoogleMapsClient {
-    pub async fn geocode(&self, address: &str) -> Option<GeocodeResult> {
+    /// Geocode an address
+    ///
+    /// # Arguments
+    ///
+    /// * `address`: The address to geocode
+    ///
+    /// returns: Result<Option<GeocodeResult>, Error>
+    ///
+    /// # Examples
+    ///
+    /// ```
+    ///
+    /// ```
+    pub async fn geocode(&self, address: &str) -> Result<Option<GeocodeResult>, reqwest::Error> {
         let url = format!(
-            "https://maps.googleapis.com/maps/api/geocode/json?address={}&key={}",
-            address, self.api_key
+            "{}geocode/json?address={}&key={}",
+            self.base_url,
+            address,
+            self.api_key
         );
 
-        let response = self.client.get(&url).send().await;
-        if let Ok(response) = response {
-            let json: JsonResult<GeocodeResponse> = response.json().await;
-            if let Ok(data) = json {
-                if let Some(result) = data.results.first() {
-                    return Some(result.clone());
-                }
-            }
+        let response = self.client.get(&url).send().await?;
+        let json: GeocodeResponse = response.json().await?;
+        if let Some(result) = json.results.first().cloned() {
+            Ok(Some(result))
+        } else {
+            Ok(None)
         }
-
-        None
     }
 }
