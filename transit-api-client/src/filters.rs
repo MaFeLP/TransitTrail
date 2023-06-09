@@ -166,12 +166,12 @@ pub enum Stop {
     /// Only return results after this time
     ///
     /// Defaults to now
-    Start((u32, u32)),
+    Start((u8, u8)),
 
     /// Only return results before this time
     ///
     /// Defaults to two hours from now
-    End((u32, u32)),
+    End((u8, u8)),
 
     /// Limit the results per returned route
     MaxResultsPerRoute(u32),
@@ -181,7 +181,7 @@ impl From<Stop> for UrlParameter {
     fn from(value: Stop) -> Self {
         /// Format the time correctly:
         /// Format is: HH:MM:SS
-        fn format_time(hours: u32, minutes: u32) -> String {
+        fn format_time(hours: u8, minutes: u8) -> String {
             let hours = if hours < 10 {
                 format!("0{}", hours)
             } else {
