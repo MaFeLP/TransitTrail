@@ -36,12 +36,10 @@
     const twoHoursMS = 2 * 60 * 60 * 1000;
 
     let now = new Date();
-    let start = `${now.getHours()}:${now.getMinutes()}`;
-    if (start.length === 4) start = "0" + start;
+    let start = `${now.getHours() < 10 ? "0" + now.getHours().toString() : now.getHours()}:${now.getMinutes() < 10 ? "0" + now.getMinutes().toString() : now.getMinutes()}`;
 
     now.setTime(now.getTime() + twoHoursMS);
-    let end = `${now.getHours()}:${now.getMinutes()}`
-    if (end.length === 4) end = "0" + end;
+    let end = `${now.getHours() < 10 ? "0" + now.getHours().toString() : now.getHours()}:${now.getMinutes() < 10 ? "0" + now.getMinutes().toString() : now.getMinutes()}`;
 </script>
 
 <div>
@@ -54,9 +52,9 @@
 
         <div class="filter left-separator">
             <label for="start">Time Range:</label>
-            <input type="time" id="start" value="{start}" min="{start}" on:keypress={{keypress}}>
+            <input type="time" id="start" value="{start}" min="{start}" on:keypress={keypress}>
             <label for="end">To</label>
-            <input type="time" id="end" value="{end}" min="{start}" on:keypress={{keypress}}>
+            <input type="time" id="end" value="{end}" min="{start}" on:keypress={keypress}>
         </div>
 
 

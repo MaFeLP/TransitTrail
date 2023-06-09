@@ -179,6 +179,23 @@ pub enum Stop {
 
 impl From<Stop> for UrlParameter {
     fn from(value: Stop) -> Self {
+        /// Format the time correctly:
+        /// Format is: HH:MM:SS
+        fn format_time(hours: u32, minutes: u32) -> String {
+            let hours = if hours < 10 {
+                format!("0{}", hours)
+            } else {
+                hours.to_string()
+            };
+            let minutes = if minutes < 10 {
+                format!("0{}", minutes)
+            } else {
+                minutes.to_string()
+            };
+
+            format!("{hours}:{minutes}:00")
+        }
+
         let out = match value {
             Stop::Routes(r) => {
                 match r.len() {
@@ -196,10 +213,10 @@ impl From<Stop> for UrlParameter {
                 }
             }
             Stop::Start((hours, minutes)) => {
-                format!("&start={hours}:{minutes}:00")
+                format!("&start={}", format_time(hours, minutes))
             }
             Stop::End((hours, minutes)) => {
-                format!("&end={hours}:{minutes}:00")
+                format!("&end={}", format_time(hours, minutes))
             }
             Stop::MaxResultsPerRoute(m) => format!("&max-results-per-route={m}"),
         };
