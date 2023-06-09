@@ -487,8 +487,8 @@ mod test {
                 10185,
                 vec![
                     filters::Stop::Routes(vec![18, 60]),
-                    filters::Stop::Start(now.time()),
-                    filters::Stop::End(end.time()),
+                    filters::Stop::Start((now.time().hour(), now.time().minute())),
+                    filters::Stop::End((end.time().hour(), now.time().minute())),
                     filters::Stop::MaxResultsPerRoute(3),
                 ],
                 Usage::Normal,

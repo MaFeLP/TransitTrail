@@ -20,10 +20,10 @@
 </div>
 
 <style lang="sass">
-  @import "src/styles/variables"
+  @use "src/styles/variables" as var
 
   main, h1
-    margin-left: $nav-width + $nav-shadow-width
+    margin-left: var.$nav-width + var.$nav-shadow-width
 
   h1
     display: flex

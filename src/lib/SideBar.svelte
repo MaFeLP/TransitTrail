@@ -10,7 +10,7 @@
     import Gear from "svelte-bootstrap-icons/lib/Gear.svelte";
     import House from "svelte-bootstrap-icons/lib/House.svelte";
     import Megaphone from "svelte-bootstrap-icons/lib/Megaphone.svelte";
-    import Stop from "svelte-bootstrap-icons/lib/Stop.svelte";
+    import Pin from "svelte-bootstrap-icons/lib/Pin.svelte"
 
     /**
      * This function is used to change the page. It takes in a component and props, and then sets the page to that component with those props.
@@ -36,7 +36,7 @@
         </li>
         <li>
             <button on:click={() => changePage(Stops, [])}>
-                <Stop/>
+                <Pin />
                 Stops
             </button>
         </li>
@@ -80,6 +80,7 @@
   // The individual page selectors
   button
     width: $nav-width - 10px
+    padding: 5px
     margin: 5px
     height: 100%
     border: 2px solid var(--wpg-blue)

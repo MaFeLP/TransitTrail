@@ -166,12 +166,12 @@ pub enum Stop {
     /// Only return results after this time
     ///
     /// Defaults to now
-    Start(Time),
+    Start((u8, u8)),
 
     /// Only return results before this time
     ///
     /// Defaults to two hours from now
-    End(Time),
+    End((u8, u8)),
 
     /// Limit the results per returned route
     MaxResultsPerRoute(u32),
@@ -179,6 +179,23 @@ pub enum Stop {
 
 impl From<Stop> for UrlParameter {
     fn from(value: Stop) -> Self {
+        /// Format the time correctly:
+        /// Format is: HH:MM:SS
+        fn format_time(hours: u8, minutes: u8) -> String {
+            let hours = if hours < 10 {
+                format!("0{}", hours)
+            } else {
+                hours.to_string()
+            };
+            let minutes = if minutes < 10 {
+                format!("0{}", minutes)
+            } else {
+                minutes.to_string()
+            };
+
+            format!("{hours}:{minutes}:00")
+        }
+
         let out = match value {
             Stop::Routes(r) => {
                 match r.len() {
@@ -195,17 +212,11 @@ impl From<Stop> for UrlParameter {
                     }
                 }
             }
-            Stop::Start(s) => {
-                let time = s
-                    .format(format_description!("[hour]:[minute]:[second]"))
-                    .unwrap();
-                format!("&start={time}")
+            Stop::Start((hours, minutes)) => {
+                format!("&start={}", format_time(hours, minutes))
             }
-            Stop::End(e) => {
-                let time = e
-                    .format(format_description!("[hour]:[minute]:[second]"))
-                    .unwrap();
-                format!("&end={time}")
+            Stop::End((hours, minutes)) => {
+                format!("&end={}", format_time(hours, minutes))
             }
             Stop::MaxResultsPerRoute(m) => format!("&max-results-per-route={m}"),
         };
