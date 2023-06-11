@@ -10,7 +10,6 @@ use settings::{get_settings, load_settings, reset_settings, save_settings, test_
 use std::fmt::Debug;
 use stop_schedules::stop_schedule;
 use tauri::async_runtime::Mutex;
-use tauri::Manager;
 use tauri_plugin_log::LogTarget;
 use transit_api_client::TransitClient;
 
@@ -86,14 +85,15 @@ fn main() {
                 ])
                 .build(),
         )
-        .setup(|app| {
-            #[cfg(debug_assertions)] // only include this code on debug builds
-            {
-                let window = app.get_window("main").unwrap();
-                window.open_devtools();
-            }
-            Ok(())
-        })
+// Uncomment during development, if devtools should be opened automatically
+//        .setup(|app| {
+//            #[cfg(debug_assertions)] // only include this code on debug builds
+//            {
+//                let window = app.get_window("main").unwrap();
+//                window.open_devtools();
+//            }
+//            Ok(())
+//        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
