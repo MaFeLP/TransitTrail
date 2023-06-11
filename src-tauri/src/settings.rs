@@ -143,33 +143,3 @@ pub async fn test_token<R: Runtime>(
         Err(why) => Err(error_string(&why, "Error while testing connection")),
     }
 }
-
-#[allow(dead_code)]
-#[tauri::command]
-pub fn login_to_api<R: Runtime>(
-    app: tauri::AppHandle<R>,
-    _window: tauri::Window<R>,
-) -> tauri::Result<()> {
-    let window = tauri::WindowBuilder::new(
-        &app,
-        "winnipeg-transit-api-login",
-        tauri::WindowUrl::App("https://api.winnipegtransit.com/".into()),
-    )
-    .title("Log In with Winnipeg Transit API")
-    .enable_clipboard_access()
-    //        .initialization_script(r#"console.log('Hello from the login window!'); window.addEventListener('load', (event) => console.log(event));"#)
-    .build()?;
-    window.open_devtools();
-    window.center()?;
-
-    window.on_window_event(|event| {
-        if let tauri::WindowEvent::CloseRequested { .. } = event {
-            println!("Window is closing");
-            //tauri::event::emit(&window, "login", Some("Hello from the login window!"));
-        }
-    });
-
-    println!("{:?}", window.eval("console.log('This is a second test'); window.addEventListener('load', (event) => console.log(event));"));
-
-    Ok(())
-}
