@@ -1,0 +1,10 @@
+{
+  "semi": true,
+  "trailingComma": "all",
+  "singleQuote": false,
+  "printWidth": 120,
+  "plugins": [
+    "prettier-plugin-svelte"
+  ],
+  "tabWidth": 4
+}
