@@ -1,11 +1,13 @@
-name: 'publish'
+name: 'Publish Release Assets'
 
 on:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
+  # Build and upload release artifacts
   build-tauri:
+    name: "Build the application for different architectures"
     permissions:
       contents: write
     strategy:
@@ -17,7 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Build and upload release artifacts
       - uses: pnpm/action-setup@v2
         with:
           version: 8
@@ -35,8 +36,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         with:
           releaseId: ${{ github.event.release.tag_name }}
+  
+  # Build and upload the documentation artifacts
+  build-documentation:
+    name: "Build the documentation PDFs"
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-      # Build and upload the documentation artifacts
       - name: "Setup typst"
         run: |
           wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
