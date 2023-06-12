@@ -22,6 +22,8 @@ jobs:
           tar xf typst-x86_64-unknown-linux-musl.tar.xz
           mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
           rm -r typst-x86_64-unknown-linux-musl*
+        env:
+          GH_TOKEN: ${{ github.token }}
       
       - name: "Build Introduction"
         working-directory: "docs"
