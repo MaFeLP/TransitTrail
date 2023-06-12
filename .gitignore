@@ -31,3 +31,7 @@ dist-ssr
 # Using a file to easily format code snippets with rustfmt
 /format.rs
 
+# Documentation output files
+/docs/introduction.pdf
+/docs/conclusion.pdf
+

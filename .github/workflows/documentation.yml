@@ -1,0 +1,34 @@
+name: "Build documentation PDFs"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "docs/**" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "docs/**" ]
+  workflow_dispatch:
+
+jobs:
+  documentation:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v3"
+
+      - name: "Setup typst"
+        run: |
+          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
+          tar xf typst-x86_64-unknown-linux-musl.tar.xz
+          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
+          rm -r typst-x86_64-unknown-linux-musl*
+      
+      - name: "Build Introduction"
+        working-directory: "docs"
+        run: |
+          /tmp/typst compile introduction.typ
+
+      - name: "Build Conclusion"
+        working-directory: "docs"
+        run: |
+          /tmp/typst compile conclusion.typ

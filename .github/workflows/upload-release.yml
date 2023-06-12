@@ -17,6 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Build and upload release artifacts
       - uses: pnpm/action-setup@v2
         with:
           version: 8
@@ -33,3 +34,30 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ github.event.release.tag_name }}
+
+      # Build and upload the documentation artifacts
+      - name: "Setup typst"
+        run: |
+          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
+          tar xf typst-x86_64-unknown-linux-musl.tar.xz
+          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
+          rm -r typst-x86_64-unknown-linux-musl*
+      
+      - name: "Build Introduction"
+        working-directory: "docs"
+        run: |
+          /tmp/typst compile introduction.typ
+
+      - name: "Build Conclusion"
+        working-directory: "docs"
+        run: |
+          /tmp/typst compile conclusion.typ
+
+      - name: Upload documentation artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            LICENSE.md
+            docs/conclusion.pdf
+            docs/introduction.pdf
+          token: ${{ secrets.GITHUB_TOKEN }}
