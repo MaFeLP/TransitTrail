@@ -1,8 +1,7 @@
 name: 'Publish Release Assets'
 
 on:
-  release:
-    types: [created]
+  workflow_dispatch:
 
 jobs:
   # Build and upload release artifacts
@@ -29,40 +28,28 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
-
+      
       - uses: tauri-apps/tauri-action@v0
         id: tauri
-
-      # Hacky workaround to upload files from given bundles in tauri
-      - name: "Format artifact paths"
-        shell: python
-        run: |
-          paths = ${{ steps.tauri.outputs.artifactPaths }}
-          with open("paths.txt", 'w') as f:
-            f.write('"' + '" "'.join(paths) + '"')
-
-      - name: "Upload release artifacts (ubuntu)"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tagName: v__VERSION__
+          releaseName: v__VERSION__
+          releaseBody: 'CHANGE ME'
+          releaseDraft: true
+          prerelease: false
+      
+      - name: "Build documentation PDFs"
         if: matrix.platform == 'ubuntu-latest'
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" $(find src-tauri/target/release/bundle/ -name '*.AppImage' -or -name '*.deb')
-
-      - name: "Upload release artifacts (macos)"
-        if: matrix.platform == 'macos-latest'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          tar cvzf $(find src-tauri/target/release/bundle/ -name '*.app').tar.gz $(find src-tauri/target/release/bundle/ -name '*.app')
-          gh release upload "${{ github.event.release.tag_name }}" $(find src-tauri/target/release/bundle/ -name '*.dmg' -or -name '*.app.tar.gz')
-
-      - name: "Upload release artifacts (windows)"
-        if: matrix.platform == 'windows-latest'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release upload "${{ github.event.release.tag_name }}" (Get-ChildItem src-tauri\\target\\release\\bundle -Filter '*.msi' -Recurse).FullName
-          gh release upload "${{ github.event.release.tag_name }}" (Get-ChildItem src-tauri\\target\\release\\bundle -Filter '*.exe' -Recurse).FullName
+          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
+          tar xf typst-x86_64-unknown-linux-musl.tar.xz
+          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
+          rm -r typst-x86_64-unknown-linux-musl*
+          /tmp/typst compile introduction.typ
+          /tmp/typst compile conclusion.typ
+          gh release upload ${{ stepts.tauri.outputs.releaseId }}" LICENSE.md docs/conclusion.pdf docs/introduction.pdf
 
   # Build and upload the documentation artifacts
   build-documentation:
