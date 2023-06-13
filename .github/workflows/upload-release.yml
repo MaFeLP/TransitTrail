@@ -12,9 +12,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+          - build: linux
+            os: ubuntu-latest
+            arch: x86_64
+            target: x86_64-unknown-linux-gnu
+          - build: macos
+            os: macos-latest
+            arch: x86_64
+            target: x86_64-apple-darwin
+          - buid: macos
+            os: macos-latest
+            arch: aarch64
+            target: aarch64-apple-darwin
+          - build: windows
+            os: windows-latest
+            arch: x86_64
+            target: x86_64-pc-windows-msvc
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
 
@@ -42,47 +58,12 @@ jobs:
       
       - name: "Build documentation PDFs"
         if: matrix.platform == 'ubuntu-latest'
+        working-directory: "docs"
         run: |
           wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
-          tar xf typst-x86_64-unknown-linux-musl.tar.xz
-          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
-          rm -r typst-x86_64-unknown-linux-musl*
-          /tmp/typst compile introduction.typ
-          /tmp/typst compile conclusion.typ
-          gh release upload ${{ steps.tauri.outputs.releaseId }}" LICENSE.md docs/conclusion.pdf docs/introduction.pdf
+          tar xvf typst-x86_64-unknown-linux-musl.tar.xz
+          ./typst-x86_64-unknown-linux-musl/typst compile introduction.typ
+          ./typst-x86_64-unknown-linux-musl/typst compile conclusion.typ
+          gh release upload ${{ steps.tauri.outputs.releaseId }}" ../LICENSE.md conclusion.pdf introduction.pdf
         env:
           GH_TOKEN: ${{ github.token }}
-
-#  # Build and upload the documentation artifacts
-#  build-documentation:
-#    name: "Build the documentation PDFs"
-#    permissions:
-#      contents: write
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - name: "Setup typst"
-#        run: |
-#          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
-#          tar xf typst-x86_64-unknown-linux-musl.tar.xz
-#          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
-#          rm -r typst-x86_64-unknown-linux-musl*
-#        env:
-#          GH_TOKEN: ${{ github.token }}
-#      
-#      - name: "Build Introduction"
-#        working-directory: "docs"
-#        run: |
-#          /tmp/typst compile introduction.typ
-#
-#      - name: "Build Conclusion"
-#        working-directory: "docs"
-#        run: |
-#          /tmp/typst compile conclusion.typ
-#
-#      - name: "Upload documentation artifacts"
-#        env:
-#          GH_TOKEN: ${{ github.token }}
-#        run: |
-#          gh release upload "${{ github.event.release.tag_name }}" LICENSE.md docs/conclusion.pdf docs/introduction.pdf
