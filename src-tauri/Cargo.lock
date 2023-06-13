@@ -3,6 +3,23 @@
 version = 3
 
 [[package]]
+name = "TransitTrail"
+version = "1.0.0-alpha.1"
+dependencies = [
+ "log",
+ "markdown",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-log",
+ "time",
+ "tokio",
+ "toml 0.7.3",
+ "transit-api-client",
+]
+
+[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -861,23 +878,6 @@ dependencies = [
  "libc",
  "redox_syscall 0.2.16",
  "windows-sys 0.48.0",
-]
-
-[[package]]
-name = "final-project"
-version = "0.0.0"
-dependencies = [
- "log",
- "markdown",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-log",
- "time",
- "tokio",
- "toml 0.7.3",
- "transit-api-client",
 ]
 
 [[package]]

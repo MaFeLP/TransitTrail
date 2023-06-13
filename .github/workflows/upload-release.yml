@@ -49,38 +49,40 @@ jobs:
           rm -r typst-x86_64-unknown-linux-musl*
           /tmp/typst compile introduction.typ
           /tmp/typst compile conclusion.typ
-          gh release upload ${{ stepts.tauri.outputs.releaseId }}" LICENSE.md docs/conclusion.pdf docs/introduction.pdf
-
-  # Build and upload the documentation artifacts
-  build-documentation:
-    name: "Build the documentation PDFs"
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: "Setup typst"
-        run: |
-          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
-          tar xf typst-x86_64-unknown-linux-musl.tar.xz
-          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
-          rm -r typst-x86_64-unknown-linux-musl*
+          gh release upload ${{ steps.tauri.outputs.releaseId }}" LICENSE.md docs/conclusion.pdf docs/introduction.pdf
         env:
           GH_TOKEN: ${{ github.token }}
-      
-      - name: "Build Introduction"
-        working-directory: "docs"
-        run: |
-          /tmp/typst compile introduction.typ
 
-      - name: "Build Conclusion"
-        working-directory: "docs"
-        run: |
-          /tmp/typst compile conclusion.typ
-
-      - name: "Upload documentation artifacts"
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release upload "${{ github.event.release.tag_name }}" LICENSE.md docs/conclusion.pdf docs/introduction.pdf
+#  # Build and upload the documentation artifacts
+#  build-documentation:
+#    name: "Build the documentation PDFs"
+#    permissions:
+#      contents: write
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - name: "Setup typst"
+#        run: |
+#          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
+#          tar xf typst-x86_64-unknown-linux-musl.tar.xz
+#          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
+#          rm -r typst-x86_64-unknown-linux-musl*
+#        env:
+#          GH_TOKEN: ${{ github.token }}
+#      
+#      - name: "Build Introduction"
+#        working-directory: "docs"
+#        run: |
+#          /tmp/typst compile introduction.typ
+#
+#      - name: "Build Conclusion"
+#        working-directory: "docs"
+#        run: |
+#          /tmp/typst compile conclusion.typ
+#
+#      - name: "Upload documentation artifacts"
+#        env:
+#          GH_TOKEN: ${{ github.token }}
+#        run: |
+#          gh release upload "${{ github.event.release.tag_name }}" LICENSE.md docs/conclusion.pdf docs/introduction.pdf
