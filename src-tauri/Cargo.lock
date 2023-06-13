@@ -3,23 +3,6 @@
 version = 3
 
 [[package]]
-name = "TransitTrail"
-version = "1.0.0-alpha.1"
-dependencies = [
- "log",
- "markdown",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-log",
- "time",
- "tokio",
- "toml 0.7.3",
- "transit-api-client",
-]
-
-[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3705,6 +3688,23 @@ dependencies = [
  "serde_json",
  "serde_repr",
  "time",
+]
+
+[[package]]
+name = "transit_trail"
+version = "1.0.0-alpha1"
+dependencies = [
+ "log",
+ "markdown",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-log",
+ "time",
+ "tokio",
+ "toml 0.7.3",
+ "transit-api-client",
 ]
 
 [[package]]
