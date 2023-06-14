@@ -56,15 +56,3 @@ jobs:
           releaseBody: 'CHANGE ME'
           releaseDraft: true
           prerelease: false
-      
-      - name: "Build documentation PDFs"
-        if: matrix.os == 'ubuntu-latest'
-        working-directory: "docs"
-        run: |
-          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
-          tar xvf typst-x86_64-unknown-linux-musl.tar.xz
-          ./typst-x86_64-unknown-linux-musl/typst compile introduction.typ
-          ./typst-x86_64-unknown-linux-musl/typst compile conclusion.typ
-          gh release upload "${{ steps.tauri.outputs.releaseId }}" ../LICENSE.md conclusion.pdf introduction.pdf
-        env:
-          GH_TOKEN: ${{ github.token }}
