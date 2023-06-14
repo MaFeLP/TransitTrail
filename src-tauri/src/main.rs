@@ -88,6 +88,7 @@ fn main() {
         .setup(|app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
+                use tauri::Manager;
                 let window = app.get_window("main").unwrap();
                 window.open_devtools();
             }

@@ -46,6 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          find src-tauri/target/release/bundle/
           gh release upload "${{ github.event.release.tag_name }}" $(find src-tauri/target/release/bundle/ -name '*.dmg' -or -name '*.app' -or -name '*.AppImage' -or -name '*.deb')
 
       - name: "Upload release artifacts (windows)"
@@ -53,6 +54,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          Get-ChildItem src-tauri\\target\\release\\bundle -Recurse
           gh release upload "${{ github.event.release.tag_name }}" (Get-ChildItem src-tauri\\target\\release\\bundle -Filter '*.msi' -Recurse).FullName
           gh release upload "${{ github.event.release.tag_name }}" (Get-ChildItem src-tauri\\target\\release\\bundle -Filter '*.exe' -Recurse).FullName
 
