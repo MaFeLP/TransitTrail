@@ -1,7 +1,7 @@
 {
   "name": "transit-trail",
   "private": true,
-  "version": "1.0.0-alpha1",
+  "version": "0.0.0-1",
   "type": "module",
   "scripts": {
     "dev": "vite",

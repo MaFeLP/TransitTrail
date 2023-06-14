@@ -1,6 +1,6 @@
 [package]
 name = "transit_trail"
-version = "1.0.0-alpha1"
+version = "0.0.0-alpha.1"
 description = "Navigate Winnipeg Transit with a different style"
 authors = ["MaFeLP", "PrincessFoxx"]
 license = "GPLv3-or-later"

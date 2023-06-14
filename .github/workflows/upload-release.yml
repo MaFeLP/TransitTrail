@@ -65,6 +65,6 @@ jobs:
           tar xvf typst-x86_64-unknown-linux-musl.tar.xz
           ./typst-x86_64-unknown-linux-musl/typst compile introduction.typ
           ./typst-x86_64-unknown-linux-musl/typst compile conclusion.typ
-          gh release upload ${{ steps.tauri.outputs.releaseId }}" ../LICENSE.md conclusion.pdf introduction.pdf
+          gh release upload "${{ steps.tauri.outputs.releaseId }}" ../LICENSE.md conclusion.pdf introduction.pdf
         env:
           GH_TOKEN: ${{ github.token }}
