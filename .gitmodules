@@ -1,0 +1,3 @@
+[submodule "google-maps-api-client"]
+	path = google-maps-api-client
+	url = ssh://git@github.com/PrincessFoxx/google-maps-api-client.git
