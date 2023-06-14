@@ -158,6 +158,40 @@ impl Display for Location {
     }
 }
 
+/// Used when creating a trip plan, to not have to query for the whole
+/// structure of a Location, but instead only use the key.
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub enum PartialLocation<'a> {
+    /// The address of a Location
+    Address(&'a str),
+
+    /// The location is a significant point of interest
+    Monument(&'a str),
+
+    /// The location is at an intersection of two streets
+    Intersection(&'a str),
+
+    /// A geographic point, representing latitude and longitude
+    Point(f64, f64),
+}
+
+impl Default for PartialLocation<'_> {
+    fn default() -> Self {
+        Self::Point(Default::default(), Default::default())
+    }
+}
+
+impl Display for PartialLocation<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Address(key) => write!(f, "addresses/{}", key),
+            Self::Monument(key) => write!(f, "monuments/{}", key),
+            Self::Intersection(key) => write!(f, "intersections/{}", key),
+            Self::Point(lat, lon) => write!(f, "geo/{},{}", lat, lon),
+        }
+    }
+}
+
 /// Represents a Street, as it is returned from the API
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Street {
