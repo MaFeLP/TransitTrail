@@ -49,6 +49,7 @@ pub enum TripPlan {
     /// The time of the trip. Defaults to now, if not included as a filter.
     ///
     /// What the time means can be customized with a [Mode]
+    //TODO change to type (u32, u32) (for hours, minutes)
     Time(Time),
 
     /// The mode with which the trip should be planned

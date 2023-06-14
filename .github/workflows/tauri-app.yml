@@ -1,0 +1,77 @@
+name: "Build and test the Application"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lint-backend:
+    name: "Run lint tests on the backend"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: cargo fmt
+      run: cargo fmt -- --check
+      working-directory: transit-api-client
+      env:
+        RUSTFLAGS: -D warnings
+
+    - name: clippy
+      run: cargo clippy --all-features --no-deps
+      working-directory: transit-api-client
+      env:
+        RUSTFLAGS: -D warnings
+
+  frontend:
+    name: "Run lint tests on the frontend"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        run_install: true
+    
+    - name: "Lint"
+      run: pnpm lint
+    
+    - name: "Check formatting"
+      run: pnpm format:check
+
+#    - name: "Test the frontend"
+#      run: |
+#        pnpm test
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        run_install: true
+
+    - name: install dependencies (ubuntu only)
+      if: matrix.platform == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+    - uses: tauri-apps/tauri-action@v0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

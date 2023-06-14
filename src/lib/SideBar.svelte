@@ -10,7 +10,7 @@
     import Gear from "svelte-bootstrap-icons/lib/Gear.svelte";
     import House from "svelte-bootstrap-icons/lib/House.svelte";
     import Megaphone from "svelte-bootstrap-icons/lib/Megaphone.svelte";
-    import Pin from "svelte-bootstrap-icons/lib/Pin.svelte"
+    import Pin from "svelte-bootstrap-icons/lib/Pin.svelte";
 
     /**
      * This function is used to change the page. It takes in a component and props, and then sets the page to that component with those props.
@@ -24,13 +24,13 @@
     <ul>
         <li>
             <button on:click={() => changePage(Home, [])}>
-                <House/>
+                <House />
                 Home
             </button>
         </li>
         <li>
             <button on:click={() => changePage(Greet, [])}>
-                <Megaphone/>
+                <Megaphone />
                 Greeter
             </button>
         </li>
@@ -42,7 +42,7 @@
         </li>
         <li>
             <button on:click={() => changePage(ServiceAdvisories, [])}>
-                <Megaphone/>
+                <Megaphone />
                 Advisories
             </button>
         </li>

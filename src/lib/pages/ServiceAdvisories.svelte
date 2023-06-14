@@ -1,49 +1,41 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/tauri";
-    import { info, error } from "tauri-plugin-log-api";
+    import { info, error } from "../../util";
+    import type { ServiceAdvisoryFilter } from "../../types/filters";
+    import type { Category } from "../../types/service_advisories";
+    import type { Priority } from "../../types/service_advisories";
 
-    function filter() {
-        function getValueOrDefault(elementId: string, def: any) {
+    async function filter(): Promise<string> {
+        function getValueOrDefault(elementId: string, def: string | number): string {
             let element = document.getElementById(elementId) as HTMLInputElement;
             if (element) {
                 return element.value;
             } else {
-                return def;
+                return def.toString();
             }
         }
 
-        let category: string = getValueOrDefault("category", "Transit");
-        let priority: number = parseInt(getValueOrDefault("priority", 3));
+        let category: Category = getValueOrDefault("category", "Transit") as Category;
+        let priority: Priority = parseInt(getValueOrDefault("priority", 3)) as Priority;
         let maxAge: number = parseInt(getValueOrDefault("maxAge", NaN));
         let limit: number = parseInt(getValueOrDefault("limit", NaN));
 
-        // Double logging to also log to stdout
-        console.log(`[ServiceAdvisory] Reloading with filters: ${category}, ${priority}, ${maxAge}, ${limit}`);
         info(`[ServiceAdvisory] Reloading with filters: ${category}, ${priority}, ${maxAge}, ${limit}`);
 
-        let filters: any[] = [
-            { Category: category },
-            { Priority: priority }
-        ];
+        let filters: ServiceAdvisoryFilter[] = [{ Category: category }, { Priority: priority }];
 
         if (isFinite(limit)) filters.push({ Limit: limit });
         if (isFinite(maxAge)) filters.push({ MaxAge: maxAge });
 
-        invoke("service_advisorie_html", { filters: filters, header: 4 })
-            .then((res: string) => {
-                let container = document.getElementById("advisory-container")!;
-                console.log("[ServiceAdvisory] Got current advisories", res);
-                info("[ServiceAdvisory] Got current advisories", res)
-                container.innerHTML = res;
-                return res;
-            }).catch((err) => {
-                console.error(err);
-                error(err);
-                return err;
-            });
+        try {
+            let html: string = await invoke("service_advisorie_html", { filters: filters, header: 4 });
+            info(`[ServiceAdvisory] Got current advisories ${html}`);
+            return html;
+        } catch (err) {
+            error(`[ServiceAdvisory] Could not get service advisories: ${err}`, err);
+            throw err;
+        }
     }
-
-    filter()
 </script>
 
 <div>
@@ -68,26 +60,29 @@
         </select>
 
         <label for="maxAge">Maximum Age (days)</label>
-        <input type="number" name="MaxAge" id="maxAge">
+        <input type="number" name="MaxAge" id="maxAge" />
 
         <label for="limit">Limit of Advisories</label>
-        <input type="number" name="Limit" id="limit">
+        <input type="number" name="Limit" id="limit" />
 
-        <input type="button" id="reload" on:click={filter} value="Filter">
+        <input type="button" id="reload" on:click={filter} value="Filter" />
     </form>
 
-    <hr/>
+    <hr />
 
     <div id="advisory-container">
-        <div id="loading">
-            Loading Service Advisories...
-        </div>
+        {#await filter()}
+            <div id="loading">Loading Service Advisories...</div>
+        {:then html}
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+            {@html html}
+        {:catch error}
+            <p style="color: red">{error.message}</p>
+        {/await}
     </div>
 </div>
 
 <style lang="sass">
-    // TODO add styling for the filters
-
     // Styling the loading container
     #loading
       display: flex

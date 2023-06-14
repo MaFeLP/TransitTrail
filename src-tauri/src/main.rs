@@ -10,7 +10,6 @@ use settings::{get_settings, load_settings, reset_settings, save_settings, test_
 use std::fmt::Debug;
 use stop_schedules::stop_schedule;
 use tauri::async_runtime::Mutex;
-use tauri::Manager;
 use tauri_plugin_log::LogTarget;
 use transit_api_client::TransitClient;
 

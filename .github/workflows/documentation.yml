@@ -1,0 +1,55 @@
+name: "Build documentation PDFs"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "docs/**" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "docs/**" ]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Upload finished PDFs to this release (tag name)"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  documentation:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v3"
+
+      - name: "Setup typst"
+        run: |
+          wget "https://github.com/typst/typst/releases/download/$(gh api 'https://api.github.com/repos/typst/typst/releases/latest' | jq -r '.tag_name')/typst-x86_64-unknown-linux-musl.tar.xz"
+          tar xf typst-x86_64-unknown-linux-musl.tar.xz
+          mv typst-x86_64-unknown-linux-musl/typst /tmp/typst
+          rm -r typst-x86_64-unknown-linux-musl*
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
+      - name: "Build Introduction"
+        working-directory: "docs"
+        run: |
+          /tmp/typst compile introduction.typ
+
+      - name: "Build Conclusion"
+        working-directory: "docs"
+        run: |
+          /tmp/typst compile conclusion.typ
+
+      - name: "Upload artifacts (release only)"
+        if: ${{ inputs.tag_name }} != ''
+        working-directory: "docs"
+        run: |
+          gh release upload "${{ inputs.tag_name }}" ../LICENSE.md 
+          gh release upload "${{ inputs.tag_name }}" conclusion.pdf
+          gh release upload "${{ inputs.tag_name }}" introduction.pdf
+        env:
+          GH_TOKEN: ${{ github.token }}

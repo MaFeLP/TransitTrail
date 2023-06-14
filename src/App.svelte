@@ -1,22 +1,23 @@
 <script lang="ts">
-  import Greet from './lib/pages/Greet.svelte'
-  import SideBar from "./lib/SideBar.svelte";
+    import Greet from "./lib/pages/Greet.svelte";
+    import SideBar from "./lib/SideBar.svelte";
+    import { SvelteComponent } from "svelte";
 
-  export let mainComponent = { component: Greet, props: [] };
+    export let mainComponent: { component: SvelteComponent; props: object[] } = { component: Greet, props: [] };
 
-  function changePage(component, props) {
-    mainComponent = { component, props };
-  }
+    function changePage(component: SvelteComponent, props: object[]) {
+        mainComponent = { component: component, props: props };
+    }
 </script>
 
 <div>
-  <SideBar changePage={changePage} />
+    <SideBar {changePage} />
 
-  <h1>Super Fancy Transit Client</h1>
-  
-  <main>
-    <svelte:component this={mainComponent.component} {...mainComponent.props} />
-  </main>
+    <h1>Super Fancy Transit Client</h1>
+
+    <main>
+        <svelte:component this={mainComponent.component} {...mainComponent.props} />
+    </main>
 </div>
 
 <style lang="sass">
