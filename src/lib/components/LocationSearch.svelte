@@ -6,6 +6,8 @@
     import type { Settings } from "../../types/settings";
     import { onMount } from "svelte";
 
+    //TODO do not allow to access an intersection as a destination?
+
     export let setLocation: (Location) => void;
     export let placeholder: string;
     export let id: string;

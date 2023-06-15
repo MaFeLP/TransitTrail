@@ -203,7 +203,7 @@ export interface Segment {
     /**
      * Individual times for walking and total. Includes default (0) values for all other fields.
      *
-     * Present in Walk
+     * Present in Walk, Ride
      */
     times?: Times;
 

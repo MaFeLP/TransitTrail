@@ -2,12 +2,14 @@
     import { invoke } from "@tauri-apps/api/tauri";
     import { info, error } from "../../util";
     import ArrowRight from "svelte-bootstrap-icons/lib/ArrowRight.svelte";
+    import BusFront from "svelte-bootstrap-icons/lib/BusFront.svelte";
+    import Stopwatch from "svelte-bootstrap-icons/lib/Stopwatch.svelte";
     import LocationSearch from "../components/LocationSearch.svelte";
     import type { Plan } from "../../types/trip_planner";
     import { toPartialLocation } from "../../types/common";
     import type { Location } from "../../types/common";
+    import TransitPlan from "../components/TransitPlan.svelte";
 
-    //TODO fix empty response body: Look at keys in request parameters!!
     async function search() {
         if (!start || !end) {
             alert("Please provide an origin and a destination!");
@@ -84,9 +86,11 @@
         <input type="button" id="reload" on:click={search} value="Go!" />
     </form>
 
-    {#each plans as plan}
-        <div>{plan}</div>
-    {/each}
+    <div id="transit-plans">
+        {#each plans as plan, index}
+            <TransitPlan {plan} id="transit-plan-{index}" />
+        {/each}
+    </div>
 </div>
 
 <style lang="sass">
@@ -120,4 +124,14 @@
   .description
     color: #4d4d4c
     font-size: small
+
+  div#transit-plans
+    display: flex
+    flex-direction: column
+    align-items: start
+    justify-content: center
+    gap: 10px
+    margin-top: 20px
+    width: 100%
+    padding-bottom: 20px
 </style>
