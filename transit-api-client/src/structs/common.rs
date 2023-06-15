@@ -206,77 +206,10 @@ pub struct Street {
 
     /// Optionally a Street Type may be specified, e.g. Road, Boulevard, Street, etc.
     #[serde(rename = "type")]
-    pub street_type: Option<StreetType>,
+    pub street_type: Option<String>,
 
     /// If this street is split into more than one parts, a street leg is given
     pub leg: Option<StreetLeg>,
-}
-
-/// What type of street it actually is
-#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
-pub enum StreetType {
-    /// The street is an avenue (Ave)
-    Avenue,
-
-    /// The street is a boulevard (Blvd)
-    Boulevard,
-
-    /// The street is a crescent (Cres)
-    Crescent,
-
-    /// The street is a drive (Dr)
-    Drive,
-
-    /// The street is a bus loop
-    Loop,
-
-    /// The street is a road (Rd)
-    Road,
-
-    /// The street is a street (St)
-    #[default]
-    Street,
-
-    /// The street is a way (Wy)
-    Way,
-
-    /// This is a terminal
-    Terminal,
-}
-
-impl TryFrom<&str> for StreetType {
-    type Error = &'static str;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value.to_ascii_lowercase().as_str() {
-            "avenue" => Ok(Self::Avenue),
-            "boulevard"=> Ok(Self::Boulevard),
-            "crescent"=> Ok(Self::Crescent),
-            "drive"=> Ok(Self::Drive),
-            "loop" => Ok(Self::Loop),
-            "road" => Ok(Self::Road),
-            "street" => Ok(Self::Street),
-            "way" => Ok(Self::Way),
-            "terminal" => Ok(Self::Terminal),
-            _ => Err("Not equal to `avenue`, `boulevard`, `crescent`, `drive`, `loop`, `road`, `street`, `way`")
-        }
-    }
-}
-
-impl Display for StreetType {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            StreetType::Avenue => write!(f, "Avenue"),
-            StreetType::Boulevard => write!(f, "Boulevard"),
-            StreetType::Crescent => write!(f, "Crescent"),
-            StreetType::Drive => write!(f, "Drive"),
-            StreetType::Loop => write!(f, "Loop"),
-            StreetType::Road => write!(f, "Road"),
-            StreetType::Street => write!(f, "Street"),
-            StreetType::Way => write!(f, "Way"),
-            StreetType::Terminal => write!(f, "Terminal"),
-        }
-    }
 }
 
 /// The part of the street if it is split up in more than one parts
@@ -372,13 +305,11 @@ pub struct Intersection {
 
 #[cfg(test)]
 mod test {
-    use crate::structs::common::{StreetLeg, StreetType};
+    use crate::structs::common::StreetLeg;
     use tokio_test::assert_err;
 
     #[test]
     fn try_from() -> Result<(), &'static str> {
-        assert_eq!(StreetType::try_from("Street")?, StreetType::Street);
-        assert_err!(StreetType::try_from("not a valid street type"));
         assert_eq!(StreetLeg::try_from("East")?, StreetLeg::East);
         assert_err!(StreetLeg::try_from("not a valid street leg"));
         Ok(())

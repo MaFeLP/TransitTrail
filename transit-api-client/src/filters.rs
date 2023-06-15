@@ -7,7 +7,7 @@ use std::fmt::Display;
 use serde::{Deserialize, Serialize};
 use time::{macros::format_description, Date};
 
-use crate::structs::common::{StreetLeg, StreetType};
+use crate::structs::common::StreetLeg;
 use crate::structs::{
     service_advisories::{Category, Priority},
     UrlParameter,
@@ -128,7 +128,7 @@ pub enum Street<'a> {
     Name(&'a str),
 
     /// Filter for the type of the street
-    Type(StreetType),
+    Type(&'a str),
 
     /// Filter for the leg of the street
     Leg(StreetLeg),

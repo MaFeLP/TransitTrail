@@ -105,8 +105,8 @@ pub enum TripStop {
     /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// # tokio_test::block_on(async move {
     /// let plans = client.trip_planner(
-    ///     Location::Point(GeoLocation::new(49.86917, -97.1391)),
-    ///     Location::Point(GeoLocation::new(49.8327, -97.10887)),
+    ///     PartialLocation::Point(49.86917, -97.1391),
+    ///     PartialLocation::Point(49.8327, -97.10887),
     ///     Vec::new(),
     ///     Usage::Normal
     /// ).await.unwrap();

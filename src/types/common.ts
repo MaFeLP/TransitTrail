@@ -127,29 +127,12 @@ export interface Street {
      *
      * This will be changed to a string a future version
      */
-    type?: StreetType;
+    type?: string;
 
     /**
      * If this street is split into more than one part, a street leg is given
      */
     leg?: StreetLeg;
-}
-
-/**
- * Represents the type of a street.
- *
- * @deprecated
- */
-export enum StreetType {
-    Avenue = "Avenue",
-    Boulevard = "Boulevard",
-    Crescent = "Crescent",
-    Drive = "Drive",
-    Loop = "Loop",
-    Road = "Road",
-    Street = "Street",
-    Way = "Way",
-    Terminal = "Terminal",
 }
 
 /**

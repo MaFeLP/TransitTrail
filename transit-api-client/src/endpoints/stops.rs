@@ -325,13 +325,13 @@ mod test {
             street: Street {
                 key: 3057,
                 name: "River Avenue".to_string(),
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
                 leg: None,
             },
             cross_street: Street {
                 key: 681,
                 name: "Cauchon Street".to_string(),
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
                 leg: None,
             },
             centre: GeoLocation {
@@ -353,13 +353,13 @@ mod test {
             street: Street {
                 key: 50000299,
                 name: "Stafford".to_string(),
-                street_type: Some(StreetType::Loop),
+                street_type: Some("Loop".to_string()),
                 leg: None,
             },
             cross_street: Street {
                 key: 3465,
                 name: "Stafford Street".to_string(),
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
                 leg: None,
             },
             centre: GeoLocation {
@@ -388,13 +388,13 @@ mod test {
                 street: Street {
                     key: 2265,
                     name: "Main Street".to_string(),
-                    street_type: Some(StreetType::Street),
+                    street_type: Some("Street".to_string()),
                     leg: None,
                 },
                 cross_street: Street {
                     key: 2871,
                     name: "Pioneer Avenue".to_string(),
-                    street_type: Some(StreetType::Avenue),
+                    street_type: Some("Avenue".to_string()),
                     leg: None,
                 },
                 centre: GeoLocation {
@@ -415,13 +415,13 @@ mod test {
                 street: Street {
                     key: 2871,
                     name: "Pioneer Avenue".to_string(),
-                    street_type: Some(StreetType::Avenue),
+                    street_type: Some("Avenue".to_string()),
                     leg: None,
                 },
                 cross_street: Street {
                     key: 2265,
                     name: "Main Street".to_string(),
-                    street_type: Some(StreetType::Street),
+                    street_type: Some("Street".to_string()),
                     leg: None,
                 },
                 centre: GeoLocation {
@@ -458,13 +458,13 @@ mod test {
                 key: 2715,
                 name: "Osborne Street".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
             },
             cross_street: Street {
                 key: 1486,
                 name: "Glasgow Avenue".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
             },
             centre: GeoLocation {
                 latitude: 49.86912,
@@ -507,13 +507,13 @@ mod test {
                 key: 2715,
                 name: "Osborne Street".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
             },
             cross_street: Street {
                 key: 3781,
                 name: "Wardlaw Avenue".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
             },
             centre: GeoLocation {
                 latitude: 49.87699,
@@ -551,13 +551,13 @@ mod test {
             street: Street {
                 key: 2430,
                 name: "McMeans Avenue".to_string(),
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
                 leg: Some(StreetLeg::East),
             },
             cross_street: Street {
                 key: 873,
                 name: "Corliss Crescent".to_string(),
-                street_type: Some(StreetType::Crescent),
+                street_type: Some("Crescent".to_string()),
                 leg: None,
             },
             centre: GeoLocation {
