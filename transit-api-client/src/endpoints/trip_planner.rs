@@ -97,7 +97,7 @@ mod test {
         let client = crate::testing_client();
         let actual = client
             .trip_planner(
-                PartialLocation::Point(49.86917,-97.1391),
+                PartialLocation::Point(49.86917, -97.1391),
                 PartialLocation::Point(49.8327, -97.10887),
                 Vec::new(),
                 Usage::Normal,

@@ -232,7 +232,10 @@ mod test {
         let client = crate::testing_client();
         let query = "Main Street";
 
-        let actual = client.search_locations(query, Some(5), Usage::Normal).await.unwrap();
+        let actual = client
+            .search_locations(query, Some(5), Usage::Normal)
+            .await
+            .unwrap();
 
         let expected = vec![
             Location::Intersection(Intersection {

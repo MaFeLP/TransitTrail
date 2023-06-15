@@ -80,9 +80,7 @@ impl From<TripPlan> for UrlParameter {
                 d.format(format_description!("[year]-[month]-[day]"))
                     .unwrap()
             ),
-            TripPlan::Time(hours, minutes) => format!(
-                "&time={hours}:{minutes}",
-            ),
+            TripPlan::Time(hours, minutes) => format!("&time={hours}:{minutes}",),
             TripPlan::Mode(m) => format!("&mode={}", m),
             TripPlan::WalkSpeed(s) => format!("&walk-speed={}", s),
             TripPlan::MaxWalkTime(t) => format!("&max-walk-time={}", t),
