@@ -48,19 +48,58 @@ export interface Location {
     type: LocationType;
 
     /**
-     * If type is set to <code>address</code>, this represents the address which is the location
+     * The unique key of the location
+     */
+    key: number | string;
+
+    /**
+     * What street the address is located on
+     *
+     * Used in address, intersection
+     */
+    street?: Street;
+
+    /**
+     * The house number/street number of the address
+     *
+     * Used in address
+     */
+    "street-number"?: number;
+
+    /**
+     * The geographic centre of the address
+     *
+     * Used in type address, intersection, point
+     */
+    centre?: GeoLocation;
+
+    /**
+     * What the point of interest is called
+     *
+     * Used in monument
+     */
+    name?: string;
+
+    /**
+     * Which categories the point of interest/monument has
+     *
+     * Used in monument
+     */
+    categories?: string[];
+
+    /**
+     * The address of the monument
+     *
+     * Used in monument
      */
     address?: Address;
 
     /**
-     * If type is set to <code>monument</code>, this represents the monument, which is the location
+     * The street crossing the main street
+     *
+     * Used in intersection
      */
-    monument?: Monument;
-
-    /**
-     * If type is set to <code>intersection</code>, this represents the intersection, which is the location
-     */
-    intersection?: Intersection;
+    "cross-street"?: Street;
 
     /**
      * If type is set to <code>point</code>, this represents the geographical coordinates of the location
