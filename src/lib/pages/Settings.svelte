@@ -21,6 +21,8 @@
         (document.getElementById("max-transfers") as HTMLInputElement).value = settings.max_transfers.toString();
         (document.getElementById("max-walking-time") as HTMLInputElement).value = settings.max_walking_time.toString();
         (document.getElementById("walking-speed") as HTMLInputElement).value = settings.walking_speed.toString();
+        (document.getElementById("advanced-search-interval") as HTMLInputElement).value =
+            settings.search_interval.toString();
     }
 
     async function save() {
@@ -31,6 +33,7 @@
             parseInt((document.getElementById("max-transfers") as HTMLInputElement).value),
             parseInt((document.getElementById("max-walking-time") as HTMLInputElement).value),
             parseInt((document.getElementById("walking-speed") as HTMLInputElement).value),
+            parseInt((document.getElementById("advanced-search-interval") as HTMLInputElement).value),
         );
         info("[Settings]: Updating settings");
         console.log(`[Settings]: New settings:`, newSettings);
@@ -94,6 +97,15 @@
         { id: "max-walking-time", name: "max-walking-time", description: "Max Walking Time (minutes)", type: "number" },
         { id: "walking-speed", name: "walking-speed", description: "Walking Speed (km/h)", type: "number" },
     ];
+
+    let advancedSettingsElements = [
+        {
+            id: "search-interval",
+            name: "search-interval",
+            description: "How often to refresh the search entries, when searching for a location (ms)",
+            type: "number",
+        },
+    ];
 </script>
 
 <div id="settings">
@@ -109,6 +121,18 @@
             <input type={element.type} id={element.id} name={element.name} />
         </div>
     {/each}
+    <hr class="w-100" />
+    <details>
+        <summary class="pointer">Advanced Section</summary>
+
+        {#each advancedSettingsElements as element}
+            <div class="setting">
+                <label for="advanced-{element.id}">{element.description}</label>
+                <input type={element.type} id="advanced-{element.id}" name={element.name} />
+            </div>
+        {/each}
+    </details>
+    <hr class="w-100" />
     <div class="setting">
         <input id="btn-save" class="btn" type="button" on:click={save} value="Save" />
         <input id="btn-reset" class="btn" type="button" on:click={reset} value="Reset Default" />
@@ -154,4 +178,10 @@
 
       label
         width: 15em
+
+  summary
+    margin-bottom: 15px
+
+  .w-100
+    width: 100%
 </style>

@@ -15,6 +15,7 @@ pub struct Settings {
     pub max_transfers: u32,
     pub max_walking_time: u32,
     pub walking_speed: f32,
+    pub search_interval: u64,
 }
 
 impl Default for Settings {
@@ -26,6 +27,8 @@ impl Default for Settings {
             max_transfers: 10,
             walking_speed: 4.0,
             max_walking_time: 30,
+
+            search_interval: 5000,
         }
     }
 }
