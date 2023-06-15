@@ -3,20 +3,46 @@
     import { info, error } from "../../util";
     import ArrowRight from "svelte-bootstrap-icons/lib/ArrowRight.svelte";
     import LocationSearch from "../components/LocationSearch.svelte";
+    import type { Plan } from "../../types/trip_planner";
+    import { toPartialLocation } from "../../types/common";
+    import type { Location } from "../../types/common";
 
-    function keypress(event: KeyboardEvent) {
-        if (event.key === "Enter") {
-            info("Pressed Enter");
+    //TODO fix empty response body: Look at keys in request parameters!!
+    async function search() {
+        if (!start || !end) {
+            alert("Please provide an origin and a destination!");
+            return;
         }
+        info("[TripPlanner] Fetching API response...");
+        try {
+            plans = await invoke("trip_planner", {
+                origin: toPartialLocation(start),
+                destination: toPartialLocation(end),
+                date: (document.getElementById("date") as HTMLInputElement).value,
+                time: (document.getElementById("time") as HTMLInputElement).value.split(":").map((x) => parseInt(x)),
+                mode: (document.getElementById("time-type") as HTMLInputElement).value,
+            });
+        } catch (e) {
+            error("[TripPlanner] Could not fetch API response!", e);
+        }
+    }
+
+    async function keypress(event: KeyboardEvent) {
+        if (event.key === "Enter") await search();
     }
 
     let now = new Date();
     let currentTime = `${now.getHours() < 10 ? "0" + now.getHours().toString() : now.getHours()}:${
         now.getMinutes() < 10 ? "0" + now.getMinutes().toString() : now.getMinutes()
     }`;
+    let today = `${now.getFullYear()}-${now.getMonth() < 10 ? "0" + now.getMonth().toString() : now.getMonth()}-${
+        now.getDay() < 10 ? "0" + now.getDay().toString() : now.getDay()
+    }`;
 
     let start: Location | null = null;
     let end: Location | null = null;
+
+    let plans: Plan[] = [];
 </script>
 
 <div>
@@ -52,10 +78,15 @@
                 <option value="ArriveAfter">Arrive After</option>
             </select>
             <input type="time" id="time" value={currentTime} min={currentTime} on:keypress={keypress} />
+            <input type="date" id="date" value={today} min={today} on:keypress={keypress} />
         </div>
 
-        <input type="button" id="reload" on:click={() => alert("Reloading...")} value="Filter" />
+        <input type="button" id="reload" on:click={search} value="Go!" />
     </form>
+
+    {#each plans as plan}
+        <div>{plan}</div>
+    {/each}
 </div>
 
 <style lang="sass">
@@ -85,4 +116,8 @@
 
   .bold
     font-weight: bold
+
+  .description
+    color: #4d4d4c
+    font-size: small
 </style>

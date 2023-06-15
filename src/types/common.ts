@@ -107,6 +107,41 @@ export interface Location {
     point?: GeoLocation;
 }
 
+export interface PartialLocation {
+    /**
+     * The address of a Location
+     */
+    Address?: string;
+
+    /**
+     * The location is a significant point of interest
+     */
+    Monument?: string;
+
+    /**
+     * The location is at an intersection of two streets
+     */
+    Intersection?: string;
+
+    /**
+     * A geographic point, representing latitude and longitude
+     */
+    Point?: [number, number];
+}
+
+export function toPartialLocation(location: Location): PartialLocation {
+    switch (location.type) {
+        case LocationType.Address:
+            return { Address: location.key.toString() };
+        case LocationType.Monument:
+            return { Monument: location.key.toString() };
+        case LocationType.Intersection:
+            return { Intersection: location.key.toString() };
+        case LocationType.Point:
+            return { Point: [location.point.latitude, location.point.longitude] };
+    }
+}
+
 /**
  * Represents a street with its attributes.
  */

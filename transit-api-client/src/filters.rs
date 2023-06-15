@@ -85,7 +85,7 @@ impl From<TripPlan> for UrlParameter {
             TripPlan::WalkSpeed(s) => format!("&walk-speed={}", s),
             TripPlan::MaxWalkTime(t) => format!("&max-walk-time={}", t),
             TripPlan::MinTransferWait(t) => format!("&min-transfer-wait={}", t),
-            TripPlan::MaxTransferWait(t) => format!("&ax-transfer-wait={}", t),
+            TripPlan::MaxTransferWait(t) => format!("&max-transfer-wait={}", t),
             TripPlan::MaxTransfers(t) => format!("&max-transfers={}", t),
         })
     }

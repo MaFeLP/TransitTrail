@@ -1,6 +1,7 @@
 use crate::{error_string, ClientState, SettingsState};
 use tauri::State;
 use time::Date;
+use time::macros::format_description;
 use transit_api_client::filters::{Mode, TripPlan as TripPlanFilters};
 use transit_api_client::prelude::*;
 
@@ -22,7 +23,7 @@ pub async fn search_locations(
 pub async fn trip_planner(
     origin: PartialLocation<'_>,
     destination: PartialLocation<'_>,
-    date: Date,
+    date: &str,
     time: (u8, u8),
     mode: Mode,
     client: State<'_, ClientState>,
@@ -30,6 +31,7 @@ pub async fn trip_planner(
 ) -> Result<Vec<trip::Plan>, &'static str> {
     let trip_filters = {
         let settings = settings.0.lock().await;
+        let date = Date::parse(date, format_description!("[year]-[month]-[day]")).map_err(|_| "Invalid date")?;
         vec![
             // Specified filters from user
             TripPlanFilters::Date(date),
