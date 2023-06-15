@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "final-project",
-    "version": "0.0.0"
+    "productName": "transit-trail",
+    "version": "0.0.0-1"
   },
   "tauri": {
     "allowlist": {
@@ -35,7 +35,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.github.mafelp.computerscience402-final-project",
+      "identifier": "com.github.mafelp.transit-trail",
       "targets": "all"
     },
     "security": {
@@ -49,7 +49,7 @@
         "maximized": true,
         "fullscreen": false,
         "resizable": true,
-        "title": "final-project",
+        "title": "Transit Trail",
         "width": 800,
         "height": 600
       }
