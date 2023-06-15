@@ -42,7 +42,8 @@ pub async fn save_settings(
     let dir = config_dir().ok_or("failed to get config directory")?;
     let file_path = dir.join("wpg-transit-client").join("settings.toml");
 
-    let toml_config = toml::to_string(&new_settings).map_err(|why| error_string(&why, "Could not serialize settings to toml"))?;
+    let toml_config = toml::to_string(&new_settings)
+        .map_err(|why| error_string(&why, "Could not serialize settings to toml"))?;
 
     let mut file = OpenOptions::new()
         .write(true)
