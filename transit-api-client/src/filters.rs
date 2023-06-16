@@ -81,7 +81,8 @@ impl From<TripPlan> for UrlParameter {
                     .unwrap()
             ),
             TripPlan::Time(hours, minutes) => {
-                format!("&time={}:{}",
+                format!(
+                    "&time={}:{}",
                     if hours < 10 {
                         format!("0{}", hours)
                     } else {

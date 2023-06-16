@@ -3,6 +3,7 @@
 
 mod service_advisory;
 mod settings;
+mod stop_info;
 mod stop_schedules;
 mod trip_planner;
 
@@ -75,6 +76,7 @@ fn main() {
             test_token,
             service_advisory::service_advisorie_html,
             stop_schedules::stop_schedule,
+            stop_info::stop_info,
             // Trip Planner
             trip_planner::trip_planner,
             trip_planner::search_locations,

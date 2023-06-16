@@ -2,8 +2,6 @@
     import { invoke } from "@tauri-apps/api/tauri";
     import { info, error } from "../../util";
     import ArrowRight from "svelte-bootstrap-icons/lib/ArrowRight.svelte";
-    import BusFront from "svelte-bootstrap-icons/lib/BusFront.svelte";
-    import Stopwatch from "svelte-bootstrap-icons/lib/Stopwatch.svelte";
     import LocationSearch from "../components/LocationSearch.svelte";
     import type { Plan } from "../../types/trip_planner";
     import { toPartialLocation } from "../../types/common";
