@@ -115,15 +115,17 @@ pub enum TripStop {
     ///
     /// match segment {
     ///     trip::Segment::Walk(walk) => {
-    ///         match &walk.to {
-    ///             trip::TripStop::Stop(stop) => {
-    ///                 // This is what we actually care about:
-    ///                 // Get the other required information of the stop
-    ///                 let stop_complete = client.stop_info(stop.key, Usage::Normal).await.unwrap();
-    ///                 println!("{:?}", stop_complete);
-    ///             },
-    ///             _ => { /* handle other types */ }
-    ///         }
+    ///         if let Some(to) = &walk.to {
+    ///             match to {
+    ///                 trip::TripStop::Stop(stop) => {
+    ///                     // This is what we actually care about:
+    ///                     // Get the other required information of the stop
+    ///                     let stop_complete = client.stop_info(stop.key, Usage::Normal).await.unwrap();
+    ///                     println!("{:?}", stop_complete);
+    ///                 },
+    ///                 _ => { /* handle other types */ }
+    ///             }
+    ///        }
     ///     },
     ///     _ => { /* handle other types */ },
     /// }
