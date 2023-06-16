@@ -2,6 +2,7 @@
     import Stopwatch from "svelte-bootstrap-icons/lib/Stopwatch.svelte";
     import BusFront from "svelte-bootstrap-icons/lib/BusFront.svelte";
     import ArrowRight from "svelte-bootstrap-icons/lib/ArrowRight.svelte";
+    import Shuffle from "svelte-bootstrap-icons/lib/Shuffle.svelte";
     import walking from "../components/walking.svg";
     import type { Plan } from "../../types/trip_planner";
     import { onMount } from "svelte";
@@ -10,6 +11,8 @@
 
     export let plan: Plan;
     export let id: string;
+
+    console.log("[TransitPlan] Displaying plan: ", plan);
 
     let dialog: HTMLDialogElement;
 
@@ -47,24 +50,40 @@
         {#each plan.segments as segment}
             {#if segment.type === SegmentType.Ride}
                 <li class="segment-ride">
-                    Board
+                    <BusFront />
+                    ({segment.times.durations.riding} min; scheduled: {new Date(
+                        segment.times.start,
+                    ).toLocaleTimeString()}) on
                     <span class={segment.route["badge-style"]["class-names"]["class-name"].join(" ")}>
                         Route {segment.route["badge-label"]}
                         {segment.variant.name}
                     </span>
-                    (scheduled at {new Date(segment.times.start).toLocaleTimeString()})
                 </li>
             {:else if segment.type === SegmentType.Walk}
-                <li class="segment-walk">
-                    Walk for {segment.to.durations.walking} min to
-                    {#if segment.to.Stop !== undefined}
-                        {segment.to.Stop.name}
-                    {:else if segment.to.Destination !== undefined}
-                        <TripLocation location={segment.to.Destination} />
+                {#if plan.segments.length <= 1}
+                    <li class="segment-walk">
+                        <img src={walking} alt="Walking Person Icon" class="walking-icon" />
+                        Walk for {plan.segments[0].times.durations.walking} min to your destination.
+                    </li>
+                {:else}
+                    <li class="segment-walk">
+                        <img src={walking} alt="Walking Person Icon" class="walking-icon" />
+                        ({segment.times.durations.walking} min)
+                        <ArrowRight />
+                        {#if segment.from !== undefined}
+                            <TripLocation location={segment.from} />
+                            <ArrowRight />
+                        {/if}
+                        <TripLocation location={segment.to} />
+                    </li>
+                {/if}
+            {:else if segment.type === SegmentType.Transfer}
+                <li class="segment-transfer">
+                    <Shuffle /> at <TripLocation location={segment.from} />
+                    {#if segment.from.stop.key !== segment.to.stop.key}
+                        <ArrowRight /> <TripLocation location={segment.to} />
                     {/if}
                 </li>
-            {:else if segment.type === SegmentType.Transfer}
-                <li class="segment-transfer">Transferring...</li>
             {:else}
                 <li class="segment-unknown">
                     Unknown segment type of your plan: {segment.type}. Expected one of: <code>Ride</code>,
