@@ -112,12 +112,26 @@
 <dialog class="search-dialog" {id} on:close={clear} on:keypress={keypress}>
     <div class="contents">
         <input type="button" value="Enter a stop number" id="{id}-stop-number" on:click={stopNumber} />
-
         <p class="or-label"><b>OR</b></p>
-
         <input type="text" placeholder="Enter a location" id="{id}-query" />
 
-        <p>Please select your location from below</p>
+        <details class="instructions">
+            <summary class="pointer">How to use</summary>
+            <ol>
+                <li>
+                    Either click on <code>Enter a stop number</code> to enter a stop number, or enter a location in the
+                    search box.<br />
+                    A location can be one of three types:
+                    <ul>
+                        <li>An address (e.g. <code>1000 Main Street</code>)</li>
+                        <li>A point of interest (e.g. <code>Canada Life Centre</code>), or</li>
+                        <li>An intersection (e.g. <code>Portage @ Main</code></li>
+                    </ul>
+                </li>
+                <li>Speed up and send the query instantly, press <code>Enter</code></li>
+                <li>Click on the search result below to select it</li>
+            </ol>
+        </details>
 
         <hr />
 
@@ -175,4 +189,7 @@
         justify-content: center
         padding: 0
         margin: 0
+
+    .instructions
+        font-size: var.$font-size
 </style>
