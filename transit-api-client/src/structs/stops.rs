@@ -43,6 +43,18 @@ pub struct Stop {
 
     /// A geographical point describing where the stop is located.
     pub centre: GeoLocation,
+
+    /// The internal name use by the API
+    #[serde(rename = "internal-name")]
+    pub internal_name: Option<String>,
+
+    /// The how many-th stop on the street this stop is
+    #[serde(rename = "sequence-on-street")]
+    pub sequence_on_street: Option<u32>,
+
+    /// What icon style to use
+    #[serde(rename = "icon-style")]
+    pub icon_style: Option<String>,
 }
 
 /// A Stops that only contains the minimum required.

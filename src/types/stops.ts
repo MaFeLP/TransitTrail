@@ -54,6 +54,21 @@ export interface Stop {
      * A geographical point describing where the stop is located.
      */
     centre: GeoLocation;
+
+    /**
+     * The internal name use by the API
+     */
+    "internal-name"?: string;
+
+    /**
+     * The how many-th stop on the street this stop is
+     */
+    "sequence-on-street"?: number;
+
+    /**
+     * What icon style to use
+     */
+    "icon-style"?: string;
 }
 
 /**

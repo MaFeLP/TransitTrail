@@ -34,14 +34,14 @@ pub struct Walk {
 
     /// Indicates whether the walk path starts at the origin of the trip, or at a stop.
     /// Contains location elements, or point elements which define a geographical point.
-    pub from: TripStop,
+    pub from: Option<TripStop>,
 
     /// Individual times for walking and total. Includes default (0) values for all other fields.
     pub times: Times,
 
     /// Indicates whether the walk path ends at the destination of the trip, or at a stop.
     /// Contains location elements, or point elements which define a geographical point.
-    pub to: TripStop,
+    pub to: Option<TripStop>,
 }
 
 /// Information about a riding route

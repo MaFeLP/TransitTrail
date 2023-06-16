@@ -2,6 +2,7 @@
 //! Structures used in multiple endpoints.
 //!
 
+use crate::prelude::Stop;
 use crate::structs::UrlParameter;
 use serde::{de::Error, Deserialize, Serialize};
 use serde_json::{Map, Number, Value};
@@ -139,6 +140,10 @@ pub enum Location {
     /// A geographic point
     #[serde(rename = "point")]
     Point(GeoLocation),
+
+    /// A bus stop
+    #[serde(rename = "stop")]
+    Stop(Stop),
 }
 
 impl Default for Location {
@@ -154,6 +159,7 @@ impl Display for Location {
             Self::Monument(m) => write!(f, "monuments/{}", m.key),
             Self::Intersection(i) => write!(f, "intersections/{}", i.key),
             Self::Point(p) => write!(f, "geo/{},{}", p.latitude, p.longitude),
+            Self::Stop(s) => write!(f, "stops/{}", s.key),
         }
     }
 }
@@ -173,6 +179,9 @@ pub enum PartialLocation<'a> {
 
     /// A geographic point, representing latitude and longitude
     Point(f64, f64),
+
+    /// A stop with its id
+    Stop(u32),
 }
 
 impl Default for PartialLocation<'_> {
@@ -188,6 +197,7 @@ impl Display for PartialLocation<'_> {
             Self::Monument(key) => write!(f, "monuments/{}", key),
             Self::Intersection(key) => write!(f, "intersections/{}", key),
             Self::Point(lat, lon) => write!(f, "geo/{},{}", lat, lon),
+            Self::Stop(key) => write!(f, "stops/{}", key),
         }
     }
 }

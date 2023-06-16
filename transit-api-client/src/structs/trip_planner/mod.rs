@@ -163,6 +163,10 @@ pub enum Location {
     /// A geographic point
     #[serde(rename = "point")]
     Point(GeoLocation),
+
+    /// A bus stop
+    #[serde(rename = "stop")]
+    Stop(Stop),
 }
 
 /// Basic information about a stop on the Trip.

@@ -36,6 +36,11 @@ export enum LocationType {
      * The location is a geographical point
      */
     Point = "point",
+
+    /**
+     * The location is a bus stop
+     */
+    Stop = "stop",
 }
 
 /**
@@ -127,6 +132,11 @@ export interface PartialLocation {
      * A geographic point, representing latitude and longitude
      */
     Point?: [number, number];
+
+    /**
+     * A bus stop
+     */
+    Stop?: number;
 }
 
 export function toPartialLocation(location: Location): PartialLocation {
@@ -139,6 +149,9 @@ export function toPartialLocation(location: Location): PartialLocation {
             return { Intersection: location.key.toString() };
         case LocationType.Point:
             return { Point: [location.point.latitude, location.point.longitude] };
+        case LocationType.Stop:
+            // A Stop location's key is always a number
+            return { Stop: location.key as number };
     }
 }
 

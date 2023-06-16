@@ -5,8 +5,7 @@
     import { LocationType } from "../../types/common";
     import type { Settings } from "../../types/settings";
     import { onMount } from "svelte";
-
-    //TODO do not allow to access an intersection as a destination?
+    import type { Stop } from "../../types/stops";
 
     export let setLocation: (Location) => void;
     export let placeholder: string;
@@ -81,11 +80,42 @@
             return;
         }
     }
+
+    async function stopNumber() {
+        let stopNumber = NaN;
+        let message = "Enter a stop number";
+
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            let input = prompt(message);
+            if (input === null) return;
+            stopNumber = parseInt(input);
+            if (isNaN(stopNumber)) {
+                message = "Invalid stop number! Please try again!";
+                continue;
+            }
+
+            try {
+                let stop: Stop = await invoke("stop_info", { id: stopNumber });
+                placeholder = `#${stop.key} (${stop.name})`;
+                setLocation({ type: LocationType.Stop, key: stopNumber });
+                dialog.close();
+                break;
+            } catch (err) {
+                error(`Could not get stop ${stopNumber}`, err);
+                message = "Invalid stop number! Please try again!";
+            }
+        }
+    }
 </script>
 
 <dialog class="search-dialog" {id} on:close={clear} on:keypress={keypress}>
     <div class="contents">
-        <input type="text" placeholder="1000 Portage Ave" id="{id}-query" />
+        <input type="button" value="Enter a stop number" id="{id}-stop-number" on:click={stopNumber} />
+
+        <p class="or-label"><b>OR</b></p>
+
+        <input type="text" placeholder="Enter a location" id="{id}-query" />
 
         <p>Please select your location from below</p>
 
@@ -139,4 +169,10 @@
         justify-content: center
         gap: 0.5rem
         width: 100%
+
+    .or-label
+        display: flex
+        justify-content: center
+        padding: 0
+        margin: 0
 </style>

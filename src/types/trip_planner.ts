@@ -91,7 +91,7 @@ export type TripStop =
           /**
            * The segment starts at the origin of the Plan
            */
-          Origin: Location;
+          origin: Location;
       }
     | {
           /**
@@ -99,13 +99,13 @@ export type TripStop =
            *
            * Only includes basic information.
            */
-          Stop: Stop;
+          stop: Stop;
       }
     | {
           /**
            * The segment ends at the [Plan]'s destination
            */
-          Destination: Location;
+          destination: Location;
       };
 
 /**
@@ -118,25 +118,31 @@ export type Location =
           /**
            * The address of a Location
            */
-          Address: Address;
+          address: Address;
       }
     | {
           /**
            * The location is a significant point of interest
            */
-          Monument: Monument;
+          monument: Monument;
       }
     | {
           /**
            * The location is at an intersection of two streets
            */
-          Intersection: Intersection;
+          intersection: Intersection;
       }
     | {
           /**
            * A geographic point
            */
-          Point: GeoLocation;
+          point: GeoLocation;
+      }
+    | {
+          /**
+           * A Bus stop
+           */
+          stop: Stop;
       };
 
 /**
@@ -196,7 +202,8 @@ export interface Segment {
      * Indicates whether the walk path starts at the origin of the trip, or at a stop.
      * Contains location elements, or point elements which define a geographical point.
      *
-     * Present in Walk, Transfer
+     * Present in Transfer
+     * MAY be present in Walk
      */
     from?: TripStop;
 
@@ -211,7 +218,8 @@ export interface Segment {
      * Indicates whether the walk path ends at the destination of the trip, or at a stop.
      * Contains location elements, or point elements which define a geographical point.
      *
-     * Present in Walk, Transfer
+     * Present in Transfer
+     * MAY be present in Walk
      */
     to?: TripStop;
 
