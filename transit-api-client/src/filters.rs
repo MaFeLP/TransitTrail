@@ -5,9 +5,9 @@
 use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
-use time::{macros::format_description, Date, Time};
+use time::{macros::format_description, Date};
 
-use crate::structs::common::{StreetLeg, StreetType};
+use crate::structs::common::StreetLeg;
 use crate::structs::{
     service_advisories::{Category, Priority},
     UrlParameter,
@@ -49,8 +49,7 @@ pub enum TripPlan {
     /// The time of the trip. Defaults to now, if not included as a filter.
     ///
     /// What the time means can be customized with a [Mode]
-    //TODO change to type (u32, u32) (for hours, minutes)
-    Time(Time),
+    Time(u8, u8),
 
     /// The mode with which the trip should be planned
     ///
@@ -61,16 +60,16 @@ pub enum TripPlan {
     WalkSpeed(f32),
 
     /// The maximum number of minutes to spend walking.
-    MaxWalkTime(i32),
+    MaxWalkTime(u32),
 
     /// The minimum number of minutes to spend waiting for a transfer.
-    MinTransferWait(i32),
+    MinTransferWait(u32),
 
     /// The maximum number of minutes to spend waiting for a transfer.
-    MaxTransferWait(i32),
+    MaxTransferWait(u32),
 
     /// The maximum number of total transfers.
-    MaxTransfers(i32),
+    MaxTransfers(u32),
 }
 
 impl From<TripPlan> for UrlParameter {
@@ -81,16 +80,26 @@ impl From<TripPlan> for UrlParameter {
                 d.format(format_description!("[year]-[month]-[day]"))
                     .unwrap()
             ),
-            TripPlan::Time(t) => format!(
-                "&time={}",
-                t.format(format_description!("[hour]:[minute]:[second]"))
-                    .unwrap()
-            ),
+            TripPlan::Time(hours, minutes) => {
+                format!(
+                    "&time={}:{}",
+                    if hours < 10 {
+                        format!("0{}", hours)
+                    } else {
+                        hours.to_string()
+                    },
+                    if minutes < 10 {
+                        format!("0{}", minutes)
+                    } else {
+                        minutes.to_string()
+                    }
+                )
+            }
             TripPlan::Mode(m) => format!("&mode={}", m),
             TripPlan::WalkSpeed(s) => format!("&walk-speed={}", s),
             TripPlan::MaxWalkTime(t) => format!("&max-walk-time={}", t),
             TripPlan::MinTransferWait(t) => format!("&min-transfer-wait={}", t),
-            TripPlan::MaxTransferWait(t) => format!("&ax-transfer-wait={}", t),
+            TripPlan::MaxTransferWait(t) => format!("&max-transfer-wait={}", t),
             TripPlan::MaxTransfers(t) => format!("&max-transfers={}", t),
         })
     }
@@ -131,7 +140,7 @@ pub enum Street<'a> {
     Name(&'a str),
 
     /// Filter for the type of the street
-    Type(StreetType),
+    Type(&'a str),
 
     /// Filter for the leg of the street
     Leg(StreetLeg),

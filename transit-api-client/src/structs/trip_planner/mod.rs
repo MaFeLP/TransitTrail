@@ -105,8 +105,8 @@ pub enum TripStop {
     /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// # tokio_test::block_on(async move {
     /// let plans = client.trip_planner(
-    ///     Location::Point(GeoLocation::new(49.86917, -97.1391)),
-    ///     Location::Point(GeoLocation::new(49.8327, -97.10887)),
+    ///     PartialLocation::Point(49.86917, -97.1391),
+    ///     PartialLocation::Point(49.8327, -97.10887),
     ///     Vec::new(),
     ///     Usage::Normal
     /// ).await.unwrap();
@@ -115,15 +115,17 @@ pub enum TripStop {
     ///
     /// match segment {
     ///     trip::Segment::Walk(walk) => {
-    ///         match &walk.to {
-    ///             trip::TripStop::Stop(stop) => {
-    ///                 // This is what we actually care about:
-    ///                 // Get the other required information of the stop
-    ///                 let stop_complete = client.stop_info(stop.key, Usage::Normal).await.unwrap();
-    ///                 println!("{:?}", stop_complete);
-    ///             },
-    ///             _ => { /* handle other types */ }
-    ///         }
+    ///         if let Some(to) = &walk.to {
+    ///             match to {
+    ///                 trip::TripStop::Stop(stop) => {
+    ///                     // This is what we actually care about:
+    ///                     // Get the other required information of the stop
+    ///                     let stop_complete = client.stop_info(stop.key, Usage::Normal).await.unwrap();
+    ///                     println!("{:?}", stop_complete);
+    ///                 },
+    ///                 _ => { /* handle other types */ }
+    ///             }
+    ///        }
     ///     },
     ///     _ => { /* handle other types */ },
     /// }
@@ -163,6 +165,10 @@ pub enum Location {
     /// A geographic point
     #[serde(rename = "point")]
     Point(GeoLocation),
+
+    /// A bus stop
+    #[serde(rename = "stop")]
+    Stop(Stop),
 }
 
 /// Basic information about a stop on the Trip.

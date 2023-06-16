@@ -325,19 +325,22 @@ mod test {
             street: Street {
                 key: 3057,
                 name: "River Avenue".to_string(),
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
                 leg: None,
             },
             cross_street: Street {
                 key: 681,
                 name: "Cauchon Street".to_string(),
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
                 leg: None,
             },
             centre: GeoLocation {
                 latitude: 49.88099,
                 longitude: -97.14116,
             },
+            internal_name: None,
+            sequence_on_street: None,
+            icon_style: None,
         };
         log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
@@ -353,19 +356,22 @@ mod test {
             street: Street {
                 key: 50000299,
                 name: "Stafford".to_string(),
-                street_type: Some(StreetType::Loop),
+                street_type: Some("Loop".to_string()),
                 leg: None,
             },
             cross_street: Street {
                 key: 3465,
                 name: "Stafford Street".to_string(),
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
                 leg: None,
             },
             centre: GeoLocation {
                 latitude: 49.85741,
                 longitude: -97.15236,
             },
+            internal_name: None,
+            sequence_on_street: None,
+            icon_style: None,
         };
         log::info!("actual={:?}, expected:{:?}", &actual, &expected);
         assert_eq!(actual, expected);
@@ -388,23 +394,26 @@ mod test {
                 street: Street {
                     key: 2265,
                     name: "Main Street".to_string(),
-                    street_type: Some(StreetType::Street),
+                    street_type: Some("Street".to_string()),
                     leg: None,
                 },
                 cross_street: Street {
                     key: 2871,
                     name: "Pioneer Avenue".to_string(),
-                    street_type: Some(StreetType::Avenue),
+                    street_type: Some("Avenue".to_string()),
                     leg: None,
                 },
                 centre: GeoLocation {
                     latitude: 49.89491,
                     longitude: -97.1379,
                 },
+                internal_name: None,
+                sequence_on_street: None,
                 distances: Some(Distances {
                     direct: 12.28,
                     walking: 16.31,
                 }),
+                icon_style: None,
             },
             Stop {
                 key: 10761,
@@ -415,23 +424,26 @@ mod test {
                 street: Street {
                     key: 2871,
                     name: "Pioneer Avenue".to_string(),
-                    street_type: Some(StreetType::Avenue),
+                    street_type: Some("Avenue".to_string()),
                     leg: None,
                 },
                 cross_street: Street {
                     key: 2265,
                     name: "Main Street".to_string(),
-                    street_type: Some(StreetType::Street),
+                    street_type: Some("Street".to_string()),
                     leg: None,
                 },
                 centre: GeoLocation {
                     latitude: 49.89452,
                     longitude: -97.13759,
                 },
+                internal_name: None,
+                sequence_on_street: None,
                 distances: Some(Distances {
                     direct: 60.92,
                     walking: 102.52,
                 }),
+                icon_style: None,
             },
         ];
 
@@ -458,18 +470,21 @@ mod test {
                 key: 2715,
                 name: "Osborne Street".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
             },
             cross_street: Street {
                 key: 1486,
                 name: "Glasgow Avenue".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
             },
             centre: GeoLocation {
                 latitude: 49.86912,
                 longitude: -97.1375,
             },
+            internal_name: None,
+            sequence_on_street: None,
+            icon_style: None,
         };
 
         log::info!("actual={:?}", &actual);
@@ -507,18 +522,21 @@ mod test {
                 key: 2715,
                 name: "Osborne Street".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
             },
             cross_street: Street {
                 key: 3781,
                 name: "Wardlaw Avenue".to_string(),
                 leg: None,
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
             },
             centre: GeoLocation {
                 latitude: 49.87699,
                 longitude: -97.14414,
             },
+            internal_name: None,
+            sequence_on_street: None,
+            icon_style: None,
         };
         log::info!("actual={:?}", &actual);
         assert_eq!(actual.stop, expected_stop);
@@ -551,19 +569,22 @@ mod test {
             street: Street {
                 key: 2430,
                 name: "McMeans Avenue".to_string(),
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
                 leg: Some(StreetLeg::East),
             },
             cross_street: Street {
                 key: 873,
                 name: "Corliss Crescent".to_string(),
-                street_type: Some(StreetType::Crescent),
+                street_type: Some("Crescent".to_string()),
                 leg: None,
             },
             centre: GeoLocation {
                 latitude: 49.90404,
                 longitude: -96.96857,
             },
+            internal_name: None,
+            sequence_on_street: None,
+            icon_style: None,
         };
         let actual = partial_stop.try_to_full_stop(&client).await?;
         log::info!("actual={:?},expected={:?}", &actual, &expected);

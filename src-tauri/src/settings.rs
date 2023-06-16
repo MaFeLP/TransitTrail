@@ -10,76 +10,40 @@ use transit_api_client::prelude::{TransitClient, Usage};
 #[serde(default)]
 pub struct Settings {
     pub api_key: String,
-    pub walking_distance: i32,
-    pub waiting_time: i32,
+    pub min_waiting_time: u32,
+    pub max_waiting_time: u32,
+    pub max_transfers: u32,
+    pub max_walking_time: u32,
     pub walking_speed: f32,
+    pub search_interval: u64,
 }
 
 impl Default for Settings {
     fn default() -> Self {
         Self {
             api_key: String::new(),
-            walking_distance: 1000,
-            waiting_time: 15,
+            min_waiting_time: 0,
+            max_waiting_time: 60,
+            max_transfers: 10,
             walking_speed: 4.0,
+            max_walking_time: 30,
+
+            search_interval: 5000,
         }
     }
 }
 
 #[tauri::command]
 pub async fn save_settings(
-    api_key: &str,
-    walking_distance: &str,
-    waiting_time: &str,
-    walking_speed: &str,
+    new_settings: Settings,
     client: State<'_, ClientState>,
     user_settings: State<'_, SettingsState>,
 ) -> Result<(), &'static str> {
     let dir = config_dir().ok_or("failed to get config directory")?;
     let file_path = dir.join("wpg-transit-client").join("settings.toml");
 
-    let settings = Settings {
-        api_key: api_key.to_string(),
-        walking_distance: {
-            if walking_distance.is_empty() {
-                Settings::default().walking_distance
-            } else {
-                walking_distance
-                    .parse()
-                    .map_err(|why|
-                        error_string(
-                            &why,
-                            "Could not parse field `walking_distance` in settings.toml (not of type `i32`",
-                        ))?
-            }
-        },
-        waiting_time: {
-            if waiting_time.is_empty() {
-                Settings::default().waiting_time
-            } else {
-                waiting_time.parse().map_err(|why| {
-                    error_string(
-                        &why,
-                        "Could not parse field `waiting_time` in settings.toml (not of type `i32`",
-                    )
-                })?
-            }
-        },
-        walking_speed: {
-            if waiting_time.is_empty() {
-                Settings::default().walking_speed
-            } else {
-                walking_speed.parse().map_err(|why| {
-                    error_string(
-                        &why,
-                        "Could not parse field `walking_speed` in settings.toml (not of type `f32`",
-                    )
-                })?
-            }
-        },
-    };
-
-    let toml_config = toml::to_string(&settings).unwrap();
+    let toml_config = toml::to_string(&new_settings)
+        .map_err(|why| error_string(&why, "Could not serialize settings to toml"))?;
 
     let mut file = OpenOptions::new()
         .write(true)
@@ -90,8 +54,8 @@ pub async fn save_settings(
     file.write_all(toml_config.as_bytes())
         .map_err(|why| error_string(&why, "Could not write to settings.toml file"))?;
 
-    *client.0.lock().await = TransitClient::new(String::from(api_key));
-    *user_settings.0.lock().await = settings;
+    *client.0.lock().await = TransitClient::new(String::from(new_settings.api_key.clone()));
+    *user_settings.0.lock().await = new_settings;
 
     Ok(())
 }

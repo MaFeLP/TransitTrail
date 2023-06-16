@@ -3,12 +3,13 @@
 
 mod service_advisory;
 mod settings;
+mod stop_info;
 mod stop_schedules;
+mod trip_planner;
 
 use log::error;
 use settings::{get_settings, load_settings, reset_settings, save_settings, test_token, Settings};
 use std::fmt::Debug;
-use stop_schedules::stop_schedule;
 use tauri::async_runtime::Mutex;
 use tauri_plugin_log::LogTarget;
 use transit_api_client::TransitClient;
@@ -74,7 +75,11 @@ fn main() {
             reset_settings,
             test_token,
             service_advisory::service_advisorie_html,
-            stop_schedule,
+            stop_schedules::stop_schedule,
+            stop_info::stop_info,
+            // Trip Planner
+            trip_planner::trip_planner,
+            trip_planner::search_locations,
         ])
         .plugin(
             tauri_plugin_log::Builder::default()
@@ -88,6 +93,7 @@ fn main() {
         .setup(|app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
+                use tauri::Manager;
                 let window = app.get_window("main").unwrap();
                 window.open_devtools();
             }

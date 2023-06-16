@@ -5,7 +5,8 @@
 use serde::Deserialize;
 
 use crate::filters;
-use crate::structs::{common::Location, trip_planner::Plan, Error, UrlParameter, Usage};
+use crate::prelude::PartialLocation;
+use crate::structs::{trip_planner::Plan, Error, UrlParameter, Usage};
 
 impl crate::TransitClient {
     /// Uses the Navigo engine to plan optimal trips from an origin to a destination.
@@ -30,18 +31,12 @@ impl crate::TransitClient {
     /// let now = OffsetDateTime::now_utc().to_offset(offset!(-7));
     /// let trip_plan = client
     ///     .trip_planner(
-    ///         Location::Point(GeoLocation {
-    ///             latitude: 49.86917,
-    ///             longitude: -97.1391,
-    ///         }),
-    ///         Location::Point(GeoLocation {
-    ///             latitude: 49.8327,
-    ///             longitude: -97.10887,
-    ///         }),
+    ///         PartialLocation::Point(49.86917, -97.1391),
+    ///         PartialLocation::Point(49.8327, -97.10887),
     ///         vec![
     ///             // These are all available filters
     ///             filters::TripPlan::Date(now.date()),
-    ///             filters::TripPlan::Time(now.time()),
+    ///             filters::TripPlan::Time(now.time().hour(), now.time().minute()),
     ///             filters::TripPlan::Mode(filters::Mode::DepartAfter),
     ///             filters::TripPlan::WalkSpeed(1.5),
     ///             filters::TripPlan::MaxWalkTime(10),
@@ -57,8 +52,8 @@ impl crate::TransitClient {
     /// ```
     pub async fn trip_planner(
         &self,
-        origin: Location,
-        destination: Location,
+        origin: PartialLocation<'_>,
+        destination: PartialLocation<'_>,
         filters: Vec<filters::TripPlan>,
         usage: Usage,
     ) -> Result<Vec<Plan>, Error> {
@@ -102,14 +97,8 @@ mod test {
         let client = crate::testing_client();
         let actual = client
             .trip_planner(
-                Location::Point(GeoLocation {
-                    latitude: 49.86917,
-                    longitude: -97.1391,
-                }),
-                Location::Point(GeoLocation {
-                    latitude: 49.8327,
-                    longitude: -97.10887,
-                }),
+                PartialLocation::Point(49.86917, -97.1391),
+                PartialLocation::Point(49.8327, -97.10887),
                 Vec::new(),
                 Usage::Normal,
             )
@@ -124,17 +113,11 @@ mod test {
         let now = OffsetDateTime::now_utc().to_offset(offset!(-7));
         let actual = client
             .trip_planner(
-                Location::Point(GeoLocation {
-                    latitude: 49.86917,
-                    longitude: -97.1391,
-                }),
-                Location::Point(GeoLocation {
-                    latitude: 49.8327,
-                    longitude: -97.10887,
-                }),
+                PartialLocation::Point(49.86917, -97.1391),
+                PartialLocation::Point(49.8327, -97.10887),
                 vec![
                     filters::TripPlan::Date(now.date()),
-                    filters::TripPlan::Time(now.time()),
+                    filters::TripPlan::Time(now.time().hour(), now.time().minute()),
                     filters::TripPlan::Mode(filters::Mode::DepartAfter),
                     filters::TripPlan::WalkSpeed(1.5),
                     filters::TripPlan::MaxWalkTime(10),
