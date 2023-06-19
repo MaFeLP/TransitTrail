@@ -135,11 +135,11 @@ mod test {
             },
             variants: Some(vec![
                 Variant {
-                    key: "25-1-D".to_string(),
+                    key: "25-0-U".to_string(),
                     name: None,
                 },
                 Variant {
-                    key: "25-0-U".to_string(),
+                    key: "25-1-D".to_string(),
                     name: None,
                 },
             ]),
@@ -171,6 +171,10 @@ mod test {
                 },
                 variants: Some(vec![
                     Variant {
+                        key: "19-1-A".to_string(),
+                        name: None,
+                    },
+                    Variant {
                         key: "19-0-L".to_string(),
                         name: None,
                     },
@@ -179,7 +183,7 @@ mod test {
                         name: None,
                     },
                     Variant {
-                        key: "19-1-A".to_string(),
+                        key: "19-1-D".to_string(),
                         name: None,
                     },
                     Variant {
@@ -187,15 +191,11 @@ mod test {
                         name: None,
                     },
                     Variant {
-                        key: "19-1-D".to_string(),
+                        key: "19-1-N".to_string(),
                         name: None,
                     },
                     Variant {
                         key: "19-0-#".to_string(),
-                        name: None,
-                    },
-                    Variant {
-                        key: "19-1-N".to_string(),
                         name: None,
                     },
                 ]),
@@ -256,11 +256,11 @@ mod test {
                     name: None,
                 },
                 Variant {
-                    key: "BLUE-0-U".to_string(),
+                    key: "BLUE-1-D".to_string(),
                     name: None,
                 },
                 Variant {
-                    key: "BLUE-1-D".to_string(),
+                    key: "BLUE-0-U".to_string(),
                     name: None,
                 },
             ]),
