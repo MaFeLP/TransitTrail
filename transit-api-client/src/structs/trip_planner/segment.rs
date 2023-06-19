@@ -2,6 +2,8 @@
 //! This module holds structs used in the Trip Planner, in individual segments;
 //!
 
+use crate::prelude::badges::{ClassNames, Style};
+use crate::prelude::{Blue, Regular};
 use crate::structs::trip_planner::Durations;
 use crate::structs::{
     routes::{Route, Variant},
@@ -61,7 +63,52 @@ impl From<DirectionsStep> for Segment {
                 .to_offset(offset!(-5));
 
                 Self::Ride(Ride {
-                    route: transit_details.line.unwrap().into(),
+                    route: {
+                        let line = transit_details
+                            .line
+                            .expect("Could not parse line from transit details. Field is missing");
+                        let short_name = line.short_name.expect(
+                            "Could not parse short name from transit details. Field is missing",
+                        );
+                        if short_name == *"BLUE".to_string() {
+                            Route::Blue(Blue {
+                                key: "BLUE".to_string(),
+                                number: "BLUE".to_string(),
+                                badge_label: "BLUE".to_string(),
+                                badge_style: Style {
+                                    class_names: ClassNames::default(),
+                                    background_color: line.color.expect("Background colour not given!"),
+                                    color: line.text_color.clone().expect("Text colour not given!"),
+                                    border_color: line.text_color.clone().expect("Border colour not given!"),
+                                },
+                                variants: Some(vec![Variant {
+                                    key: "BLUE".to_string(),
+                                    name: Some(format!("BLUE to {}", transit_details.headsign.expect("Could not get the headsign of the line! Is the key wrong?"))),
+                                }]),
+                                ..Default::default()
+                            })
+                        } else {
+                            let short_name: u32 = short_name.parse().expect(
+                                "Could not convert the name to a number. Is the key wrong?",
+                            );
+                            Route::Regular(Regular {
+                                key: short_name,
+                                number: short_name,
+                                badge_label: short_name,
+                                badge_style: Style {
+                                    class_names: ClassNames::default(),
+                                    background_color: line.color.expect("Background colour not given!"),
+                                    color: line.text_color.clone().expect("Text colour not given!"),
+                                    border_color: line.text_color.clone().expect("Border colour not given!"),
+                                },
+                                variants: Some(vec![Variant {
+                                    key: short_name.to_string(),
+                                    name: Some(format!("{} to {}", short_name, transit_details.headsign.expect("Could not get the headsign of the line! Is the key wrong?"))),
+                                }]),
+                                ..Default::default()
+                            })
+                        }
+                    },
                     times: Times {
                         start: PrimitiveDateTime::new(start_time.date(), start_time.time()),
                         end: PrimitiveDateTime::new(end_time.date(), end_time.time()),
