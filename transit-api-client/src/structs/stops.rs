@@ -360,7 +360,7 @@ pub enum CustomerType {
 pub struct BadgeStyle {
     /// Classes for the badge
     #[serde(rename = "class-names")]
-    pub class_names: RenameMe,
+    pub class_names: ClassNamesHolder,
 
     /// The background color of the badge
     #[serde(rename = "background-color")]
@@ -374,9 +374,9 @@ pub struct BadgeStyle {
     pub color: String,
 }
 
-/// TODO: Rename me
+/// A Struct just holding the field class_name
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RenameMe {
+pub struct ClassNamesHolder {
     /// The class name
     #[serde(rename = "class-name")]
     pub class_name: Vec<FoxxClassNames>,

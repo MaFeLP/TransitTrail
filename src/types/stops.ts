@@ -421,7 +421,7 @@ export interface BadgeStyle {
     /**
      * Classes for the badge
      */
-    "class-names": RenameMe;
+    "class-names": ClassNamesHolder;
 
     /**
      * The background color of the badge
@@ -440,9 +440,9 @@ export interface BadgeStyle {
 }
 
 /**
- * TODO: Rename me
+ * A Struct just holding the field class-name
  */
-export interface RenameMe {
+export interface ClassNamesHolder {
     /**
      * The class name
      */
