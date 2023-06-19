@@ -1,0 +1,5 @@
+#[workspace]
+#members = ["google-maps-api-client", "src-tauri", "transit-api-client"]
+
+[workspace]
+members = ["src-tauri"]
