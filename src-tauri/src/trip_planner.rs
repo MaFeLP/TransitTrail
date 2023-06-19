@@ -41,13 +41,11 @@ pub async fn trip_planner(
         vec![
             // Specified filters from user
             TripPlanFilters::Mode(mode),
-            TripPlanFilters::Date(
-                match date {
-                    Some(d) => Date::parse(&d, format_description!("[year]-[month]-[day]"))
-                        .map_err(|_| "Invalid date")?,
-                    None => now.date(),
-                }
-            ),
+            TripPlanFilters::Date(match date {
+                Some(d) => Date::parse(&d, format_description!("[year]-[month]-[day]"))
+                    .map_err(|_| "Invalid date")?,
+                None => now.date(),
+            }),
             TripPlanFilters::Time(now_time.0, now_time.1),
             // Specified filters from settings
             TripPlanFilters::MaxTransfers(settings.max_transfers),

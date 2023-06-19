@@ -7,8 +7,8 @@ pub mod segment;
 
 use google_maps_api_client::DirectionsLeg;
 use serde::{Deserialize, Serialize};
-use time::{OffsetDateTime, PrimitiveDateTime};
 use time::macros::offset;
+use time::{OffsetDateTime, PrimitiveDateTime};
 
 use super::{
     common::{Address, GeoLocation, Intersection, Monument},
@@ -31,8 +31,12 @@ pub struct Plan {
 
 impl From<DirectionsLeg> for Plan {
     fn from(leg: DirectionsLeg) -> Self {
-        let start_time = OffsetDateTime::from_unix_timestamp(leg.departure_time.unwrap().value).unwrap().to_offset(offset!(-5));
-        let end_time = OffsetDateTime::from_unix_timestamp(leg.arrival_time.unwrap().value).unwrap().to_offset(offset!(-5));
+        let start_time = OffsetDateTime::from_unix_timestamp(leg.departure_time.unwrap().value)
+            .unwrap()
+            .to_offset(offset!(-5));
+        let end_time = OffsetDateTime::from_unix_timestamp(leg.arrival_time.unwrap().value)
+            .unwrap()
+            .to_offset(offset!(-5));
         let mut times = Times {
             start: PrimitiveDateTime::new(start_time.date(), start_time.time()),
             end: PrimitiveDateTime::new(end_time.date(), end_time.time()),

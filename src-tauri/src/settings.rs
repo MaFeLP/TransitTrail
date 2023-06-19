@@ -1,8 +1,8 @@
+use google_maps_api_client::GoogleMapsClient;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
-use google_maps_api_client::GoogleMapsClient;
 
-use crate::{error_string, ClientState, SettingsState, GoogleMapsState};
+use crate::{error_string, ClientState, GoogleMapsState, SettingsState};
 use serde::{Deserialize, Serialize};
 use tauri::{api::path::config_dir, State};
 use transit_api_client::prelude::{TransitClient, Usage};
@@ -101,9 +101,7 @@ pub async fn reset_settings(settings: State<'_, SettingsState>) -> Result<(), ()
 }
 
 #[tauri::command]
-pub async fn test_token(
-    token: String,
-) -> Result<(), &'static str> {
+pub async fn test_token(token: String) -> Result<(), &'static str> {
     let client = TransitClient::new(token);
     match client.stop_info(10064, Usage::Normal).await {
         Ok(_) => Ok(()),
@@ -112,9 +110,7 @@ pub async fn test_token(
 }
 
 #[tauri::command]
-pub async fn test_google_token(
-    token: String,
-) -> Result<(), &'static str> {
+pub async fn test_google_token(token: String) -> Result<(), &'static str> {
     let client = GoogleMapsClient::new(token);
     match client.geocode("300 Portage Ave, Winnipeg, MB").await {
         Ok(_) => Ok(()),

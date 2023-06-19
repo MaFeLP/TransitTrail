@@ -86,9 +86,9 @@ fn main() {
     println!("[Before Init]: Loaded user settings: {user_settings:?}");
 
     tauri::Builder::default()
-        .manage(ClientState(Mutex::new(TransitClient::new(
-            String::from(&user_settings.api_key),
-        ))))
+        .manage(ClientState(Mutex::new(TransitClient::new(String::from(
+            &user_settings.api_key,
+        )))))
         .manage(GoogleMapsState(Mutex::new(GoogleMapsClient::new(
             String::from(&user_settings.google_api_key),
         ))))

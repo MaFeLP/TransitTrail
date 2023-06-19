@@ -2,16 +2,16 @@
 //! This module holds structs used in the Trip Planner, in individual segments;
 //!
 
+use crate::structs::trip_planner::Durations;
 use crate::structs::{
     routes::{Route, Variant},
     stops::Bus,
     trip_planner::{Bounds, Times, TripStop},
 };
-use serde::{Deserialize, Serialize};
-use time::{OffsetDateTime, PrimitiveDateTime};
-use time::macros::offset;
 use google_maps_api_client::{DirectionsStep, TravelMode};
-use crate::structs::trip_planner::Durations;
+use serde::{Deserialize, Serialize};
+use time::macros::offset;
+use time::{OffsetDateTime, PrimitiveDateTime};
 
 /// Segments can either be of type [Walk], [Ride] or [Transfer]
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -33,24 +33,32 @@ pub enum Segment {
 impl From<DirectionsStep> for Segment {
     fn from(step: DirectionsStep) -> Self {
         match step.travel_mode {
-            TravelMode::Walking => {
-                Self::Walk(Walk {
-                    times: Times {
-                        durations: Durations {
-                            walking: (step.duration.value / 60) as u32,
-                            total: (step.duration.value / 60) as u32,
-                            ..Default::default()
-                        },
+            TravelMode::Walking => Self::Walk(Walk {
+                times: Times {
+                    durations: Durations {
+                        walking: (step.duration.value / 60) as u32,
+                        total: (step.duration.value / 60) as u32,
                         ..Default::default()
                     },
-                    instructions: Some(step.html_instructions.clone()),
                     ..Default::default()
-                })
-            }
+                },
+                instructions: Some(step.html_instructions.clone()),
+                ..Default::default()
+            }),
             TravelMode::Transit => {
-                let transit_details = step.transit_details.expect("Can not display transit details! Missing in API response!");
-                let start_time = OffsetDateTime::from_unix_timestamp(transit_details.departure_time.unwrap().value).unwrap().to_offset(offset!(-5));
-                let end_time = OffsetDateTime::from_unix_timestamp(transit_details.arrival_time.unwrap().value).unwrap().to_offset(offset!(-5));
+                let transit_details = step
+                    .transit_details
+                    .expect("Can not display transit details! Missing in API response!");
+                let start_time = OffsetDateTime::from_unix_timestamp(
+                    transit_details.departure_time.unwrap().value,
+                )
+                .unwrap()
+                .to_offset(offset!(-5));
+                let end_time = OffsetDateTime::from_unix_timestamp(
+                    transit_details.arrival_time.unwrap().value,
+                )
+                .unwrap()
+                .to_offset(offset!(-5));
 
                 Self::Ride(Ride {
                     route: transit_details.line.unwrap().into(),
@@ -63,12 +71,22 @@ impl From<DirectionsStep> for Segment {
                             ..Default::default()
                         },
                     },
-                    to: Some(transit_details.arrival_stop.expect("No arrival stop was given in the Google API response").name),
-                    from: Some(transit_details.departure_stop.expect("No departure stop was given in the Google API response").name),
+                    to: Some(
+                        transit_details
+                            .arrival_stop
+                            .expect("No arrival stop was given in the Google API response")
+                            .name,
+                    ),
+                    from: Some(
+                        transit_details
+                            .departure_stop
+                            .expect("No departure stop was given in the Google API response")
+                            .name,
+                    ),
                     ..Default::default()
                 })
             }
-            _ => panic!("Unsupported travel mode: {:?}", step.travel_mode)
+            _ => panic!("Unsupported travel mode: {:?}", step.travel_mode),
         }
     }
 }

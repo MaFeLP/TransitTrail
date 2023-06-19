@@ -141,10 +141,6 @@
   .bold
     font-weight: bold
 
-  .description
-    color: #4d4d4c
-    font-size: small
-
   div#plans
     display: flex
     flex-direction: row

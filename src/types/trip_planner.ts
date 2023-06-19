@@ -239,4 +239,9 @@ export interface Segment {
      * Present in Ride
      */
     variant?: Variant;
+
+    /**
+     * HTML instructions on this segment provided by Google Maps **only**
+     */
+    instructions?: string;
 }

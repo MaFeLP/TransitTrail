@@ -82,6 +82,8 @@
                         <img src={walking} alt="Walking Person Icon" class="walking-icon" />
                         ({segment.times.durations.walking} min)
                         <ArrowRight />
+                        <!-- We trust google that they are not injecting code into their API responses... -->
+                        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                         {@html segment.instructions}
                     </li>
                 {/if}
