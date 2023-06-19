@@ -1,9 +1,9 @@
 <script lang="ts">
-    import Greet from "./lib/pages/Greet.svelte";
+    import Home from "./lib/pages/Home.svelte";
     import SideBar from "./lib/SideBar.svelte";
     import { SvelteComponent } from "svelte";
 
-    export let mainComponent: { component: SvelteComponent; props: object[] } = { component: Greet, props: [] };
+    export let mainComponent: { component: SvelteComponent; props: object[] } = { component: Home, props: [] };
 
     function changePage(component: SvelteComponent, props: object[]) {
         mainComponent = { component: component, props: props };

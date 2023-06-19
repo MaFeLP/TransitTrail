@@ -1,7 +1,6 @@
 <script lang="ts">
     // Page Imports
     import Home from "./pages/Home.svelte";
-    import Greet from "./pages/Greet.svelte";
     import Settings from "./pages/Settings.svelte";
     import Stops from "./pages/Stops.svelte";
     import ServiceAdvisories from "./pages/ServiceAdvisories.svelte";
@@ -28,12 +27,6 @@
             <button on:click={() => changePage(Home, [])}>
                 <House />
                 Home
-            </button>
-        </li>
-        <li>
-            <button on:click={() => changePage(Greet, [])}>
-                <Megaphone />
-                Greeter
             </button>
         </li>
         <li>
