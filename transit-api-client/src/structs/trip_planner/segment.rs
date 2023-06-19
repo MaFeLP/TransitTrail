@@ -42,7 +42,7 @@ impl From<DirectionsStep> for Segment {
                     },
                     ..Default::default()
                 },
-                instructions: Some(step.html_instructions.clone()),
+                instructions: Some(step.html_instructions),
                 ..Default::default()
             }),
             TravelMode::Transit => {

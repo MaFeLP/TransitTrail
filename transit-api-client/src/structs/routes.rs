@@ -103,7 +103,7 @@ impl From<DirectionsTransitLine> for Route {
         let short_name = line
             .short_name
             .expect("Could not parse short name from transit details. Field is missing");
-        if short_name == "BLUE".to_string() {
+        if short_name == *"BLUE".to_string() {
             Self::Blue(Blue {
                 key: "BLUE".to_string(),
                 number: "BLUE".to_string(),

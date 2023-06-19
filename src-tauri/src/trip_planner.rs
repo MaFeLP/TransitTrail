@@ -42,7 +42,7 @@ pub async fn trip_planner(
             // Specified filters from user
             TripPlanFilters::Mode(mode),
             TripPlanFilters::Date(match date {
-                Some(d) => Date::parse(&d, format_description!("[year]-[month]-[day]"))
+                Some(d) => Date::parse(d, format_description!("[year]-[month]-[day]"))
                     .map_err(|_| "Invalid date")?,
                 None => now.date(),
             }),
