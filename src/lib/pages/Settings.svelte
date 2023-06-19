@@ -3,6 +3,7 @@
     import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/api/notification";
     import { info, error } from "../../util";
     import { Settings } from "../../types/settings";
+    import { onMount } from "svelte";
 
     async function load() {
         info("[Settings]: Loading settings");
@@ -15,6 +16,9 @@
         let passwordElement = document.getElementById("api-key") as HTMLInputElement;
         passwordElement.value = settings.api_key;
         passwordElement.setAttribute("type", "password");
+        let googleApiKeyElement = document.getElementById("google-api-key") as HTMLInputElement;
+        googleApiKeyElement.value = settings.google_api_key;
+        googleApiKeyElement.setAttribute("type", "password");
 
         (document.getElementById("min-waiting-time") as HTMLInputElement).value = settings.min_waiting_time.toString();
         (document.getElementById("max-waiting-time") as HTMLInputElement).value = settings.max_waiting_time.toString();
@@ -28,6 +32,7 @@
     async function save() {
         let newSettings = new Settings(
             (document.getElementById("api-key") as HTMLInputElement).value,
+            (document.getElementById("google-api-key") as HTMLInputElement).value,
             parseInt((document.getElementById("min-waiting-time") as HTMLInputElement).value),
             parseInt((document.getElementById("max-waiting-time") as HTMLInputElement).value),
             parseInt((document.getElementById("max-transfers") as HTMLInputElement).value),
@@ -82,13 +87,34 @@
         }
     }
 
-    load()
-        .then(() => {
-            console.info("[Settings]: Initial Settings load complete");
-        })
-        .catch((e) => {
-            error(`[Settings]: Could not perform initial Settings load! ${e}`);
-        });
+    async function test_google_token() {
+        let permissionGranted = await isPermissionGranted();
+        if (!permissionGranted) {
+            const permission = await requestPermission();
+            permissionGranted = permission === "granted";
+        }
+
+        try {
+            await invoke("test_google_token", {
+                token: (document.getElementById("google-api-key") as HTMLInputElement).value,
+            });
+
+            if (permissionGranted)
+                sendNotification({
+                    title: "Token Test Result",
+                    body: "The specified API token is valid. Press 'save' in the settings, to save your token.",
+                });
+            else alert("The specified API token is valid. Press 'save' in the settings, to save your token.");
+        } catch (e) {
+            if (permissionGranted)
+                sendNotification({
+                    title: "Token Test Result",
+                    body: "The specified API token is NOT valid. Please provide a valid token and try again.",
+                });
+            else alert("The specified API token is NOT valid. Please provide a valid token and try again.");
+            error(`[Settings]: Failed to test token ${e}`);
+        }
+    }
 
     let settingsElements = [
         { id: "min-waiting-time", name: "min-waiting-time", description: "Min Waiting Time (minutes)", type: "number" },
@@ -106,6 +132,8 @@
             type: "number",
         },
     ];
+
+    onMount(load);
 </script>
 
 <div id="settings">
@@ -114,6 +142,12 @@
         <input type="text" id="api-key" />
         <!--of type text for workaround-->
         <input id="btn-test" class="btn" type="button" on:click={test_token} value="Test" />
+    </div>
+    <div class="setting">
+        <label for="google-api-key">Google Maps API Key</label>
+        <input type="text" id="google-api-key" />
+        <!--of type text for workaround-->
+        <input id="btn-google-test" class="btn" type="button" on:click={test_google_token} value="Test" />
     </div>
     {#each settingsElements as element}
         <div class="setting">

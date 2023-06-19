@@ -4,6 +4,8 @@
 //!
 
 use serde::{Deserialize, Serialize};
+use google_maps_api_client::{DirectionsTransitDetails, DirectionsTransitLine};
+use crate::prelude::badges::{ClassNames, Style};
 
 /// Represents a NON-BLUE route.
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
@@ -30,7 +32,7 @@ pub struct Regular {
 
     /// How this route's badge should be styled. For more info, see [badges]
     #[serde(rename = "badge-style")]
-    pub badge_style: badges::Style,
+    pub badge_style: Style,
 
     /// Variants of the current route, e.g. if the route splits up, where it's destination is.
     ///
@@ -61,7 +63,7 @@ pub struct Blue {
 
     /// How this route's badge should be styled. For more info, see [badges]
     #[serde(rename = "badge-style")]
-    pub badge_style: badges::Style,
+    pub badge_style: Style,
 
     /// Variants of the current route, e.g. if the route splits up, where it's destination is.
     ///
@@ -85,6 +87,58 @@ pub enum Route {
 impl Default for Route {
     fn default() -> Self {
         Self::Regular(Regular::default())
+    }
+}
+
+impl From<DirectionsTransitDetails> for Route {
+    fn from(details: DirectionsTransitDetails) -> Self {
+        let line = details.line.expect("No line found!");
+        line.into()
+    }
+}
+
+//TODO: Add destination of bus to the name, and not (as currently) the name
+impl From<DirectionsTransitLine> for Route {
+    fn from(line: DirectionsTransitLine) -> Self {
+        let short_name = line.short_name.expect("Could not parse short name from transit details. Field is missing");
+        if short_name == "BLUE".to_string() {
+            Self::Blue(
+                Blue {
+                    key: "BLUE".to_string(),
+                    number: "BLUE".to_string(),
+                    badge_label: "BLUE".to_string(),
+                    badge_style: Style {
+                        class_names: ClassNames::default(),
+                        background_color: line.color.expect("Background colour not given!"),
+                        color: line.text_color.clone().expect("Text colour not given!"),
+                        border_color: line.text_color.clone().expect("Border colour not given!"),
+                    },
+                    variants: Some(vec![
+                        Variant { key: "BLUE".to_string(), name: Some(format!("BLUE to {}", line.name)) },
+                    ]),
+                    ..Default::default()
+                }
+            )
+        } else {
+            let short_name: u32 = short_name.parse().expect("Could not convert the name to a number. Is the key wrong?");
+            Self::Regular(
+                Regular {
+                    key: short_name,
+                    number: short_name,
+                    badge_label: short_name,
+                    badge_style: Style {
+                        class_names: ClassNames::default(),
+                        background_color: line.color.expect("Background colour not given!"),
+                        color: line.text_color.clone().expect("Text colour not given!"),
+                        border_color: line.text_color.clone().expect("Border colour not given!"),
+                    },
+                    variants: Some(vec![
+                        Variant { key: short_name.to_string(), name: Some(format!("{} to {}", short_name, line.name)) },
+                    ]),
+                    ..Default::default()
+                }
+            )
+        }
     }
 }
 

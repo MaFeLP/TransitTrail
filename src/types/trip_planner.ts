@@ -7,11 +7,6 @@ import type { Bus } from "./stops";
  */
 export interface Plan {
     /**
-     * The how many-th plan this is
-     */
-    number: number;
-
-    /**
      * Contains start and end times of the plan or segment, including the total duration in
      * minutes. Riding, walking, and waiting totals are also included where appropriate.
      */

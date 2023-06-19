@@ -1,15 +1,17 @@
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
+use google_maps_api_client::GoogleMapsClient;
 
-use crate::{error_string, ClientState, SettingsState};
+use crate::{error_string, ClientState, SettingsState, GoogleMapsState};
 use serde::{Deserialize, Serialize};
-use tauri::{api::path::config_dir, Runtime, State};
+use tauri::{api::path::config_dir, State};
 use transit_api_client::prelude::{TransitClient, Usage};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(default)]
 pub struct Settings {
     pub api_key: String,
+    pub google_api_key: String,
     pub min_waiting_time: u32,
     pub max_waiting_time: u32,
     pub max_transfers: u32,
@@ -22,6 +24,7 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             api_key: String::new(),
+            google_api_key: String::new(),
             min_waiting_time: 0,
             max_waiting_time: 60,
             max_transfers: 10,
@@ -37,6 +40,7 @@ impl Default for Settings {
 pub async fn save_settings(
     new_settings: Settings,
     client: State<'_, ClientState>,
+    maps_client: State<'_, GoogleMapsState>,
     user_settings: State<'_, SettingsState>,
 ) -> Result<(), &'static str> {
     let dir = config_dir().ok_or("failed to get config directory")?;
@@ -54,7 +58,8 @@ pub async fn save_settings(
     file.write_all(toml_config.as_bytes())
         .map_err(|why| error_string(&why, "Could not write to settings.toml file"))?;
 
-    *client.0.lock().await = TransitClient::new(String::from(new_settings.api_key.clone()));
+    *client.0.lock().await = TransitClient::new(new_settings.api_key.clone());
+    *maps_client.0.lock().await = GoogleMapsClient::new(new_settings.google_api_key.clone());
     *user_settings.0.lock().await = new_settings;
 
     Ok(())
@@ -96,13 +101,22 @@ pub async fn reset_settings(settings: State<'_, SettingsState>) -> Result<(), ()
 }
 
 #[tauri::command]
-pub async fn test_token<R: Runtime>(
-    _app: tauri::AppHandle<R>,
-    _window: tauri::Window<R>,
+pub async fn test_token(
     token: String,
 ) -> Result<(), &'static str> {
     let client = TransitClient::new(token);
     match client.stop_info(10064, Usage::Normal).await {
+        Ok(_) => Ok(()),
+        Err(why) => Err(error_string(&why, "Error while testing connection")),
+    }
+}
+
+#[tauri::command]
+pub async fn test_google_token(
+    token: String,
+) -> Result<(), &'static str> {
+    let client = GoogleMapsClient::new(token);
+    match client.geocode("300 Portage Ave, Winnipeg, MB").await {
         Ok(_) => Ok(()),
         Err(why) => Err(error_string(&why, "Error while testing connection")),
     }

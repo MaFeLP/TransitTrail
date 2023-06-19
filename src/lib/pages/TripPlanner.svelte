@@ -7,6 +7,7 @@
     import { toPartialLocation } from "../../types/common";
     import type { Location } from "../../types/common";
     import TransitPlan from "../components/TransitPlan.svelte";
+    import GoogleTransitPlan from "../components/GoogleTransitPlan.svelte";
 
     async function search() {
         if (!start || !end) {
@@ -14,13 +15,28 @@
             return;
         }
         info("[TripPlanner] Fetching API response...");
+        let options = {
+            mode: (document.getElementById("time-type") as HTMLInputElement).value,
+        };
+
+        if ((document.getElementById("date") as HTMLInputElement).value) {
+            options["date"] = (document.getElementById("date") as HTMLInputElement).value;
+        }
+        if ((document.getElementById("time") as HTMLInputElement).value) {
+            options["time"] = (document.getElementById("time") as HTMLInputElement).value
+                .split(":")
+                .map((x) => parseInt(x));
+        }
+
         try {
             plans = await invoke("trip_planner", {
                 origin: toPartialLocation(start),
                 destination: toPartialLocation(end),
-                date: (document.getElementById("date") as HTMLInputElement).value,
-                time: (document.getElementById("time") as HTMLInputElement).value.split(":").map((x) => parseInt(x)),
-                mode: (document.getElementById("time-type") as HTMLInputElement).value,
+                ...options,
+            });
+            google_plans = await invoke("google_trip_planner", {
+                origin: toPartialLocation(start, false),
+                destination: toPartialLocation(end, false),
             });
         } catch (e) {
             error("[TripPlanner] Could not fetch API response!", e);
@@ -31,18 +47,11 @@
         if (event.key === "Enter") await search();
     }
 
-    let now = new Date();
-    let currentTime = `${now.getHours() < 10 ? "0" + now.getHours().toString() : now.getHours()}:${
-        now.getMinutes() < 10 ? "0" + now.getMinutes().toString() : now.getMinutes()
-    }`;
-    let today = `${now.getFullYear()}-${now.getMonth() < 10 ? "0" + now.getMonth().toString() : now.getMonth()}-${
-        now.getDay() < 10 ? "0" + now.getDay().toString() : now.getDay()
-    }`;
-
     let start: Location | null = null;
     let end: Location | null = null;
 
     let plans: Plan[] = [];
+    let google_plans: Plan[] = [];
 </script>
 
 <div>
@@ -77,17 +86,30 @@
                 <option value="ArriveBefore">Arrive Before</option>
                 <option value="ArriveAfter">Arrive After</option>
             </select>
-            <input type="time" id="time" value={currentTime} min={currentTime} on:keypress={keypress} />
-            <input type="date" id="date" value={today} min={today} on:keypress={keypress} />
+            <input type="time" id="time" on:keypress={keypress} />
+            <input type="date" id="date" on:keypress={keypress} />
         </div>
 
         <input type="button" id="reload" on:click={search} value="Go!" />
     </form>
 
-    <div id="transit-plans">
-        {#each plans as plan, index}
-            <TransitPlan {plan} id="transit-plan-{index}" />
-        {/each}
+    <div id="plans">
+        <div id="transit-plans">
+            {#if plans.length !== 0}
+                <h4>NaviGo</h4>
+            {/if}
+            {#each plans as plan, index}
+                <TransitPlan {plan} id="transit-plan-{index}" />
+            {/each}
+        </div>
+        <div id="google-plans">
+            {#if google_plans.length !== 0}
+                <h4>Google Maps</h4>
+            {/if}
+            {#each google_plans as plan, index}
+                <GoogleTransitPlan {plan} id="google-transit-plan-{index}" />
+            {/each}
+        </div>
     </div>
 </div>
 
@@ -123,13 +145,18 @@
     color: #4d4d4c
     font-size: small
 
+  div#plans
+    display: flex
+    flex-direction: row
+    align-items: start
+    justify-content: space-evenly
+    width: 100%
+    margin-top: 20px
+
   div#transit-plans
     display: flex
     flex-direction: column
     align-items: start
     justify-content: center
     gap: 10px
-    margin-top: 20px
-    width: 100%
-    padding-bottom: 20px
 </style>

@@ -1,5 +1,6 @@
 export class Settings {
     api_key: string;
+    google_api_key: string;
     min_waiting_time: number;
     max_waiting_time: number;
     max_transfers: number;
@@ -13,6 +14,7 @@ export class Settings {
         return (
             "{ " +
             `api_key: ${this.api_key}, ` +
+            `google_api_key: ${this.google_api_key}, ` +
             `min_waiting_time: ${this.min_waiting_time}; ` +
             `max_waiting_time: ${this.max_waiting_time}; ` +
             `max_transfers: ${this.max_transfers}; ` +
@@ -25,6 +27,7 @@ export class Settings {
 
     constructor(
         api_key: string,
+        google_api_key: string,
         min_waiting_time: number,
         max_waiting_time: number,
         max_transfers: number,
@@ -34,6 +37,7 @@ export class Settings {
     ) {
         return {
             api_key: api_key,
+            google_api_key: google_api_key,
             min_waiting_time: min_waiting_time,
             max_waiting_time: max_waiting_time,
             max_transfers: max_transfers,

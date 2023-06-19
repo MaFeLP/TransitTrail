@@ -139,7 +139,13 @@ export interface PartialLocation {
     Stop?: number;
 }
 
-export function toPartialLocation(location: Location): PartialLocation {
+export function toPartialLocation(location: Location, transit_api_format = true): PartialLocation {
+    if (!transit_api_format) {
+        if (location.type === LocationType.Monument) return { Monument: location.name };
+
+        return { Point: [location.centre.latitude, location.centre.longitude] };
+    }
+
     switch (location.type) {
         case LocationType.Address:
             return { Address: location.key.toString() };
