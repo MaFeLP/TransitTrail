@@ -79,7 +79,7 @@ impl From<DirectionsStep> for Segment {
                                     class_names: ClassNames::default(),
                                     background_color: line.color.expect("Background colour not given!"),
                                     color: line.text_color.clone().expect("Text colour not given!"),
-                                    border_color: line.text_color.clone().expect("Border colour not given!"),
+                                    border_color: line.text_color.expect("Border colour not given!"),
                                 },
                                 variants: Some(vec![Variant {
                                     key: "BLUE".to_string(),
@@ -99,7 +99,7 @@ impl From<DirectionsStep> for Segment {
                                     class_names: ClassNames::default(),
                                     background_color: line.color.expect("Background colour not given!"),
                                     color: line.text_color.clone().expect("Text colour not given!"),
-                                    border_color: line.text_color.clone().expect("Border colour not given!"),
+                                    border_color: line.text_color.expect("Border colour not given!"),
                                 },
                                 variants: Some(vec![Variant {
                                     key: short_name.to_string(),
