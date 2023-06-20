@@ -18,12 +18,6 @@ use tauri::async_runtime::Mutex;
 use tauri_plugin_log::LogTarget;
 use transit_api_client::TransitClient;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 /// Get access to the global TransitClient of the application.
 ///
 /// Just add `client: State<'_, ClientState>` as a parameter to the function
@@ -94,7 +88,6 @@ fn main() {
         ))))
         .manage(SettingsState(Mutex::new(user_settings)))
         .invoke_handler(tauri::generate_handler![
-            greet,
             // Settings
             save_settings,
             get_settings,
