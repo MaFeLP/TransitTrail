@@ -33,7 +33,7 @@ jobs:
           rm -r typst-x86_64-unknown-linux-musl*
         env:
           GH_TOKEN: ${{ github.token }}
-      
+
       - name: "Build Introduction"
         working-directory: "docs"
         run: |
@@ -45,10 +45,10 @@ jobs:
           /tmp/typst compile conclusion.typ
 
       - name: "Upload artifacts (release only)"
-        if: ${{ inputs.tag_name }} != ''
         working-directory: "docs"
         run: |
-          gh release upload "${{ inputs.tag_name }}" ../LICENSE.md 
+          [ -z "${{ inputs.tag_name}}" ] && exit 0
+          gh release upload "${{ inputs.tag_name }}" ../LICENSE.md
           gh release upload "${{ inputs.tag_name }}" conclusion.pdf
           gh release upload "${{ inputs.tag_name }}" introduction.pdf
         env:
