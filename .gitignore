@@ -28,7 +28,6 @@ dist-ssr
 
 # Unneeded lock files
 /transit-api-client/Cargo.lock
-/Cargo.lock
 
 # Using a file to easily format code snippets with rustfmt
 /format.rs
