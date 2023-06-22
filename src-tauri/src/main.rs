@@ -14,7 +14,9 @@ use settings::{
     Settings,
 };
 use std::fmt::Debug;
+use tauri::api::shell;
 use tauri::async_runtime::Mutex;
+use tauri::{AppHandle, Manager, Runtime};
 use tauri_plugin_log::LogTarget;
 use transit_api_client::TransitClient;
 
@@ -75,6 +77,22 @@ pub struct SettingsState(pub Mutex<Settings>);
 /// ```
 pub struct GoogleMapsState(pub Mutex<GoogleMapsClient>);
 
+#[tauri::command]
+async fn open_webpage<R: Runtime>(link: &str, handle: AppHandle<R>) -> Result<(), &'static str> {
+    //let _ = WindowBuilder::new(
+    //    &handle,
+    //    "webpage",
+    //    WindowUrl::External(link.parse().unwrap()),
+    //)
+    //.build()
+    //.map_err(|why| error_string(&why, "Failed to open webpage!"))?;
+
+    shell::open(&handle.shell_scope(), link, None)
+        .map_err(|why| error_string(&why, "Failed to open webpage!"))?;
+
+    Ok(())
+}
+
 fn main() {
     let user_settings = load_settings().unwrap_or_default();
     println!("[Before Init]: Loaded user settings: {user_settings:?}");
@@ -88,6 +106,7 @@ fn main() {
         ))))
         .manage(SettingsState(Mutex::new(user_settings)))
         .invoke_handler(tauri::generate_handler![
+            open_webpage,
             // Settings
             save_settings,
             get_settings,
@@ -114,7 +133,6 @@ fn main() {
         .setup(|app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                use tauri::Manager;
                 let window = app.get_window("main").unwrap();
                 window.open_devtools();
             }

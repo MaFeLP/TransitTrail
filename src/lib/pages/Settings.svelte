@@ -5,6 +5,9 @@
     import { Settings } from "../../types/settings";
     import { onMount } from "svelte";
 
+    // Icons
+    import InfoCircle from "svelte-bootstrap-icons/lib/InfoCircle.svelte";
+
     async function load() {
         info("[Settings]: Loading settings");
         let settings: Settings = await invoke("get_settings");
@@ -116,20 +119,54 @@
         }
     }
 
-    let settingsElements = [
-        { id: "min-waiting-time", name: "min-waiting-time", description: "Min Waiting Time (minutes)", type: "number" },
-        { id: "max-waiting-time", name: "max-waiting-time", description: "Max Waiting Time (minutes)", type: "number" },
-        { id: "max-transfers", name: "max-transfers", description: "Max Transfers", type: "number" },
-        { id: "max-walking-time", name: "max-walking-time", description: "Max Walking Time (minutes)", type: "number" },
-        { id: "walking-speed", name: "walking-speed", description: "Walking Speed (km/h)", type: "number" },
+    const SETTINGS_ELEMENTS = [
+        {
+            id: "min-waiting-time",
+            name: "min-waiting-time",
+            description: "Min Waiting Time (minutes)",
+            type: "number",
+            help: "The minimum amount of time you want to have between to transfers in minutes.",
+        },
+        {
+            id: "max-waiting-time",
+            name: "max-waiting-time",
+            description: "Max Waiting Time (minutes)",
+            type: "number",
+            help: "The maximum mount of time you are willing to wait for a connection in minutes.",
+        },
+        {
+            id: "max-transfers",
+            name: "max-transfers",
+            description: "Max Transfers",
+            type: "number",
+            help: "The maximum amount of transfers on your trip.",
+        },
+        {
+            id: "max-walking-time",
+            name: "max-walking-time",
+            description: "Max Walking Time (minutes)",
+            type: "number",
+            help: "The maximum time in minutes you are willing to spend while walking on your trip.",
+        },
+        {
+            id: "walking-speed",
+            name: "walking-speed",
+            description: "Walking Speed (km/h)",
+            type: "number",
+            help: "Your walking speed in km/h (can also be a decimal).",
+        },
     ];
 
-    let advancedSettingsElements = [
+    const ADVANCED_SETTINGS_ELEMENTS = [
         {
             id: "search-interval",
             name: "search-interval",
-            description: "How often to refresh the search entries, when searching for a location (ms)",
+            description: "Location Search Interval (ms)",
             type: "number",
+            help:
+                "The interval in milliseconds, in which the search entries are refreshed. A lower value will result" +
+                "in a more responsive search, but will also result in more API calls, which might cause the" +
+                "application to fail on some requests.",
         },
     ];
 
@@ -139,19 +176,38 @@
 <div id="settings">
     <div class="setting">
         <label for="api-key">API Key</label>
-        <input type="text" id="api-key" />
+        <button
+            type="button"
+            id="help-btn-api-key"
+            class="btn help-btn"
+            on:click={() => alert("Your Transit Client API key. Please see the homepage for how to obtain one.")}
+        >
+            <InfoCircle />
+        </button>
         <!--of type text for workaround-->
+        <input type="text" id="api-key" />
         <input id="btn-test" class="btn" type="button" on:click={test_token} value="Test" />
     </div>
     <div class="setting">
         <label for="google-api-key">Google Maps API Key</label>
+        <button
+            type="button"
+            id="help-btn-google-api-key"
+            class="btn help-btn"
+            on:click={() => alert("Your Google Maps API key. Please see the homepage for how to obtain one.")}
+        >
+            <InfoCircle />
+        </button>
         <input type="text" id="google-api-key" />
         <!--of type text for workaround-->
         <input id="btn-google-test" class="btn" type="button" on:click={test_google_token} value="Test" />
     </div>
-    {#each settingsElements as element}
+    {#each SETTINGS_ELEMENTS as element}
         <div class="setting">
             <label for={element.id}>{element.description}</label>
+            <button type="button" id="help-btn-{element.id}" class="btn help-btn" on:click={() => alert(element.help)}>
+                <InfoCircle />
+            </button>
             <input type={element.type} id={element.id} name={element.name} />
         </div>
     {/each}
@@ -159,9 +215,17 @@
     <details>
         <summary class="pointer">Advanced Section</summary>
 
-        {#each advancedSettingsElements as element}
+        {#each ADVANCED_SETTINGS_ELEMENTS as element}
             <div class="setting">
                 <label for="advanced-{element.id}">{element.description}</label>
+                <button
+                    type="button"
+                    id="advanced-help-btn-{element.id}"
+                    class="btn help-btn"
+                    on:click={() => alert(element.help)}
+                >
+                    <InfoCircle />
+                </button>
                 <input type={element.type} id="advanced-{element.id}" name={element.name} />
             </div>
         {/each}
