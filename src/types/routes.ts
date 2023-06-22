@@ -12,7 +12,6 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-
 /**
  * A route is a named and numbered pattern of service that covers a certain geographic area with a
  * consistent method of service delivery.

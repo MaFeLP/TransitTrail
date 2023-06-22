@@ -12,7 +12,6 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-
 /**
  * Structures for the [service_advisories endpoint](crate::endpoints::service_advisories)
  */

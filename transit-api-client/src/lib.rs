@@ -12,7 +12,6 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-
 #![warn(missing_docs, invalid_doc_attributes, missing_debug_implementations)]
 #![deny(non_ascii_idents, unused_crate_dependencies)]
 //! Winnipeg Api Client

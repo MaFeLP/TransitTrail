@@ -12,26 +12,25 @@
    You should have received a copy of the GNU General Public License along with
    this program. If not, see <https://www.gnu.org/licenses/>. -->
 
-
 <script lang="ts">
     import Home from "./lib/pages/Home.svelte";
     import SideBar from "./lib/SideBar.svelte";
-    import {SvelteComponent} from "svelte";
+    import { SvelteComponent } from "svelte";
 
     export let mainComponent: { component: SvelteComponent; props: object[] } = { component: Home, props: [] };
 
     function changePage(component: SvelteComponent, props: object[]) {
-        mainComponent = {component: component, props: props};
+        mainComponent = { component: component, props: props };
     }
 </script>
 
 <div>
-    <SideBar {changePage}/>
+    <SideBar {changePage} />
 
     <h1>Super Fancy Transit Client</h1>
 
     <main>
-        <svelte:component this={mainComponent.component} {...mainComponent.props}/>
+        <svelte:component this={mainComponent.component} {...mainComponent.props} />
     </main>
 </div>
 

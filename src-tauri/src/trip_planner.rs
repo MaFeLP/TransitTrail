@@ -12,7 +12,6 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-
 use crate::{error_string, ClientState, GoogleMapsState, SettingsState};
 use google_maps_api_client::{GeocodeResult, GoogleMapsClient, TravelMode};
 use tauri::State;

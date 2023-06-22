@@ -12,7 +12,6 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-
 //!
 //! Holds functions to get locations (can be an [Address], a [Monument], or an [Intersection])
 //! from the API.

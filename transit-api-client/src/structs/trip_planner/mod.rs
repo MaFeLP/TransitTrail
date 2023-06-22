@@ -12,7 +12,6 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-
 //!
 //! Contains data structures exclusively used in the
 //! [trip_planner](crate::TransitClient::trip_planner) endpoint

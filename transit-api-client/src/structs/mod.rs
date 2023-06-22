@@ -12,7 +12,6 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-
 //!
 //! This module holds all the datastructures that can be used in the API and returned from the API.
 //!

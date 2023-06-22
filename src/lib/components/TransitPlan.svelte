@@ -12,7 +12,6 @@
    You should have received a copy of the GNU General Public License along with
    this program. If not, see <https://www.gnu.org/licenses/>. -->
 
-
 <script lang="ts">
     import Stopwatch from "svelte-bootstrap-icons/lib/Stopwatch.svelte";
     import BusFront from "svelte-bootstrap-icons/lib/BusFront.svelte";
