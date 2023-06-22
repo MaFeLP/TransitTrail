@@ -17,6 +17,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: true
+        ssh-key: ${{ secrets.GH_SSH_KEY }}
 
     - name: cargo fmt
       run: cargo fmt -- --check
@@ -60,6 +63,9 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: true
+        ssh-key: ${{ secrets.GH_SSH_KEY }}
 
     - uses: pnpm/action-setup@v2
       with:

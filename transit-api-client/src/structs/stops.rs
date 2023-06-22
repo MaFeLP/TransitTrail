@@ -58,6 +58,18 @@ pub struct Stop {
 
     /// A geographical point describing where the stop is located.
     pub centre: GeoLocation,
+
+    /// The internal name use by the API
+    #[serde(rename = "internal-name")]
+    pub internal_name: Option<String>,
+
+    /// The how many-th stop on the street this stop is
+    #[serde(rename = "sequence-on-street")]
+    pub sequence_on_street: Option<u32>,
+
+    /// What icon style to use
+    #[serde(rename = "icon-style")]
+    pub icon_style: Option<String>,
 }
 
 /// A Stops that only contains the minimum required.
@@ -363,7 +375,7 @@ pub enum CustomerType {
 pub struct BadgeStyle {
     /// Classes for the badge
     #[serde(rename = "class-names")]
-    pub class_names: RenameMe,
+    pub class_names: ClassNamesHolder,
 
     /// The background color of the badge
     #[serde(rename = "background-color")]
@@ -377,9 +389,9 @@ pub struct BadgeStyle {
     pub color: String,
 }
 
-/// TODO: Rename me
+/// A Struct just holding the field class_name
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RenameMe {
+pub struct ClassNamesHolder {
     /// The class name
     #[serde(rename = "class-name")]
     pub class_name: Vec<FoxxClassNames>,

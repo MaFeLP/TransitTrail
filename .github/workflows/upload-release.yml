@@ -34,6 +34,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
+          ssh-key: ${{ secrets.GH_SSH_KEY }}
 
       - uses: pnpm/action-setup@v2
         with:
@@ -45,7 +48,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
-      
+
       - uses: tauri-apps/tauri-action@v0
         id: tauri
         env:

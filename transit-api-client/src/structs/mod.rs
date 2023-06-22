@@ -24,8 +24,6 @@ use serde::{de, Deserialize};
 use serde_json::Value;
 
 pub mod common;
-#[allow(dead_code, unused_imports, clippy::init_numbered_fields)]
-mod datetime_formatter;
 pub mod destinations;
 pub mod routes;
 pub mod service_advisories;
@@ -148,3 +146,9 @@ impl From<serde_json::Error> for Error {
         Self::Json(value)
     }
 }
+
+time::serde::format_description!(
+    datetime_formatter,
+    PrimitiveDateTime,
+    "[year]-[month]-[day]T[hour]:[minute]:[second]"
+);

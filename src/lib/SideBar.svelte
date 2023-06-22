@@ -16,16 +16,17 @@
 <script lang="ts">
     // Page Imports
     import Home from "./pages/Home.svelte";
-    import Greet from "./pages/Greet.svelte";
     import Settings from "./pages/Settings.svelte";
     import Stops from "./pages/Stops.svelte";
     import ServiceAdvisories from "./pages/ServiceAdvisories.svelte";
+    import TripPlanner from "./pages/TripPlanner.svelte";
 
     // Icon imports
     import Gear from "svelte-bootstrap-icons/lib/Gear.svelte";
     import House from "svelte-bootstrap-icons/lib/House.svelte";
     import Megaphone from "svelte-bootstrap-icons/lib/Megaphone.svelte";
     import Pin from "svelte-bootstrap-icons/lib/Pin.svelte";
+    import PinMap from "svelte-bootstrap-icons/lib/PinMap.svelte";
 
     /**
      * This function is used to change the page. It takes in a component and props, and then sets the page to that component with those props.
@@ -44,15 +45,15 @@
             </button>
         </li>
         <li>
-            <button on:click={() => changePage(Greet, [])}>
-                <Megaphone />
-                Greeter
-            </button>
-        </li>
-        <li>
             <button on:click={() => changePage(Stops, [])}>
                 <Pin />
                 Stops
+            </button>
+        </li>
+        <li>
+            <button on:click={() => changePage(TripPlanner, [])}>
+                <PinMap />
+                Trip Planner
             </button>
         </li>
         <li>

@@ -44,7 +44,7 @@ impl crate::TransitClient {
     ///     .street(
     ///         vec![
     ///             filters::Street::Name("Portage Ave"),
-    ///             filters::Street::Type(StreetType::Avenue),
+    ///             filters::Street::Type("Avenue"),
     ///             filters::Street::Leg(StreetLeg::East),
     ///         ],
     ///         Usage::Normal,
@@ -150,13 +150,13 @@ mod test {
             Street {
                 key: 2265,
                 name: "Main Street".to_string(),
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
                 leg: None,
             },
             Street {
                 key: 3442,
                 name: "St Germain Street".to_string(),
-                street_type: Some(StreetType::Street),
+                street_type: Some("Street".to_string()),
                 leg: None,
             },
         ];
@@ -175,13 +175,13 @@ mod test {
             Street {
                 key: 2903,
                 name: "Portage Avenue".to_string(),
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
                 leg: None,
             },
             Street {
                 key: 2904,
                 name: "Portage Avenue".to_string(),
-                street_type: Some(StreetType::Avenue),
+                street_type: Some("Avenue".to_string()),
                 leg: Some(StreetLeg::East),
             },
         ];
@@ -196,7 +196,7 @@ mod test {
             .street(
                 vec![
                     filters::Street::Name("Portage Ave"),
-                    filters::Street::Type(StreetType::Avenue),
+                    filters::Street::Type("Avenue"),
                     filters::Street::Leg(StreetLeg::East),
                 ],
                 Usage::Normal,
@@ -206,7 +206,7 @@ mod test {
         let expected = vec![Street {
             key: 2904,
             name: "Portage Avenue".to_string(),
-            street_type: Some(StreetType::Avenue),
+            street_type: Some("Avenue".to_string()),
             leg: Some(StreetLeg::East),
         }];
         log::info!("actual={:?}, expected:{:?}", &actual, &expected);
@@ -220,7 +220,7 @@ mod test {
         let expected = Street {
             key: 2904,
             name: "Portage Avenue".to_string(),
-            street_type: Some(StreetType::Avenue),
+            street_type: Some("Avenue".to_string()),
             leg: Some(StreetLeg::East),
         };
         log::info!("actual={:?}, expected:{:?}", &actual, &expected);

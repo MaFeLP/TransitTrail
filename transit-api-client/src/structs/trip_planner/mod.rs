@@ -20,8 +20,10 @@
 
 pub mod segment;
 
+use google_maps_api_client::DirectionsLeg;
 use serde::{Deserialize, Serialize};
-use time::PrimitiveDateTime;
+use time::macros::offset;
+use time::{OffsetDateTime, PrimitiveDateTime};
 
 use super::{
     common::{Address, GeoLocation, Intersection, Monument},
@@ -34,15 +36,45 @@ pub use segment::*;
 /// the destination.
 #[derive(Clone, Default, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Plan {
-    /// The how many-th plan this is
-    pub number: u32,
-
     /// Contains start and end times of the plan or segment, including the total duration in
     /// minutes. Riding, walking, and waiting totals are also included where appropriate.
     pub times: Times,
 
     /// Information about how this plan is structured
     pub segments: Vec<Segment>,
+}
+
+impl From<DirectionsLeg> for Plan {
+    fn from(leg: DirectionsLeg) -> Self {
+        let start_time = OffsetDateTime::from_unix_timestamp(leg.departure_time.unwrap().value)
+            .unwrap()
+            .to_offset(offset!(-5));
+        let end_time = OffsetDateTime::from_unix_timestamp(leg.arrival_time.unwrap().value)
+            .unwrap()
+            .to_offset(offset!(-5));
+        let mut times = Times {
+            start: PrimitiveDateTime::new(start_time.date(), start_time.time()),
+            end: PrimitiveDateTime::new(end_time.date(), end_time.time()),
+            durations: Durations::default(),
+        };
+        let segments: Vec<Segment> = leg.steps.into_iter().map(|step| step.into()).collect();
+
+        for segment in &segments {
+            match segment {
+                Segment::Walk(walk) => {
+                    times.durations.walking += walk.times.durations.walking;
+                    times.durations.total += walk.times.durations.total;
+                }
+                Segment::Ride(ride) => {
+                    times.durations.riding += ride.times.durations.riding;
+                    times.durations.total += ride.times.durations.total;
+                }
+                _ => {}
+            }
+        }
+
+        Plan { times, segments }
+    }
 }
 
 /// Time information about the [Plan]/[Segment]: when it starts/ends and how much time is
@@ -120,8 +152,8 @@ pub enum TripStop {
     /// let client = TransitClient::new("<YOUR_API_TOKEN>".to_string());
     /// # tokio_test::block_on(async move {
     /// let plans = client.trip_planner(
-    ///     Location::Point(GeoLocation::new(49.86917, -97.1391)),
-    ///     Location::Point(GeoLocation::new(49.8327, -97.10887)),
+    ///     PartialLocation::Point(49.86917, -97.1391),
+    ///     PartialLocation::Point(49.8327, -97.10887),
     ///     Vec::new(),
     ///     Usage::Normal
     /// ).await.unwrap();
@@ -130,15 +162,17 @@ pub enum TripStop {
     ///
     /// match segment {
     ///     trip::Segment::Walk(walk) => {
-    ///         match &walk.to {
-    ///             trip::TripStop::Stop(stop) => {
-    ///                 // This is what we actually care about:
-    ///                 // Get the other required information of the stop
-    ///                 let stop_complete = client.stop_info(stop.key, Usage::Normal).await.unwrap();
-    ///                 println!("{:?}", stop_complete);
-    ///             },
-    ///             _ => { /* handle other types */ }
-    ///         }
+    ///         if let Some(to) = &walk.to {
+    ///             match to {
+    ///                 trip::TripStop::Stop(stop) => {
+    ///                     // This is what we actually care about:
+    ///                     // Get the other required information of the stop
+    ///                     let stop_complete = client.stop_info(stop.key, Usage::Normal).await.unwrap();
+    ///                     println!("{:?}", stop_complete);
+    ///                 },
+    ///                 _ => { /* handle other types */ }
+    ///             }
+    ///        }
     ///     },
     ///     _ => { /* handle other types */ },
     /// }
@@ -178,6 +212,10 @@ pub enum Location {
     /// A geographic point
     #[serde(rename = "point")]
     Point(GeoLocation),
+
+    /// A bus stop
+    #[serde(rename = "stop")]
+    Stop(Stop),
 }
 
 /// Basic information about a stop on the Trip.

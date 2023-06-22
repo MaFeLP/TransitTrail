@@ -51,6 +51,11 @@ export enum LocationType {
      * The location is a geographical point
      */
     Point = "point",
+
+    /**
+     * The location is a bus stop
+     */
+    Stop = "stop",
 }
 
 /**
@@ -63,24 +68,112 @@ export interface Location {
     type: LocationType;
 
     /**
-     * If type is set to <code>address</code>, this represents the address which is the location
+     * The unique key of the location
+     */
+    key: number | string;
+
+    /**
+     * What street the address is located on
+     *
+     * Used in address, intersection
+     */
+    street?: Street;
+
+    /**
+     * The house number/street number of the address
+     *
+     * Used in address
+     */
+    "street-number"?: number;
+
+    /**
+     * The geographic centre of the address
+     *
+     * Used in type address, intersection, point
+     */
+    centre?: GeoLocation;
+
+    /**
+     * What the point of interest is called
+     *
+     * Used in monument
+     */
+    name?: string;
+
+    /**
+     * Which categories the point of interest/monument has
+     *
+     * Used in monument
+     */
+    categories?: string[];
+
+    /**
+     * The address of the monument
+     *
+     * Used in monument
      */
     address?: Address;
 
     /**
-     * If type is set to <code>monument</code>, this represents the monument, which is the location
+     * The street crossing the main street
+     *
+     * Used in intersection
      */
-    monument?: Monument;
-
-    /**
-     * If type is set to <code>intersection</code>, this represents the intersection, which is the location
-     */
-    intersection?: Intersection;
+    "cross-street"?: Street;
 
     /**
      * If type is set to <code>point</code>, this represents the geographical coordinates of the location
      */
     point?: GeoLocation;
+}
+
+export interface PartialLocation {
+    /**
+     * The address of a Location
+     */
+    Address?: string;
+
+    /**
+     * The location is a significant point of interest
+     */
+    Monument?: string;
+
+    /**
+     * The location is at an intersection of two streets
+     */
+    Intersection?: string;
+
+    /**
+     * A geographic point, representing latitude and longitude
+     */
+    Point?: [number, number];
+
+    /**
+     * A bus stop
+     */
+    Stop?: number;
+}
+
+export function toPartialLocation(location: Location, transit_api_format = true): PartialLocation {
+    if (!transit_api_format) {
+        if (location.type === LocationType.Monument) return { Monument: location.name };
+
+        return { Point: [location.centre.latitude, location.centre.longitude] };
+    }
+
+    switch (location.type) {
+        case LocationType.Address:
+            return { Address: location.key.toString() };
+        case LocationType.Monument:
+            return { Monument: location.key.toString() };
+        case LocationType.Intersection:
+            return { Intersection: location.key.toString() };
+        case LocationType.Point:
+            return { Point: [location.point.latitude, location.point.longitude] };
+        case LocationType.Stop:
+            // A Stop location's key is always a number
+            return { Stop: location.key as number };
+    }
 }
 
 /**
@@ -103,29 +196,12 @@ export interface Street {
      *
      * This will be changed to a string a future version
      */
-    type?: StreetType;
+    type?: string;
 
     /**
      * If this street is split into more than one part, a street leg is given
      */
     leg?: StreetLeg;
-}
-
-/**
- * Represents the type of a street.
- *
- * @deprecated
- */
-export enum StreetType {
-    Avenue = "Avenue",
-    Boulevard = "Boulevard",
-    Crescent = "Crescent",
-    Drive = "Drive",
-    Loop = "Loop",
-    Road = "Road",
-    Street = "Street",
-    Way = "Way",
-    Terminal = "Terminal",
 }
 
 /**

@@ -17,7 +17,7 @@
  * Filters for various API endpoints, that may have more than one filter option
  */
 
-import { StreetLeg, StreetType } from "./common";
+import { StreetLeg } from "./common";
 import { Category, Priority } from "./service_advisories";
 
 /**
@@ -65,7 +65,7 @@ export type TripPlanFilter =
            *
            * What the time means can be customized with a [Mode]
            */
-          Time: Time;
+          Time: [number, number];
       }
     | {
           /**
@@ -145,7 +145,7 @@ export type Street =
           /**
            * Filter for the type of the street
            */
-          Type: StreetType;
+          Type: string;
       }
     | {
           /**

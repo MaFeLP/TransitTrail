@@ -18,6 +18,7 @@
 //! consistent method of service delivery.
 //!
 
+use crate::prelude::badges::Style;
 use serde::{Deserialize, Serialize};
 
 /// Represents a NON-BLUE route.
@@ -45,7 +46,7 @@ pub struct Regular {
 
     /// How this route's badge should be styled. For more info, see [badges]
     #[serde(rename = "badge-style")]
-    pub badge_style: badges::Style,
+    pub badge_style: Style,
 
     /// Variants of the current route, e.g. if the route splits up, where it's destination is.
     ///
@@ -76,7 +77,7 @@ pub struct Blue {
 
     /// How this route's badge should be styled. For more info, see [badges]
     #[serde(rename = "badge-style")]
-    pub badge_style: badges::Style,
+    pub badge_style: Style,
 
     /// Variants of the current route, e.g. if the route splits up, where it's destination is.
     ///

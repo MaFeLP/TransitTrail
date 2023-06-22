@@ -84,12 +84,12 @@ mod test {
                 name: "Downtown".to_string(),
             },
             Destination {
-                key: 164,
-                name: "Kingston Row".to_string(),
-            },
-            Destination {
                 key: 10,
                 name: "City Hall".to_string(),
+            },
+            Destination {
+                key: 164,
+                name: "Kingston Row".to_string(),
             },
         ];
 
